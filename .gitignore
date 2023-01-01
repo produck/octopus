@@ -102,3 +102,13 @@ dist
 
 # TernJS port file
 .tern-port
+
+# vscode
+.vscode
+
+# Development debug
+.debug.mjs
+
+# Duck dist
+packages/**/index.cjs
+packages/**/version.mjs

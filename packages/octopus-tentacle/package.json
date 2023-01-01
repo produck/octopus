@@ -1,0 +1,50 @@
+{
+	"name": "@produck/octopus-tentacle",
+	"version": "0.6.0",
+	"description": "Agent framework for octopus-head.",
+	"keywords": [
+		"workflow",
+		"pipeline",
+		"job",
+		"scheduler",
+		"cluster"
+	],
+	"author": "chaoslee <chaos2lee@qq.com>",
+	"homepage": "https://github.com/produck/octopus#readme",
+	"license": "MIT",
+	"main": "index.cjs",
+	"type": "module",
+	"exports": {
+		"import": "./src/index.mjs",
+		"require": "./src/index.cjs"
+	},
+	"types": "index.d.ts",
+	"files": [
+		"src",
+		"index.d.ts",
+		"tsconfig.json"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/produck/octopus.git"
+	},
+	"scripts": {
+		"build:extract": "node script/extract.mjs",
+		"build": "npm run build:extract && rollup -c script/rollup.config.mjs",
+		"prepublishOnly": " npm run build"
+	},
+	"bugs": {
+		"url": "https://github.com/produck/octopus/issues"
+	},
+	"devDependencies": {
+		"mocha": "^10.2.0",
+		"rollup": "^3.9.0"
+	},
+	"dependencies": {
+		"@produck/duck": "^1.0.3",
+		"@produck/mold": "^0.3.1"
+	}
+}
