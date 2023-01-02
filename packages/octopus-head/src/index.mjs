@@ -9,6 +9,7 @@ import * as DuckCLICommander from '@produck/duck-cli-commander';
 
 import * as meta from './version.mjs';
 import * as CLI from './cli.mjs';
+import * as WebApp from './Web/index.mjs';
 
 export const OctopusHead = Duck.define({
 	id: 'org.produck.octopus.head',
@@ -22,6 +23,8 @@ export const OctopusHead = Duck.define({
 		}),
 		DuckWeb.Component([
 			{ id: 'Redirect', provider: DuckWeb.Preset.RedirectHttps },
+			{ id: 'Application', provider: WebApp.Application },
+			{ id: 'Agent', provider: WebApp.Agent },
 		]),
 		DuckRunner.Component(),
 		DuckCLI.Component(CLI.factory, DuckCLICommander.Provider),
