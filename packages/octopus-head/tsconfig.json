@@ -1,0 +1,9 @@
+{
+	"compilerOptions": {
+		"noEmit": true,
+		"allowJs": true,
+		"lib": [
+			"ES2022"
+		],
+	}
+}

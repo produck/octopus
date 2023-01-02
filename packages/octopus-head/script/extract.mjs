@@ -6,5 +6,10 @@ const require = createRequire(import.meta.url);
 const meta = require('../package.json');
 
 const versionJSFile = path.resolve('src/version.mjs');
+const keys = ['name', 'version', 'description'];
 
-fs.writeFileSync(versionJSFile, `export default '${meta.version}';`);
+const code = keys
+	.map(key => `export const ${key} = '${meta[key]}';`)
+	.join('\n');
+
+fs.writeFileSync(versionJSFile, code);
