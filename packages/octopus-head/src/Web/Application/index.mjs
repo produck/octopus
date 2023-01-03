@@ -14,12 +14,18 @@ export const Provider = defineKoaApp(function Application(app, {
 		provider: Router.API,
 		uses: [{
 			name: 'Product',
-			path: '/product',
+			path: '/product/{productModel}',
 			provider: Router.Product,
 			uses: [{
 				name: 'Job',
 				path: '/{productId}/job',
 				provider: Router.Job,
+			}, {
+				name: 'Order',
+				path: '/{productId}/order',
+			}, {
+				name: 'Artifact',
+				path: '/{productId}/artifact',
 			}],
 		}],
 	}),

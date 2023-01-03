@@ -54,6 +54,7 @@
 		"@produck/duck-web-koa": "^1.0.1",
 		"@produck/duck-web-koa-forker": "^1.0.1",
 		"@produck/duck-workspace": "^1.0.3",
-		"@produck/mold": "^0.3.1"
+		"@produck/mold": "^0.3.1",
+		"koa-body": "^6.0.1"
 	}
 }

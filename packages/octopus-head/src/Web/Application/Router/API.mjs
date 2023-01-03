@@ -12,18 +12,37 @@ const QuerySchema = S.Object({
 const normalizeQuery = Normalizer(QuerySchema);
 
 export const Router = defineRouter(function APIRouter(router, {
-
+	Application, Environment,
 }) {
 	router
 		.use(async function authenticate(ctx, next) {
-			const query = normalizeQuery(ctx.query);
-			const requestedAt = Number(query.time);
+			const query = ctx.query;
 
+			try {
+				normalizeQuery(query);
+			} catch {
+				return ctx.throw(400, 'Bad app, time or sign.');
+			}
+
+			const requestedAt = Number(query.time);
 			const offset = Math.abs(Date.now() - requestedAt);
 
-			if (offset > 60000) {
+			if (offset > Environment.get('APPLICATION.TIMEOUT')) {
 				return ctx.throw(408, 'Expired time.');
 			}
+
+			const applicationId = query.app.toLowerCase();
+			const application = await Application.get(applicationId);
+
+			if (application === null) {
+				return ctx.throw(404, `Application(${application}) is NOT found.`);
+			}
+
+			if (!await application.verify(query.time, query.sign)) {
+				return ctx.throw(401, 'Bad signature.');
+			}
+
+			ctx.state.application = application;
 
 			return next();
 		});
