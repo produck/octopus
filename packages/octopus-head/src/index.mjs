@@ -30,11 +30,15 @@ export const OctopusHead = Duck.define({
 		DuckCLI.Component(CLI.factory, DuckCLICommander.Provider),
 		DuckLog.Component(),
 	],
-}, function OctopusHead({ CLI }, options) {
-
+}, function OctopusHead({
+	CLI, Kit
+}, options) {
+	Kit.Options = options;
 
 	return Object.freeze({
 		boot: async () => await CLI.parser(),
 		shutdown: async () => {},
+		defineModel: () => {},
+		defineCraft: () => {},
 	});
 });

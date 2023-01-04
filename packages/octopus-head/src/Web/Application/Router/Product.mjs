@@ -16,32 +16,31 @@ const ProductDataSchema = S.Object({
 
 const normalizeProduct = Normalizer(ProductDataSchema);
 
-function ProductData(product) {
-	return {
-		id: product.id,
-		model: product.model.name,
-		createdAt: product.createdAt,
-		startedAt: product.startedAt,
-		finishedAt: product.finishedAt,
-		statusCode: product.statusCode,
-		message: product.message,
-	};
-}
-
 export const Router = defineRouter(function ProductRouter(router, {
-	Workshop,
+	Environment, Workshop,
 }) {
 	router
-		.param('productModel', function () {
+		.param('productModel', function assertModel(productModel, ctx, next) {
+			if (!Workshop.Model.has(productModel)) {
+				return ctx.throw(404, `A model(${productModel}) is NOT found.`);
+			}
 
+			ctx.state.model = Workshop.Model.get(productModel);
+
+			return next();
 		})
 		.get(async function queryProductList(ctx) {
 			const { application } = ctx.state;
-			const list = await Workshop.queue.filter(application.id);
 
-			ctx.body = list.map(ProductData);
+			ctx.body = await Workshop.Product.Queue.filter(application.id);
 		})
 		.post(KoaBody(), async function createProduct(ctx) {
+			const waitingLength = await Workshop.Product.Queue.getWaitingLength();
+
+			if (waitingLength > Environment.get('PRODUCT.QUEUE.MAX')) {
+				return ctx.throw(429, 'Too many waiting product.');
+			}
+
 			const data = ctx.request.body;
 
 			try {
@@ -50,12 +49,12 @@ export const Router = defineRouter(function ProductRouter(router, {
 				return ctx.throw(400, 'Bad request body.');
 			}
 
-			const product = await Workshop.create(data);
+			const product = await Workshop.Product.Queue.create(data);
 
-			ctx.body = ProductData(product);
+			ctx.body = product;
 		})
 		.param('productId', async function fetchProduct(productId, ctx, next) {
-			const product = await Workshop.get(productId);
+			const product = await Workshop.Product.Queue.get(productId);
 
 			if (product === null) {
 				return ctx.throw(404, `The product(${productId}) is NOT found.`);
@@ -66,7 +65,7 @@ export const Router = defineRouter(function ProductRouter(router, {
 			return next();
 		})
 		.get('/{productId}', async function getProduct(ctx) {
-			ctx.body = ProductData(ctx.state.product);
+			ctx.body = ctx.state.product;
 		})
 		.delete('/{productId}', async function deleteProduct(ctx) {
 			const { product } = ctx.state;
@@ -80,6 +79,6 @@ export const Router = defineRouter(function ProductRouter(router, {
 			}
 
 			await product.delete();
-			ctx.body = ProductData(product);
+			ctx.body = product;
 		});
 });
