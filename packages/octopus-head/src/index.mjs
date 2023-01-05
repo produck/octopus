@@ -10,6 +10,7 @@ import * as DuckCLICommander from '@produck/duck-cli-commander';
 import * as meta from './version.mjs';
 import * as CLI from './cli.mjs';
 import * as WebApp from './Web/index.mjs';
+import * as Runner from './Runner/index.mjs';
 
 export const OctopusHead = Duck.define({
 	id: 'org.produck.octopus.head',
@@ -27,12 +28,19 @@ export const OctopusHead = Duck.define({
 			{ id: 'Application', provider: WebApp.Application },
 			{ id: 'Agent', provider: WebApp.Agent },
 		]),
-		DuckRunner.Component(),
+		DuckRunner.Component({
+			roles: {
+				AgentServer: Runner.Play.AgentServer,
+				ApplicationServer: Runner.Play.ApplicationServer,
+				Scheduler: Runner.Play.Scheduler,
+				System: Runner.Play.System,
+			},
+		}),
 		DuckCLI.Component(CLI.factory, DuckCLICommander.Provider),
 		DuckLog.Component(),
 	],
 }, function OctopusHead({
-	CLI, Kit, Workshop
+	CLI, Kit, Workshop,
 }, options) {
 	Kit.Options = options;
 

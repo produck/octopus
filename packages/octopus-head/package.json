@@ -55,6 +55,7 @@
 		"@produck/duck-web-koa-forker": "^1.0.1",
 		"@produck/duck-workspace": "^1.0.3",
 		"@produck/mold": "^0.3.1",
+		"@produck/quack": "^0.1.1",
 		"@types/node": "^18.11.18",
 		"koa-body": "^6.0.1",
 		"semver": "^7.3.8"
