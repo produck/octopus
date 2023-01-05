@@ -1,12 +1,14 @@
 import * as Duck from '@produck/duck';
 
-import { Workshop, Environment, Application, Agent } from './Feature';
+import * as Feature from './Feature';
 
 declare module '@produck/duck' {
 	interface ProductKit {
-		Application: Application.Registry;
-		Environment: Environment.Registry;
-		Workshop: Workshop.Manager;
-		Agent: Agent.Manager;
+		Application: Feature.Application.Registry;
+		Environment: Feature.Environment.Registry;
+		Workshop: Feature.Workshop.Manager;
+		Agent: Feature.Agent.Manager;
+		Scheduler: Feature.Scheduler;
+		Group: Feature.Group;
 	}
 }

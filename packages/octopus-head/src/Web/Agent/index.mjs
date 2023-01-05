@@ -18,9 +18,13 @@ const RJSPRouter = DuckWebKoaForker.defineRouter(function RJSPRouter(router, {
 	}
 
 	router
-		.use(KoaBody())
-		.put('/sync', async function handleData(ctx) {
+		.put('/sync', KoaBody(), async function handleData(ctx) {
 			const data = RJSP.normalize(ctx.request.body);
+
+			if (!Workshop.Job.Craft.has(data.meta.craft)) {
+				return ctx.throw(403, 'Unavailable craft.');
+			}
+
 			const agent = await Agent.fetch(data.id, data.meta);
 
 			agent.activate();

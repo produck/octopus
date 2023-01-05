@@ -20,6 +20,7 @@ export const OctopusHead = Duck.define({
 		DuckWorkspace.Component({
 			log: 'log',
 			temp: 'tmp',
+			tls: 'tls',
 		}),
 		DuckWeb.Component([
 			{ id: 'Redirect', provider: DuckWeb.Preset.RedirectHttps },
@@ -31,14 +32,14 @@ export const OctopusHead = Duck.define({
 		DuckLog.Component(),
 	],
 }, function OctopusHead({
-	CLI, Kit
+	CLI, Kit, Workshop
 }, options) {
 	Kit.Options = options;
 
 	return Object.freeze({
 		boot: async () => await CLI.parser(),
 		shutdown: async () => {},
-		defineModel: () => {},
-		defineCraft: () => {},
+		Model: () => {},
+		Craft: () => {},
 	});
 });
