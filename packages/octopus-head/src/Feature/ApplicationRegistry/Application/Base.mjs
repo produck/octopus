@@ -11,6 +11,7 @@ const SIGNATURE_REG = /^[0-9a-f]+$/i;
 
 export class BaseOctopusApplication extends AbstractOctopusApplication {
 	#data = Object.seal(Data.normalize({}));
+	PublicKey = new this._PublicKeyRegistry(this);
 
 	constructor(data) {
 		super();
