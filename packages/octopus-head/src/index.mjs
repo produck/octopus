@@ -40,7 +40,7 @@ export const OctopusHead = Duck.define({
 		DuckLog.Component(),
 	],
 }, function OctopusHead({
-	CLI, Kit, Workshop,
+	CLI, Kit, Workshop, Environment,
 }, options) {
 	Kit.Options = options;
 

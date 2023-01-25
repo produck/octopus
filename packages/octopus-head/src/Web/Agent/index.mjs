@@ -9,6 +9,7 @@ const RJSPRouter = DuckWebKoaForker.defineRouter(function RJSPRouter(router, {
 }) {
 	function Configuration() {
 		return {
+			age: Environment.get('ENVIRONMENT.AGE'),
 			syncInterval: Environment.get('AGENT.SYNC.INTERVAL'),
 			syncTimeout: Environment.get('AGENT.SYNC.TIMEOUT'),
 			syncRetryInterval: Environment.get('AGENT.SYNC.RETRY.INTERVAL'),

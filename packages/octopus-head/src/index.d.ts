@@ -33,7 +33,7 @@ interface Settings {
 declare module '@produck/duck' {
 	interface ProductKit {
 		Application: Feature.Application.Registry;
-		Environment: Feature.Environment.Registry;
+		Environment: Feature.Environment;
 		Workshop: Feature.Workshop.Manager;
 		Agent: Feature.Agent.Manager;
 		Scheduler: Feature.Scheduler;

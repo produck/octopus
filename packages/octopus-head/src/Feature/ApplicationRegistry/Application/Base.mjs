@@ -7,8 +7,6 @@ import * as Data from './Data.mjs';
 export const KeyListSchema = S.Array({ items: P.String() });
 export const normalizeKeyList = Normalizer(KeyListSchema);
 
-const SIGNATURE_REG = /^[0-9a-f]+$/i;
-
 export class BaseOctopusApplication extends AbstractOctopusApplication {
 	#data = Object.seal(Data.normalize({}));
 	PublicKey = new this._PublicKeyRegistry(this);

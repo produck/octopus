@@ -1,21 +1,30 @@
+import { webcrypto as crypto } from 'node:crypto';
+import * as PublicKey from './PublicKey/index.mjs';
+
 function assertImplemented(methodName) {
 	throw new Error(`Method '.${methodName}()' MUST be implemented.`);
 }
 
 export class AbstractPublicKeyManager {
-	_query() {
+	_PublicKey = PublicKey.Base;
 
+	async _id() {
+		return crypto.randomUUID();
 	}
 
-	_has() {
-
+	async _query() {
+		assertImplemented('_query');
 	}
 
-	_get() {
-
+	async _has() {
+		assertImplemented('_has');
 	}
 
-	_add() {
+	async _get() {
+		assertImplemented('_get');
+	}
 
+	async _add() {
+		assertImplemented('_add');
 	}
 }

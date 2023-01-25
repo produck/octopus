@@ -32,8 +32,9 @@ export const MetaSchema = S.Object({
 
 export const Schema = S.Object({
 	id: P.String(),
-	meta: P.OrNull(MetaSchema),
-	job: P.OrNull(JobStatusSchema),
+	meta: MetaSchema,
+	ready: P.Boolean(),
+	job: P.OrNull(P.String(), true),
 	config: ConfigurationSchema,
 	rpc: S.Array({ items: JsonRpcDatagramSchema }),
 });

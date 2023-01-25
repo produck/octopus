@@ -18,10 +18,6 @@ export const plugin = DuckWebKoaForker.Plugin({
 			name: 'ProductMember',
 			path: '/{productId}',
 			uses: [{
-				name: 'Job',
-				path: '/job',
-				provider: Job.Router,
-			}, {
 				name: 'Order',
 				path: '/order',
 				provider: Order.Router,
@@ -29,6 +25,10 @@ export const plugin = DuckWebKoaForker.Plugin({
 				name: 'Artifact',
 				path: '/artifact',
 				provider: Artifact.Router,
+			}, {
+				name: 'Job',
+				path: '/job',
+				provider: Job.Router,
 			}],
 		}],
 	}],

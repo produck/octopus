@@ -1,31 +1,32 @@
+import * as PublicKey from './PublicKey/index.mjs';
 import { AbstractPublicKeyManager } from './Abstract.mjs';
 
 export class BasePublicKeyManager extends AbstractPublicKeyManager {
-	/** @type {import('../Base.mjs').BaseOctopusApplication} */
-	#application = null;
-
-	constructor(application) {
-		super();
-		this.#application = application;
-	}
-
-	query() {
+	async query() {
 
 	}
 
-	has(fingerprint) {
-		const _flag = this._has(fingerprint);
+	async has(id) {
+		const _flag = await this._has(id);
 	}
 
-	get(fingerprint) {
-
-	}
-
-	add(pem) {
+	async get(id) {
 
 	}
 
-	remove(fingerprint) {
+	async add(pem) {
+		const id = await this._id();
+		const _data = await this._add({ id, pem, createdAt: Date.now });
+
+		try {
+			return new this._PublicKey(PublicKey.Data.normalize(_data));
+		} catch (error) {
+
+		}
+
+	}
+
+	async remove(id) {
 
 	}
 }
