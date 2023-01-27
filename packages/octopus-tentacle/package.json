@@ -40,6 +40,7 @@
 		"url": "https://github.com/produck/octopus/issues"
 	},
 	"devDependencies": {
+		"@types/mocha": "^10.0.1",
 		"mocha": "^10.2.0",
 		"rollup": "^3.9.0"
 	},
