@@ -2,7 +2,7 @@ import * as assert from 'node:assert/strict';
 import { describe, it } from 'mocha';
 
 import { webcrypto as crypto } from 'node:crypto';
-import { defineApplication } from './define.mjs';
+import { define as defineApplication } from './index.mjs';
 
 describe('OctopusHead::Feature::Application', function () {
 	describe('::defineApplication()', function () {

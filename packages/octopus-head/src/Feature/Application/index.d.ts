@@ -38,3 +38,5 @@ export module Options {
 export function define(
 	options: Options.Value
 ): ApplicationConstructor;
+
+export { ApplicationConstructor as Constructor };

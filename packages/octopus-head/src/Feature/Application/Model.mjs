@@ -4,9 +4,9 @@ import * as Data from './Data.mjs';
 
 export const BaseApplication = Model.define({
 	name: 'Application',
-	data: Data.normalize,
 	creatable: true,
 	deletable: true,
+	data: Data.normalize,
 	base: Definer.Base(({ Declare }) => {
 		Declare.Prototype.notDestroyedRequired()
 			.Accessor('id', function () {
