@@ -31,8 +31,9 @@ export const Router = defineRouter(function APIRouter(router, {
 				return ctx.throw(408, 'Expired time.');
 			}
 
-			const applicationId = query.app.toLowerCase();
-			const application = await Application.get(applicationId);
+			const application = await Application.get({
+				id: query.app.toLowerCase(),
+			});
 
 			if (application === null) {
 				return ctx.throw(404, `Application(${application}) is NOT found.`);

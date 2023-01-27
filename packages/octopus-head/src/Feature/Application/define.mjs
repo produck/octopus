@@ -15,7 +15,7 @@ export function defineApplication(_options = {}) {
 			},
 			async _destroy(data) {
 				await options.destroy(data.id);
-			}
+			},
 		}, {
 			async _has(data) {
 				return await options.has(data.id);
@@ -28,7 +28,7 @@ export function defineApplication(_options = {}) {
 			},
 			async _create(data) {
 				return await options.create(data);
-			}
+			},
 		}),
 	});
 }
