@@ -2,12 +2,12 @@ import * as assert from 'node:assert/strict';
 import { describe, it } from 'mocha';
 
 import { webcrypto as crypto } from 'node:crypto';
-import { define as defineApplication } from './index.mjs';
+import { define } from './index.mjs';
 
-describe('OctopusHead::Feature::Application', function () {
+describe('::Feature::Application', function () {
 	describe('::defineApplication()', function () {
 		it('should create a CustomApplication.', function () {
-			const CustomApplication = defineApplication();
+			const CustomApplication = define();
 
 			assert.equal(CustomApplication.name, 'CustomApplicationProxy');
 		});
@@ -18,7 +18,7 @@ describe('OctopusHead::Feature::Application', function () {
 
 		describe('::has()', function () {
 			it('should get true.', async function () {
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					has: () => true,
 				});
@@ -27,7 +27,7 @@ describe('OctopusHead::Feature::Application', function () {
 			});
 
 			it('should get false.', async function () {
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					has: () => false,
 				});
@@ -36,7 +36,7 @@ describe('OctopusHead::Feature::Application', function () {
 			});
 
 			it('should throw if bad has().', async function () {
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					has: () => null,
 				});
@@ -55,7 +55,7 @@ describe('OctopusHead::Feature::Application', function () {
 			it('should get a application.', async function () {
 				const example = { id: crypto.randomUUID(), createdAt: Date.now() };
 
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					get: () => example,
 				});
@@ -69,7 +69,7 @@ describe('OctopusHead::Feature::Application', function () {
 			});
 
 			it('should get a null.', async function () {
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					get: () => null,
 				});
@@ -85,7 +85,7 @@ describe('OctopusHead::Feature::Application', function () {
 
 		describe('::query()', function () {
 			it('should get a []', async function () {
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 				});
 
@@ -95,7 +95,7 @@ describe('OctopusHead::Feature::Application', function () {
 			it('should get a [Application]', async function () {
 				const id = crypto.randomUUID();
 
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					query: () => [{ id, createdAt: Date.now() }],
 				});
@@ -112,7 +112,7 @@ describe('OctopusHead::Feature::Application', function () {
 				const example = { id: crypto.randomUUID(), createdAt: Date.now() };
 				const store = [example];
 
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					create: async function createApplication(_data) {
 						store.push({ ..._data });
@@ -130,7 +130,7 @@ describe('OctopusHead::Feature::Application', function () {
 			});
 
 			it('should throw if bad create().', async function () {
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					create: () => null,
 				});
@@ -152,7 +152,7 @@ describe('OctopusHead::Feature::Application', function () {
 
 				assert.notEqual(example.id, newId);
 
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					get: () => ({ ...example }),
 				});
@@ -169,7 +169,7 @@ describe('OctopusHead::Feature::Application', function () {
 				let fetched = false;
 				const example = { id: crypto.randomUUID(), createdAt: Date.now() };
 
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					get: () => fetched ? null : example,
 				});
@@ -189,7 +189,7 @@ describe('OctopusHead::Feature::Application', function () {
 				let destroyed = false;
 				const example = { id: crypto.randomUUID(), createdAt: Date.now() };
 
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					get: () => destroyed ? null : example,
 					destroy: () => destroyed = true,
@@ -207,7 +207,7 @@ describe('OctopusHead::Feature::Application', function () {
 			it('should get id.', async function () {
 				const example = { id: crypto.randomUUID(), createdAt: Date.now() };
 
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					get: () => example,
 				});
@@ -224,7 +224,7 @@ describe('OctopusHead::Feature::Application', function () {
 			it('should get a date.', async function () {
 				const example = { id: crypto.randomUUID(), createdAt: Date.now() };
 
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					get: () => example,
 				});
@@ -241,7 +241,7 @@ describe('OctopusHead::Feature::Application', function () {
 			it('should get a json string.', async function () {
 				const example = { id: crypto.randomUUID(), createdAt: Date.now() };
 
-				const MemoneryApplication = defineApplication({
+				const MemoneryApplication = define({
 					...SAMPLE_OPTIONS,
 					get: () => example,
 				});

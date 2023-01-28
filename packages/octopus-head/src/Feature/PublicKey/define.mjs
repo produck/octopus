@@ -4,6 +4,8 @@ import { BasePublicKey } from './Model.mjs';
 import * as Options from './Options.mjs';
 import * as Filter from './Filter.mjs';
 
+const FILTER_ALL = Filter.Preset.All.normalize();
+
 export function definePublicKey(_options = {}) {
 	const options = Options.normalize(_options);
 
@@ -24,7 +26,7 @@ export function definePublicKey(_options = {}) {
 			async _get(data) {
 				return await options.get(data.id);
 			},
-			async _query(_filter) {
+			async _query(_filter = FILTER_ALL) {
 				const { name } = Filter.normalize(_filter);
 				const filterOptions = Filter.Preset[name].normalize(_filter);
 

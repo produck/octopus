@@ -16,6 +16,9 @@ export const BasePublicKey = Model.define({
 			.Accessor('id', function () {
 				return _(this).id;
 			})
+			.Accessor('owner', function () {
+				return _(this).owner;
+			})
 			.Accessor('createdAt', function () {
 				return new Date(_(this).createdAt);
 			})
@@ -24,7 +27,7 @@ export const BasePublicKey = Model.define({
 					U.throwError('plain', 'string');
 				}
 
-				if (!T.Native.String(plain) && !SIGNATURE_REG.test(signature)) {
+				if (!T.Native.String(signature) || !SIGNATURE_REG.test(signature)) {
 					U.throwError('signature', 'hex string');
 				}
 
@@ -45,7 +48,7 @@ export const BasePublicKey = Model.define({
 		return {
 			id,
 			owner,
-			reatedAt: new Date(createdAt),
+			createdAt: new Date(createdAt),
 		};
 	},
 });
