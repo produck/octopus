@@ -33,25 +33,25 @@ export module Property {
 type EventListenerMap = {
 	'fetch': () => void;
 	'fetch-error': (error: Error) => void;
-	'put': <T extends Property.Key>(name: T, value: Property.Map[T]) => void;
-	'put-error': (error: Error) => void;
+	'set': <T extends Property.Key>(name: T, value: Property.Map[T]) => void;
+	'set-error': (error: Error) => void;
 	'data-error': (error: Error) => void;
 }
 
 export type EventName = keyof EventListenerMap;
 
-export class BaseOctopusEnvironment extends EventEmitter {
+export class BaseEnvironment extends EventEmitter {
 	on<T extends EventName>(eventName: T, listener: EventListenerMap[T]): this;
 	off<T extends EventName>(eventName: T, listener: EventListenerMap[T]): this;
 	once<T extends EventName>(eventName: T, listener: EventListenerMap[T]): this;
 
 	_fetch(): Promise<void>;
 
-	_put<T extends Property.Key>(name: T, value: Property.Map[T]): Promise<void>;
+	_set<T extends Property.Key>(name: T, value: Property.Map[T]): Promise<void>;
 
 	get<T extends Property.Key>(name: T): Property.Map[T];
 
-	put<T extends Property.Key>(name: T, value: Property.Map[T]): Promise<void>;
+	set<T extends Property.Key>(name: T, value: Property.Map[T]): Promise<void>;
 
 	fetch(): Promise<Property.Map>;
 
@@ -66,17 +66,17 @@ export module Options {
 	interface Object {
 		name?: string;
 		fetch?: () => Promise<Property.Map>;
-		put?: (name: Property.Key, value: Property.Value) => Promise<void>;
+		set?: (name: Property.Key, value: Property.Value) => Promise<void>;
 	}
 
 	export function normalize(_options: Object): Object;
 	export const Schema: Schema<Object>;
 }
 
-declare class CustomOctopusEvnironment extends BaseOctopusEnvironment {}
+declare class CustomEnvironment extends BaseEnvironment {}
 
 export function defineEnvironment(
 	_options: Options.Object
-): typeof CustomOctopusEvnironment;
+): typeof CustomEnvironment;
 
 export { defineEnvironment as define };

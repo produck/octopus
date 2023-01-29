@@ -4,12 +4,12 @@ function assertImplemented(methodName) {
 	throw new Error(`Method '.${methodName}()' MUST be implemented.`);
 }
 
-export class AbstractOctopusEnvironment extends EventEmitter {
+export class AbstractEnvironment extends EventEmitter {
 	async _fetch() {
 		assertImplemented('_fetch');
 	}
 
-	async _put() {
-		assertImplemented('_put');
+	async _set() {
+		assertImplemented('_set');
 	}
 }

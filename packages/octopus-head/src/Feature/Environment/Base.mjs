@@ -1,9 +1,9 @@
 import { T, U } from '@produck/mold';
 import * as Property from './Property.mjs';
 
-import { AbstractOctopusEnvironment } from './Abstract.mjs';
+import { AbstractEnvironment } from './Abstract.mjs';
 
-export class BaseOctopusEnvironment extends AbstractOctopusEnvironment {
+export class BaseEnvironment extends AbstractEnvironment {
 	#cache = Object.seal(Property.normalize({}));
 	#busy = false;
 
@@ -17,23 +17,27 @@ export class BaseOctopusEnvironment extends AbstractOctopusEnvironment {
 		}
 	}
 
+	get isBusy() {
+		return this.#busy;
+	}
+
 	get(name) {
 		this.#assertName(name);
 
 		return this.#cache[name];
 	}
 
-	async put(name, value) {
+	async set(name, value) {
 		this.#assertName(name);
 		Property.normalizeValue(name, value);
-		this.emit('put', name, value);
+		this.emit('set', name, value);
 
 		try {
-			await this._put(name, value);
+			await this._set(name, value);
 		} catch (cause) {
-			const error = new Error('Put evnironment property failed.', { cause });
+			const error = new Error('Set environment property failed.', { cause });
 
-			this.emit('put-error', error);
+			this.emit('set-error', error);
 		}
 	}
 
