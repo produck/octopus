@@ -16,24 +16,16 @@ export interface ModelRegistry {
 export interface Product {
 	id: string;
 	model: Model;
-	order: any;
-	artifact: any;
 	orderedAt: Date;
 	createdAt: Date;
 	startedAt: Date;
 	finisthedAt: Date;
-	deletedAt: Date;
-	statusCode: number;
+	status: number;
 	message: string | null;
 
-	readonly isFinished: boolean;
-	readonly isDeleted: boolean;
-	abort(): Promise<void>;
-	delete(): Promise<void>;
-	save(): Promise<void>;
+	order(): Promise<void>;
 	start(): Promise<void>;
-	evaluate(): Promise<void>;
-	Job: ProductJob;
+	finish(status: number, message: string | null): Promise<void>;
 }
 
 export interface Queue {
