@@ -7,8 +7,8 @@ export const StatusSchema = P.Enum([0], 0);
 export const MessageSchemna = P.OrNull(P.String());
 
 export const Schema = S.Object({
-	id: P.OrNull(UUIDSchema),
-	owner: P.OrNull(UUIDSchema),
+	id: UUIDSchema,
+	owner: UUIDSchema,
 	model: AtSchema,
 	createdAt: AtSchema,
 	orderedAt: AtSchema,

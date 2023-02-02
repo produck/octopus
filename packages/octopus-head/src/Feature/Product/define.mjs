@@ -6,7 +6,7 @@ import * as Filter from './Filter.mjs';
 
 const FILTER_ALL = Filter.Preset.All.normalize();
 
-export function defineProduct(_options) {
+export function defineProduct(_options = {}) {
 	const options = Options.normalize(_options);
 
 	return Entity.define({

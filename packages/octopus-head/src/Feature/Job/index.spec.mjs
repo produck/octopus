@@ -82,7 +82,7 @@ describe('::Feature::Job', function () {
 		});
 
 		describe('.load()', function () {
-			it('should get a job.', async function () {
+			it('should update the job.', async function () {
 				const example = { ...EXAMPLE };
 				const newId = crypto.randomUUID();
 
