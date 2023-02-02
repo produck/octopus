@@ -15,8 +15,8 @@ const At = key => [key, function atGetter() {
 const AT_KEYS = ['createdAt', 'visitedAt'];
 const PLAIN_KEYS = ['id', 'craft', 'version', 'job'];
 
-export const BaseAgent = Model.define({
-	name: 'Agent',
+export const BaseTentacle = Model.define({
+	name: 'Tentacle',
 	creatable: true,
 	updatable: true,
 	deletable: true,

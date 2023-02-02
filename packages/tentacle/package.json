@@ -1,7 +1,7 @@
 {
-	"name": "@produck/octopus-head",
+	"name": "@produck/octopus-tentacle",
 	"version": "0.6.0",
-	"description": "Workflow definition framework hub endpoint.",
+	"description": "Agent framework for octopus-brain.",
 	"keywords": [
 		"workflow",
 		"pipeline",
@@ -32,7 +32,6 @@
 		"url": "git+https://github.com/produck/octopus.git"
 	},
 	"scripts": {
-		"test": "mocha \"**/*.spec.mjs\" --no-diff -t 999999999",
 		"build:extract": "node script/extract.mjs",
 		"build": "npm run build:extract && rollup -c script/rollup.config.mjs",
 		"prepublishOnly": " npm run build"
@@ -43,7 +42,7 @@
 	"devDependencies": {
 		"@types/mocha": "^10.0.1",
 		"mocha": "^10.2.0",
-		"rollup": "^3.10.1"
+		"rollup": "^3.9.0"
 	},
 	"dependencies": {
 		"@produck/duck": "^1.0.3",
@@ -52,16 +51,11 @@
 		"@produck/duck-log": "^1.0.4",
 		"@produck/duck-log-quack": "^1.0.1",
 		"@produck/duck-runner": "^1.0.4",
-		"@produck/duck-web": "^1.0.4",
-		"@produck/duck-web-koa": "^1.0.1",
-		"@produck/duck-web-koa-forker": "^1.0.1",
 		"@produck/duck-workspace": "^1.0.3",
 		"@produck/mold": "^0.3.1",
 		"@produck/quack": "^0.1.1",
-		"@produck/shop": "^0.1.1",
 		"@types/node": "^18.11.18",
 		"@types/semver": "^7.3.13",
-		"koa-body": "^6.0.1",
 		"semver": "^7.3.8"
 	}
 }

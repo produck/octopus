@@ -1,17 +1,17 @@
 import { Definer, Entity } from '@produck/shop';
 
-import { BaseAgent } from './Model.mjs';
+import { BaseTentacle } from './Model.mjs';
 import * as Options from './Options.mjs';
 import * as Filter from './Filter.mjs';
 
 const FILTER_ALL = Filter.Preset.All.normalize();
 
-export function defineAgent(_options = {}) {
+export function defineTentacle(_options = {}) {
 	const options = Options.normalize(_options);
 
 	return Entity.define({
 		name: options.name,
-		Model: BaseAgent,
+		Model: BaseTentacle,
 		define: Definer.Custom({
 			async _load(data) {
 				return await options.get(data.id);

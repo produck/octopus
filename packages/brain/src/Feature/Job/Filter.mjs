@@ -12,15 +12,15 @@ const FilterOfProductSchemna = S.Object({
 	product: UUIDSchema,
 });
 
-const FilterOfAgentSchemna = S.Object({
-	name: P.Constant('OfAgent'),
-	agent: UUIDSchema,
+const FilterOfTentacleSchemna = S.Object({
+	name: P.Constant('OfTentacle'),
+	tentacle: UUIDSchema,
 });
 
 export const Preset = {
 	All: FilterDescriptor(FilterAllSchema),
 	OfProduct: FilterDescriptor(FilterOfProductSchemna),
-	OfAgent: FilterDescriptor(FilterOfAgentSchemna),
+	OfTentacle: FilterDescriptor(FilterOfTentacleSchemna),
 };
 
 const FilterSchema = S.Object({
