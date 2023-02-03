@@ -3,9 +3,13 @@ import { S, P, Normalizer } from '@produck/mold';
 
 import * as Data from './Data.mjs';
 
+const now = Date.now();
+
 const EXAMPLE = Data.normalize({
 	id: crypto.randomUUID(),
 	craft: 'example',
+	createdAt: now,
+	visitedAt: now,
 });
 
 const QuerySchema = S.Object({

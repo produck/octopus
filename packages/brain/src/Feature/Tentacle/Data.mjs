@@ -3,7 +3,7 @@ import { Normalizer, P, S } from '@produck/mold';
 
 import { UUIDSchema } from '../Utils.mjs';
 
-const AtSchema = P.OrNull(P.Integer());
+const AtSchema = P.Integer();
 
 export const Schema = S.Object({
 	id: UUIDSchema,
