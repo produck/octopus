@@ -27,7 +27,7 @@ export const Router = defineRouter(function APIRouter(router, {
 			const requestedAt = Number(query.time);
 			const offset = Math.abs(Date.now() - requestedAt);
 
-			if (offset > Environment.get('APPLICATION.TIMEOUT')) {
+			if (offset > Environment.get('APPLICATION.REQUEST.TIMEOUT')) {
 				return ctx.throw(408, 'Expired time.');
 			}
 

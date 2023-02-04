@@ -12,7 +12,7 @@ export module Property {
 
 		'SCHEDULER.EVALUATING.INTERVAL': number;
 
-		'APPLICATION.TIMEOUT': number;
+		'APPLICATION.REQUEST.TIMEOUT': number;
 
 		'PRODUCT.QUEUE.MAX': number;
 		'PRODUCT.ORDER.CREATION.TIMEOUT': number;

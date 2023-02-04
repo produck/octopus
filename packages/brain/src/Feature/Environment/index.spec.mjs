@@ -86,7 +86,7 @@ describe('::Ferture::Environment', function () {
 			const env = new CustomEnvironment();
 
 			it('should get a value.', function () {
-				assert.ok(typeof env.get('ENVIRONMENT.AGE') === 'number');
+				assert.ok(typeof env.get('ENVIRONMENT.MODIFIED') === 'number');
 			});
 
 			it('should throw if bad name.', function () {
@@ -110,7 +110,7 @@ describe('::Ferture::Environment', function () {
 			it('should set a value.', async function () {
 				const env = new CustomEnvironment();
 
-				await env.set('APPLICATION.TIMEOUT', 50000);
+				await env.set('APPLICATION.REQUEST.TIMEOUT', 50000);
 			});
 
 			it('should emit set-error if bad _set().', async function () {
@@ -127,7 +127,7 @@ describe('::Ferture::Environment', function () {
 					flag.a = true;
 				});
 
-				await env.set('APPLICATION.TIMEOUT', 500000);
+				await env.set('APPLICATION.REQUEST.TIMEOUT', 500000);
 				assert.equal(flag.a, true);
 			});
 		});
