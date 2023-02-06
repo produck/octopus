@@ -16,9 +16,9 @@ const EMITTER_PROXY_KEYS = ['on', 'off', 'once'];
 const EXTERNAL_KEYS = ['NOW', 'MAX_ALIVE_GAP', 'WATCHING_INTERVAL'];
 const AT_KEYS = ['createdAt', 'visitedAt'];
 const PLAIN_KEYS = ['id', 'name', 'version'];
-const byIdInDES = (brainA, brainB) => brainA.visitedAt - brainB.visitedAt;
+const byIdInASC = (brainA, brainB) => brainA.id - brainB.id;
 
-const ExternalValueSchema = P.UINT32();
+const ExternalValueSchema = P.Integer();
 const normalizeExternalValue = Normalizer(ExternalValueSchema);
 
 const ExternalAccessor = key => [key, function getItem() {
@@ -59,13 +59,14 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 			throw new Error('A brain is alive currently.');
 		}
 
+		context.active = true;
+
 		const isAlive = brain => this.NOW - brain.visitedAt < this.MAX_ALIVE_GAP;
 		const self = await this.get(Data.normalize(_selfData));
 
-		context.active = false;
 		context.current = self;
 
-		(async function observe(Brain) {
+		(async function watch(Brain) {
 			if (context.current !== self) {
 				return;
 			}
@@ -79,7 +80,7 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 					Throw.ImplementError('There SHOULD be 1 brain at least.');
 				}
 
-				const aliveList = list.filter(isAlive).sort(byIdInDES);
+				const aliveList = list.filter(isAlive).sort(byIdInASC);
 
 				if (aliveList.length > 0) {
 					if (aliveList[0].id === self.id) {
@@ -90,7 +91,7 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 				context.emitter.emit('watch-error', error);
 			}
 
-			setTimeout(() => observe(Brain), Brain.WATCHING_INTERVAL);
+			setTimeout(() => watch(Brain), Brain.WATCHING_INTERVAL);
 		})(this);
 
 		return this;
