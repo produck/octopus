@@ -1,9 +1,9 @@
 import { Normalizer, P, S } from '@produck/mold';
 
-import { UUIDSchema } from '../Utils.mjs';
+import { UUIDSchema as IdSchema } from '../Utils.mjs';
 
 export const Schema = S.Object({
-	id: P.OrNull(UUIDSchema),
+	id: P.OrNull(IdSchema),
 	createdAt: P.OrNull(P.Number()),
 });
 

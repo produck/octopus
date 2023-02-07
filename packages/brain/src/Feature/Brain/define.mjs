@@ -1,8 +1,9 @@
 import { Definer, Entity } from '@produck/shop';
 
+import { normalizeUUID as normalizeId } from '../Utils.mjs';
 import { BaseBrain } from './Model.mjs';
-import * as Options from './Options.mjs';
 import * as Data from './Data.mjs';
+import * as Options from './Options.mjs';
 
 export function defineBrain(...args) {
 	const options = Options.normalize(...args);
@@ -18,8 +19,8 @@ export function defineBrain(...args) {
 			_external(key) {
 				return options.external(key);
 			},
-			async _has(data) {
-				return await options.has(data.id);
+			async _has(_id) {
+				return await options.has(normalizeId(_id));
 			},
 			async _get(_data) {
 				return await options.get(Data.normalize(_data));

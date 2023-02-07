@@ -1,8 +1,10 @@
+import { webcrypto as crypto } from 'node:crypto';
 import * as assert from 'node:assert/strict';
 import { describe, it } from 'mocha';
 
-import { webcrypto as crypto } from 'node:crypto';
 import { define } from './index.mjs';
+
+const ID_EXAMPLE = crypto.randomUUID();
 
 describe('::Feature::Application', function () {
 	describe('::defineApplication()', function () {
@@ -23,7 +25,7 @@ describe('::Feature::Application', function () {
 					has: () => true,
 				});
 
-				assert.equal(await MemoneryApplication.has({}), true);
+				assert.equal(await MemoneryApplication.has(ID_EXAMPLE), true);
 			});
 
 			it('should get false.', async function () {
@@ -32,7 +34,7 @@ describe('::Feature::Application', function () {
 					has: () => false,
 				});
 
-				assert.equal(await MemoneryApplication.has({}), false);
+				assert.equal(await MemoneryApplication.has(ID_EXAMPLE), false);
 			});
 
 			it('should throw if bad has().', async function () {
@@ -41,10 +43,7 @@ describe('::Feature::Application', function () {
 					has: () => null,
 				});
 
-				await assert.rejects(() => MemoneryApplication.has({
-					id: crypto.randomUUID(),
-					createdAt: Date.now(),
-				}), {
+				await assert.rejects(() => MemoneryApplication.has(ID_EXAMPLE), {
 					name: 'ApplicationImplementError',
 					message: 'Bad Application flag when has(), one boolean expected.',
 				});
@@ -60,10 +59,7 @@ describe('::Feature::Application', function () {
 					get: () => example,
 				});
 
-				const application = await MemoneryApplication.get({
-					id: crypto.randomUUID(),
-					createdAt: Date.now(),
-				});
+				const application = await MemoneryApplication.get(ID_EXAMPLE);
 
 				assert.equal(application.id, example.id);
 			});
@@ -74,10 +70,7 @@ describe('::Feature::Application', function () {
 					get: () => null,
 				});
 
-				const application = await MemoneryApplication.get({
-					id: crypto.randomUUID(),
-					createdAt: Date.now(),
-				});
+				const application = await MemoneryApplication.get(ID_EXAMPLE);
 
 				assert.equal(application, null);
 			});
@@ -157,7 +150,7 @@ describe('::Feature::Application', function () {
 					get: () => ({ ...example }),
 				});
 
-				const application = await MemoneryApplication.get(example);
+				const application = await MemoneryApplication.get(ID_EXAMPLE);
 
 				assert.equal(application.id, example.id);
 				example.id = newId;
@@ -174,7 +167,7 @@ describe('::Feature::Application', function () {
 					get: () => fetched ? null : example,
 				});
 
-				const application = await MemoneryApplication.get(example);
+				const application = await MemoneryApplication.get(ID_EXAMPLE);
 
 				assert.equal(application.id, example.id);
 				assert.equal(application.isDestroyed, false);
@@ -195,7 +188,7 @@ describe('::Feature::Application', function () {
 					destroy: () => destroyed = true,
 				});
 
-				const application = await MemoneryApplication.get(example);
+				const application = await MemoneryApplication.get(ID_EXAMPLE);
 
 				assert.equal(application.isDestroyed, false);
 				await application.destroy();
@@ -212,9 +205,7 @@ describe('::Feature::Application', function () {
 					get: () => example,
 				});
 
-				const application = await MemoneryApplication.get({
-					id: crypto.randomUUID(),
-				});
+				const application = await MemoneryApplication.get(ID_EXAMPLE);
 
 				assert.equal(application.id, example.id);
 			});
@@ -229,9 +220,7 @@ describe('::Feature::Application', function () {
 					get: () => example,
 				});
 
-				const application = await MemoneryApplication.get({
-					id: crypto.randomUUID(),
-				});
+				const application = await MemoneryApplication.get(ID_EXAMPLE);
 
 				assert.ok(application.createdAt instanceof Date);
 			});
@@ -246,10 +235,7 @@ describe('::Feature::Application', function () {
 					get: () => example,
 				});
 
-				const application = await MemoneryApplication.get({
-					id: crypto.randomUUID(),
-				});
-
+				const application = await MemoneryApplication.get(ID_EXAMPLE);
 				const jsonObject = JSON.parse(JSON.stringify(application));
 
 				assert.equal(jsonObject.id, example.id);

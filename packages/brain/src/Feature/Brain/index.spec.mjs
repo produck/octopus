@@ -4,7 +4,6 @@ import { describe, it } from 'mocha';
 
 import { defineBrain } from './index.mjs';
 import * as Data from './Data.mjs';
-import { resolve } from 'node:path';
 
 describe('Feature::Brain', function () {
 	describe('::defineBrain()', function () {
@@ -32,7 +31,7 @@ describe('Feature::Brain', function () {
 						has: () => value,
 					});
 
-					assert.equal(await TestBrain.has(EXAMPLE), value);
+					assert.equal(await TestBrain.has(EXAMPLE.id), value);
 				});
 			}
 		});
