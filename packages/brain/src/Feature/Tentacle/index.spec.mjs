@@ -1,5 +1,5 @@
 import { webcrypto as crypto } from 'node:crypto';
-import * as assert from 'node:assert';
+import * as assert from 'node:assert/strict';
 import { describe, it } from 'mocha';
 
 import { defineTentacle, Data } from './index.mjs';
@@ -151,6 +151,7 @@ describe('::Feature::Tentacle', function () {
 
 				assert.deepEqual(jsonObject, {
 					...EXAMPLE,
+					ready: false,
 					createdAt: new Date(EXAMPLE.createdAt).toISOString(),
 					visitedAt: new Date(EXAMPLE.visitedAt).toISOString(),
 				});

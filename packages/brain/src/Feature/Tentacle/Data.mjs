@@ -9,6 +9,7 @@ export const Schema = S.Object({
 	id: IdSchema,
 	craft: P.String(),
 	version: S.Value(Semver.valid, 'semver string', () => '0.0.0'),
+	ready: P.Boolean(false),
 	job: P.OrNull(IdSchema),
 	createdAt: AtSchema,
 	visitedAt: AtSchema,

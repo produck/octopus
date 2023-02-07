@@ -43,10 +43,10 @@ const RJSPRouter = DuckWebKoaForker.defineRouter(function RJSPRouter(router, {
 
 			await agent.commit();
 		})
-		.get('/job/content', async function getCurrentJob() {
+		.get('/job/request', async function getCurrentJob() {
 
 		})
-		.post('/job/result', async function finishJob() {
+		.post('/job/response', async function finishJob() {
 
 		})
 		.post('/job/error', async function catchJob() {

@@ -12,7 +12,7 @@ const At = key => [key, function atGetter() {
 }];
 
 const AT_KEYS = ['createdAt', 'visitedAt'];
-const PLAIN_KEYS = ['id', 'craft', 'version', 'job'];
+const PLAIN_KEYS = ['id', 'craft', 'version', 'job', 'ready'];
 
 export const BaseTentacle = Model.define({
 	name: 'Tentacle',

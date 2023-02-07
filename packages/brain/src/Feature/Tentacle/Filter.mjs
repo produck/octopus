@@ -6,6 +6,7 @@ function FilterDescriptor(Schema) {
 
 const RangeSchemas = {
 	busy: P.OrNull(P.Boolean()),
+	ready: P.OrNull(P.Boolean()),
 	visitedIn: P.OrNull(P.Integer()),
 	createdIn: P.OrNull(P.Integer()),
 };
