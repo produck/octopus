@@ -43,7 +43,7 @@
 	"devDependencies": {
 		"@types/mocha": "^10.0.1",
 		"mocha": "^10.2.0",
-		"rollup": "^3.10.1"
+		"rollup": "^3.14.0"
 	},
 	"dependencies": {
 		"@produck/duck": "^1.0.3",
@@ -58,8 +58,8 @@
 		"@produck/duck-workspace": "^1.0.3",
 		"@produck/mold": "^0.3.1",
 		"@produck/quack": "^0.1.1",
-		"@produck/shop": "^0.1.1",
-		"@types/node": "^18.11.18",
+		"@produck/shop": "^0.2.0",
+		"@types/node": "^18.13.0",
 		"@types/semver": "^7.3.13",
 		"koa-body": "^6.0.1",
 		"semver": "^7.3.8"
