@@ -1,15 +1,15 @@
 import * as Semver from 'semver';
 import { Normalizer, P, S } from '@produck/mold';
 
-import { UUIDSchema } from '../Utils.mjs';
+import { UUIDSchema as IdSchema } from '../Utils.mjs';
 
 const AtSchema = P.Integer();
 
 export const Schema = S.Object({
-	id: UUIDSchema,
+	id: IdSchema,
 	craft: P.String(),
 	version: S.Value(Semver.valid, 'semver string', () => '0.0.0'),
-	job: P.OrNull(UUIDSchema),
+	job: P.OrNull(IdSchema),
 	createdAt: AtSchema,
 	visitedAt: AtSchema,
 });

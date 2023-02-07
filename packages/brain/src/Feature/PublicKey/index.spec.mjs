@@ -35,7 +35,7 @@ describe('::Feature::PublicKey', function () {
 					has: () => true,
 				});
 
-				assert.equal(await TestPublicKey.has({}), true);
+				assert.equal(await TestPublicKey.has(EXAMPLE.id), true);
 			});
 
 			it('should get false.', async function () {
@@ -44,7 +44,7 @@ describe('::Feature::PublicKey', function () {
 					has: () => false,
 				});
 
-				assert.equal(await TestPublicKey.has({}), false);
+				assert.equal(await TestPublicKey.has(EXAMPLE.id), false);
 			});
 		});
 
@@ -55,7 +55,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const key = await TestPublicKey.get({ ...EXAMPLE });
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.equal(key.id, EXAMPLE.id);
 			});
@@ -123,7 +123,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...example }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.equal(_(key).createdAt, EXAMPLE.createdAt);
 				example.createdAt = newCreatedAt;
@@ -139,7 +139,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.equal(key.isDestroyed, false);
 				await key.destroy();
@@ -154,7 +154,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.equal(await key.verify('', '1'), false);
 			});
@@ -165,7 +165,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE, pem: '' }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.equal(await key.verify('', '1'), false);
 			});
@@ -184,7 +184,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.equal(await key.verify(plain, signature.toString('hex')), true);
 			});
@@ -195,7 +195,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.throws(() => key.verify(1), {
 					name: 'TypeError',
@@ -209,7 +209,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.throws(() => key.verify('', 1), {
 					name: 'TypeError',
@@ -225,7 +225,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 				const jsonObject = JSON.parse(JSON.stringify(key));
 
 				assert.deepEqual(jsonObject, {
@@ -243,7 +243,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.equal(key.id, EXAMPLE.id);
 			});
@@ -256,7 +256,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.equal(key.owner, EXAMPLE.owner);
 			});
@@ -269,7 +269,7 @@ describe('::Feature::PublicKey', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const key = await TestPublicKey.get(EXAMPLE);
+				const key = await TestPublicKey.get(EXAMPLE.id);
 
 				assert.equal(key.createdAt.getTime(), EXAMPLE.createdAt);
 			});

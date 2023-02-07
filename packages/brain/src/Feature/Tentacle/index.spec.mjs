@@ -29,7 +29,7 @@ describe('::Feature::Tentacle', function () {
 						has: () => value,
 					});
 
-					assert.equal(await TestTentacle.has(EXAMPLE), value);
+					assert.equal(await TestTentacle.has(EXAMPLE.id), value);
 				});
 			}
 		});
@@ -41,7 +41,7 @@ describe('::Feature::Tentacle', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const tentacle = await TestTentacle.get({ ...EXAMPLE });
+				const tentacle = await TestTentacle.get(EXAMPLE.id);
 
 				assert.equal(tentacle.id, EXAMPLE.id);
 			});
@@ -82,7 +82,7 @@ describe('::Feature::Tentacle', function () {
 					get: () => ({ ...example }),
 				});
 
-				const tentacle = await TestTentacle.get({ ...example });
+				const tentacle = await TestTentacle.get(EXAMPLE.id);
 
 				example.visitedAt += 5000;
 				assert.equal(tentacle.visitedAt.getTime(), EXAMPLE.visitedAt);
@@ -100,7 +100,7 @@ describe('::Feature::Tentacle', function () {
 					get: () => ({ ...example }),
 				});
 
-				const tentacle = await TestTentacle.get({ ...example });
+				const tentacle = await TestTentacle.get(EXAMPLE.id);
 
 				await tentacle.save();
 			});
@@ -115,7 +115,7 @@ describe('::Feature::Tentacle', function () {
 					get: () => ({ ...example }),
 				});
 
-				const tentacle = await TestTentacle.get({ ...example });
+				const tentacle = await TestTentacle.get(EXAMPLE.id);
 
 				await tentacle.destroy();
 				assert.equal(tentacle.isDestroyed, true);
@@ -132,7 +132,7 @@ describe('::Feature::Tentacle', function () {
 						get: () => ({ ...example }),
 					});
 
-					const product = await TestTentacle.get(EXAMPLE);
+					const product = await TestTentacle.get(EXAMPLE.id);
 
 					assert.ok(product[key] instanceof Date);
 				});
@@ -146,7 +146,7 @@ describe('::Feature::Tentacle', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const tentacle = await TestTentacle.get({ ...EXAMPLE });
+				const tentacle = await TestTentacle.get(EXAMPLE.id);
 				const jsonObject = JSON.parse(JSON.stringify(tentacle));
 
 				assert.deepEqual(jsonObject, {
@@ -164,7 +164,7 @@ describe('::Feature::Tentacle', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const tentacle = await TestTentacle.get({ ...EXAMPLE });
+				const tentacle = await TestTentacle.get(EXAMPLE.id);
 
 				tentacle.visit();
 				assert.notEqual(tentacle.visitedAt, EXAMPLE.visitedAt);
@@ -179,7 +179,7 @@ describe('::Feature::Tentacle', function () {
 				});
 
 				const jobId = crypto.randomUUID();
-				const tentacle = await TestTentacle.get({ ...EXAMPLE });
+				const tentacle = await TestTentacle.get(EXAMPLE.id);
 
 				tentacle.pick(jobId);
 				assert.equal(tentacle.toJSON().job, jobId);
@@ -194,7 +194,7 @@ describe('::Feature::Tentacle', function () {
 				});
 
 				const jobId = crypto.randomUUID();
-				const tentacle = await TestTentacle.get({ ...EXAMPLE });
+				const tentacle = await TestTentacle.get(EXAMPLE.id);
 
 				tentacle.pick(jobId);
 				assert.equal(tentacle.toJSON().job, jobId);

@@ -1,13 +1,13 @@
 import { Normalizer, P, S, Cust } from '@produck/mold';
 
-import { UUIDSchema } from '../Utils.mjs';
+import { UUIDSchema as IdSchema } from '../Utils.mjs';
 
 const AtSchema = P.OrNull(P.Integer());
 export const StatusSchema = P.Enum([0], 0);
 export const MessageSchemna = P.OrNull(P.String());
 
 export const Schema = Cust(S.Object({
-	id: UUIDSchema,
+	id: IdSchema,
 	createdAt: AtSchema,
 	visitedAt: AtSchema,
 	assignedAt: AtSchema,

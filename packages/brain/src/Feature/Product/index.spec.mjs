@@ -29,7 +29,7 @@ describe('::Feature::Product', function () {
 						has: () => value,
 					});
 
-					assert.equal(await TestProduct.has(EXAMPLE), value);
+					assert.equal(await TestProduct.has(EXAMPLE.id), value);
 				});
 			}
 		});
@@ -41,10 +41,7 @@ describe('::Feature::Product', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const product = await TestProduct.get({
-					id: EXAMPLE.id,
-					owner: EXAMPLE.owner,
-				});
+				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.id, EXAMPLE.id);
 			});
@@ -88,10 +85,7 @@ describe('::Feature::Product', function () {
 					get: () => ({ ...example }),
 				});
 
-				const product = await TestProduct.get({
-					id: EXAMPLE.id,
-					owner: EXAMPLE.owner,
-				});
+				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.id, EXAMPLE.id);
 				example.id = newId;
@@ -107,10 +101,7 @@ describe('::Feature::Product', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const product = await TestProduct.get({
-					id: EXAMPLE.id,
-					owner: EXAMPLE.owner,
-				});
+				const product = await TestProduct.get(EXAMPLE.id);
 
 				await product.save();
 			});
@@ -123,10 +114,7 @@ describe('::Feature::Product', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const product = await TestProduct.get({
-					id: EXAMPLE.id,
-					owner: EXAMPLE.owner,
-				});
+				const product = await TestProduct.get(EXAMPLE.id);
 
 				await product.destroy();
 				assert.equal(product.isDestroyed, true);
@@ -143,7 +131,7 @@ describe('::Feature::Product', function () {
 						get: () => ({ ...EXAMPLE }),
 					});
 
-					const product = await TestProduct.get(EXAMPLE);
+					const product = await TestProduct.get(EXAMPLE.id);
 
 					assert.equal(product[key], null);
 				});
@@ -158,7 +146,7 @@ describe('::Feature::Product', function () {
 						get: () => ({ ...example }),
 					});
 
-					const product = await TestProduct.get(EXAMPLE);
+					const product = await TestProduct.get(EXAMPLE.id);
 
 					assert.ok(product[key] instanceof Date);
 				});
@@ -175,7 +163,7 @@ describe('::Feature::Product', function () {
 					get: () => ({ ...example }),
 				});
 
-				const job = await TestProduct.get(example);
+				const job = await TestProduct.get(EXAMPLE.id);
 				const jsonObject = JSON.parse(JSON.stringify(job));
 
 				assert.deepEqual(jsonObject, {
@@ -195,7 +183,7 @@ describe('::Feature::Product', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const product = await TestProduct.get(example);
+				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.orderedAt, null);
 				await product.order();
@@ -211,7 +199,7 @@ describe('::Feature::Product', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const product = await TestProduct.get(example);
+				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.orderedAt, null);
 				await product.order();
@@ -233,7 +221,7 @@ describe('::Feature::Product', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const product = await TestProduct.get(example);
+				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.startedAt, null);
 				await product.start();
@@ -249,7 +237,7 @@ describe('::Feature::Product', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const product = await TestProduct.get(example);
+				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.startedAt, null);
 
@@ -268,7 +256,7 @@ describe('::Feature::Product', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const product = await TestProduct.get(example);
+				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.startedAt, null);
 				await product.start();
@@ -290,7 +278,7 @@ describe('::Feature::Product', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const product = await TestProduct.get(example);
+				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.finishedAt, null);
 				await product.finish(0, 'ok');

@@ -1,6 +1,8 @@
 import { Definer, Entity } from '@produck/shop';
 
+import { normalizeUUID as normalizeId } from '../Utils.mjs';
 import { BasePublicKey } from './Model.mjs';
+import * as Data from './Data.mjs';
 import * as Options from './Options.mjs';
 import * as Filter from './Filter.mjs';
 
@@ -20,11 +22,11 @@ export function definePublicKey(_options = {}) {
 				await options.destroy(data.id);
 			},
 		}, {
-			async _has(data) {
-				return await options.has(data.id);
+			async _has(_id) {
+				return await options.has(normalizeId(_id));
 			},
-			async _get(data) {
-				return await options.get(data.id);
+			async _get(_id) {
+				return await options.get(normalizeId(_id));
 			},
 			async _query(_filter = FILTER_ALL) {
 				const { name } = Filter.normalize(_filter);
@@ -32,8 +34,8 @@ export function definePublicKey(_options = {}) {
 
 				return await options.query[name](filterOptions);
 			},
-			async _create(data) {
-				return await options.create(data);
+			async _create(_data) {
+				return await options.create(Data.normalize(_data));
 			},
 		}),
 	});

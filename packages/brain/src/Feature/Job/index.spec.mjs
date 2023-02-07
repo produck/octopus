@@ -27,7 +27,7 @@ describe('::Feature::Job', function () {
 					has: () => true,
 				});
 
-				assert.equal(await TestJob.has(EXAMPLE), true);
+				assert.equal(await TestJob.has(EXAMPLE.id), true);
 			});
 
 			it('should get false.', async function () {
@@ -36,7 +36,7 @@ describe('::Feature::Job', function () {
 					has: () => false,
 				});
 
-				assert.equal(await TestJob.has(EXAMPLE), false);
+				assert.equal(await TestJob.has(EXAMPLE.id), false);
 			});
 		});
 
@@ -47,7 +47,7 @@ describe('::Feature::Job', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const job = await TestJob.get(EXAMPLE);
+				const job = await TestJob.get(EXAMPLE.id);
 
 				assert.equal(job.id, EXAMPLE.id);
 			});
@@ -93,7 +93,7 @@ describe('::Feature::Job', function () {
 					get: () => ({ ...example }),
 				});
 
-				const job = await TestJob.get(EXAMPLE);
+				const job = await TestJob.get(EXAMPLE.id);
 
 				assert.equal(job.id, EXAMPLE.id);
 				example.id = newId;
@@ -110,30 +110,30 @@ describe('::Feature::Job', function () {
 					save: () => ({ ...EXAMPLE }),
 				});
 
-				const job = await TestJob.get(EXAMPLE);
+				const job = await TestJob.get(EXAMPLE.id);
 
 				await job.save();
 			});
 		});
 
 		describe('.destroy()', async function () {
-			const TestJob = defineJob({
-				...SAMPLE_OPTIONS,
-				get: () => ({ ...EXAMPLE }),
+			it('should be destroyed.', async function () {
+				const TestJob = defineJob({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...EXAMPLE }),
+				});
+
+				const job = await TestJob.get(EXAMPLE.id);
+
+				await job.destroy();
 			});
-
-			const job = await TestJob.get(EXAMPLE);
-
-			await job.destroy();
 		});
 
 		const ats = {};
 
-		for (const atKey of [
+		for (const key of [
 			'visited', 'created', 'assigned', 'started', 'finished',
-		]) {
-			const key = `${atKey}At`;
-
+		].map(atKey => `${atKey}At`)) {
 			describe(`.${key}`, function () {
 				it('should get null', async function () {
 					const TestJob = defineJob({
@@ -141,7 +141,7 @@ describe('::Feature::Job', function () {
 						get: () => ({ ...EXAMPLE }),
 					});
 
-					const job = await TestJob.get(EXAMPLE);
+					const job = await TestJob.get(EXAMPLE.id);
 
 					assert.equal(job[key], null);
 				});
@@ -156,7 +156,7 @@ describe('::Feature::Job', function () {
 						get: () => ({ ...example }),
 					});
 
-					const job = await TestJob.get(EXAMPLE);
+					const job = await TestJob.get(EXAMPLE.id);
 
 					assert.ok(job[key] instanceof Date);
 				});
@@ -173,7 +173,7 @@ describe('::Feature::Job', function () {
 					get: () => ({ ...example }),
 				});
 
-				const job = await TestJob.get(example);
+				const job = await TestJob.get(example.id);
 				const jsonObject = JSON.parse(JSON.stringify(job));
 
 				assert.deepEqual(jsonObject, {
@@ -193,7 +193,7 @@ describe('::Feature::Job', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const job = await TestJob.get(example);
+				const job = await TestJob.get(example.id);
 
 				assert.equal(example.visitedAt, null);
 				await job.visit();
@@ -211,7 +211,7 @@ describe('::Feature::Job', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const job = await TestJob.get(example);
+				const job = await TestJob.get(example.id);
 
 				assert.equal(example.assignedAt, null);
 				await job.assign();
@@ -227,7 +227,7 @@ describe('::Feature::Job', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const job = await TestJob.get(example);
+				const job = await TestJob.get(example.id);
 
 				await job.assign();
 
@@ -248,7 +248,7 @@ describe('::Feature::Job', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const job = await TestJob.get(example);
+				const job = await TestJob.get(example.id);
 
 				assert.equal(example.startedAt, null);
 				await job.start();
@@ -264,7 +264,7 @@ describe('::Feature::Job', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const job = await TestJob.get(example);
+				const job = await TestJob.get(example.id);
 
 				await assert.rejects(async () => await job.start(), {
 					name: 'Error',
@@ -281,7 +281,7 @@ describe('::Feature::Job', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const job = await TestJob.get(example);
+				const job = await TestJob.get(example.id);
 
 				await job.start();
 
@@ -302,7 +302,7 @@ describe('::Feature::Job', function () {
 					save: data => Object.assign(example, data),
 				});
 
-				const job = await TestJob.get(example);
+				const job = await TestJob.get(example.id);
 
 				await job.finish(0, 'ok');
 				assert.equal(example.message, 'ok');
