@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import { Normalizer, P } from '@produck/mold';
 import { Definer, Model, _ } from '@produck/shop';
 
