@@ -1,13 +1,16 @@
-import { Normalizer, P, S, Cust } from '@produck/mold';
+import { Normalizer, P } from '@produck/mold';
 
 import { UUIDSchema as IdSchema } from '../Utils.mjs';
+import * as STATUS from './Status.mjs';
 
 const AtSchema = P.OrNull(P.Integer());
-export const StatusSchema = P.Enum([0], 0);
+export const StatusSchema = P.Enum(STATUS.LIST.map(def => def.value), 0);
 export const MessageSchemna = P.OrNull(P.String());
 
-export const Schema = Cust(S.Object({
+export const SchemaOptions = {
 	id: IdSchema,
+	product: IdSchema,
+	craft: P.String(),
 	createdAt: AtSchema,
 	visitedAt: AtSchema,
 	assignedAt: AtSchema,
@@ -15,13 +18,11 @@ export const Schema = Cust(S.Object({
 	finishedAt: AtSchema,
 	status: StatusSchema,
 	message: MessageSchemna,
-}), (_v, _e, next) => {
-	const data = next();
+	source: P.Any(null),
+	target: P.Any(null),
+};
 
+export const assertAts = () => {};
 
-	return data;
-});
-
-export const normalize = Normalizer(Schema);
 export const normalizeStatus = Normalizer(StatusSchema);
 export const normalizeMessage = Normalizer(MessageSchemna);

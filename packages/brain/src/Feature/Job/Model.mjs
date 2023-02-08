@@ -1,9 +1,18 @@
-import { Definer, Model, _ } from '@produck/shop';
+import { Cust, Normalizer, P, S, U } from '@produck/mold';
+import { Definer, Model, _, _Data } from '@produck/shop';
 
 import * as Data from './Data.mjs';
+import * as STATUS from './Status.mjs';
 
-const AT_KEYS = ['visitedAt', 'createdAt', 'assignedAt', 'startedAt', 'finishedAt'];
-const PLAIN_KEYS = ['id', 'status', 'message'];
+const AT_KEYS = [
+	'visitedAt', 'createdAt', 'assignedAt', 'startedAt', 'finishedAt',
+];
+
+const PLAIN_KEYS = [
+	'id', 'product',
+	'craft', 'source', 'target',
+	'status', 'message',
+];
 
 const NullOrDate = any => any === null ? null : new Date(any);
 
@@ -15,71 +24,108 @@ const At = key => [key, function atGetter() {
 	return NullOrDate(_(this)[key]);
 }];
 
-export const BaseJob = Model.define({
-	name: 'Job',
-	creatable: true,
-	deletable: true,
-	updatable: true,
-	data: Data.normalize,
-	base: Definer.Base(({ Declare }) => {
-		Declare.Prototype.notDestroyedRequired()
-			.Method('visit', async function () {
-				_(this).visitedAt = Date.now();
-				await this.save();
-			})
-			.Method('assign', async function () {
-				if (this.assignedAt !== null) {
-					throw new Error('This job has been assigned.');
-				}
+export function defineJobModel(Craft) {
+	const DataSchema = Cust(S.Object({
+		...Data.SchemaOptions,
+		craft: P.Enum(Craft.nameList, null),
+	}), (_v, _e, next) => {
+		const data = next();
+		const craft = Craft.get(data.craft);
 
-				_(this).assignedAt = Date.now();
-				await this.save();
-			})
-			.Method('start', async function () {
-				if (this.assignedAt === null) {
-					throw new Error('This job is NOT assigned.');
-				}
-
-				if (this.startedAt !== null) {
-					throw new Error('This job has been started.');
-				}
-
-				_(this).startedAt = Date.now();
-				await this.save();
-			})
-			.Method('finish', async function (_status, _message = null) {
-				const status = Data.normalizeStatus(_status);
-				const message = Data.normalizeMessage(_message);
-
-				const _this = _(this);
-
-				_this.status = status;
-				_this.message = message;
-				_this.finishedAt = Date.now();
-
-				await this.save();
-			});
-
-		for (const key of PLAIN_KEYS) {
-			Declare.Prototype.Accessor(...Plain(key));
+		if (!craft.isSource(data.source)) {
+			U.throwError('.source', `${data.craft} source.`);
 		}
 
-		for (const atKey of AT_KEYS) {
-			Declare.Prototype.Accessor(...At(atKey));
-		}
-	}),
-	toJSON() {
-		const data = _(this);
-		const object = {};
-
-		for (const key of PLAIN_KEYS) {
-			object[key] = data[key];
+		if (!craft.isTarget(data.target)) {
+			U.throwError('.target', `${data.craft} target.`);
 		}
 
-		for (const key of AT_KEYS) {
-			object[key] = NullOrDate(data[key]);
-		}
+		Data.assertAts(data);
 
-		return object;
-	},
-});
+		return data;
+	});
+
+	return Model.define({
+		name: 'Job',
+		creatable: true,
+		deletable: true,
+		updatable: true,
+		data: Normalizer(DataSchema),
+		base: Definer.Base(({ Declare, Throw }) => {
+			Declare.Prototype.notDestroyedRequired()
+				.Method('visit', function () {
+					_(this).visitedAt = Date.now();
+
+					return this;
+				})
+				.Method('assign', function () {
+					if (this.assignedAt !== null) {
+						throw new Error('This job has been assigned.');
+					}
+
+					_(this).assignedAt = Date.now();
+
+					return this;
+				})
+				.Method('start', function () {
+					if (this.assignedAt === null) {
+						throw new Error('This job is NOT assigned.');
+					}
+
+					if (this.startedAt !== null) {
+						throw new Error('This job has been started.');
+					}
+
+					_(this).startedAt = Date.now();
+
+					return this;
+				})
+				.Method('finish', function (_status, _message = null) {
+					const status = Data.normalizeStatus(_status);
+					const message = Data.normalizeMessage(_message);
+
+					const data = _(this);
+
+					data.status = status;
+					data.message = message;
+					data.finishedAt = Date.now();
+
+					return this;
+				})
+				.Method('complete', function (_target) {
+					const craft = Craft.get(this.craft);
+
+					if (!craft.isTarget(_target)) {
+						Throw('Bad target');
+					}
+
+					_(this).target = _target;
+					this.finish(STATUS.OK);
+
+					return this;
+				});
+
+			for (const key of PLAIN_KEYS) {
+				Declare.Prototype.Accessor(...Plain(key));
+			}
+
+			for (const atKey of AT_KEYS) {
+				Declare.Prototype.Accessor(...At(atKey));
+			}
+		}),
+		toJSON() {
+			const data = _(this);
+			const object = {};
+
+			for (const key of PLAIN_KEYS) {
+				object[key] = data[key];
+			}
+
+			for (const key of AT_KEYS) {
+				object[key] = NullOrDate(data[key]);
+			}
+
+			return object;
+		},
+	});
+}

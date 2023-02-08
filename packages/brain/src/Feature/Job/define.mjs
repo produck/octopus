@@ -1,19 +1,19 @@
 import { Definer, Entity } from '@produck/shop';
 
 import { normalizeUUID as normalizeId } from '../Utils.mjs';
-import { BaseJob } from './Model.mjs';
+import { defineJobModel } from './Model.mjs';
 import * as Data from './Data.mjs';
 import * as Options from './Options.mjs';
 import * as Filter from './Filter.mjs';
 
 const FILTER_ALL = Filter.Preset.All.normalize();
 
-export function defineJob(_options = {}) {
+export function defineJob(_options = {}, Craft) {
 	const options = Options.normalize(_options);
 
 	return Entity.define({
 		name: options.name,
-		Model: BaseJob,
+		Model: defineJobModel(Craft),
 		define: Definer.Custom({
 			async _load(data) {
 				return await options.get(data.id);

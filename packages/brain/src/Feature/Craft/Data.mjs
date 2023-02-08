@@ -14,6 +14,8 @@ export const FIFO = ({ Job, Tentacle, assign }) => {
 export const Schema = S.Object({
 	name: P.String(),
 	policy: P.Function(FIFO),
+	source: P.Function(() => true),
+	target: P.Function(() => true),
 });
 
 export const normalize = Normalizer(Schema);

@@ -1,3 +1,4 @@
+import { T, U } from '@produck/mold';
 import { EventEmitter } from 'node:events';
 import { Definer, Model, _ } from '@produck/shop';
 
@@ -28,9 +29,9 @@ const defineBase = Definer.Base(({ Declare }) => {
 		Declare.Prototype.Accessor(...Plain(key));
 	}
 
-	function evaluate(jobList, tentacleList) {
+	function evaluate(taskList, tentacleList) {
 		const matched = {};
-		const evaluator = new Evaluator(jobList, tentacleList, matched);
+		const evaluator = new Evaluator(taskList, tentacleList, matched);
 
 		try {
 			_(this).policy(evaluator);
@@ -43,8 +44,30 @@ const defineBase = Definer.Base(({ Declare }) => {
 		}
 	}
 
+	function isSource(any) {
+		const _flag = _(this).source(any);
+
+		if (!T.Native.Boolean(_flag)) {
+			U.throwError('flag <= data.source()', 'boolean');
+		}
+
+		return _flag;
+	}
+
+	function isTarget(any) {
+		const _flag = _(this).target(any);
+
+		if (!T.Native.Boolean(_flag)) {
+			U.throwError('flag <= data.target()', 'boolean');
+		}
+
+		return _flag;
+	}
+
 	Declare.Prototype
-		.Method('evaluate', evaluate);
+		.Method('evaluate', evaluate)
+		.Method('isSource', isSource)
+		.Method('isTarget', isTarget);
 });
 
 export const BaseCraft = Model.define({

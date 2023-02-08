@@ -18,18 +18,18 @@ export function defineCraft(_options) {
 		name: options.name,
 		Model: BaseCraft,
 		define: Definer.Custom({}, {
-			async _get(name) {
+			_get(name) {
 				assertCraftName(name);
 
-				return await options.get(name);
+				return options.get(name);
 			},
-			async _has(name) {
+			_has(name) {
 				assertCraftName(name);
 
-				return await options.has(name);
+				return options.has(name);
 			},
-			async _create(_data) {
-				return await options.create(Data.normalize(_data));
+			_create(_data) {
+				return options.create(Data.normalize(_data));
 			},
 		}),
 	});
