@@ -12,6 +12,12 @@ const Plain = key => [key, function () {
 	return _(this)[key];
 }];
 
+export function assertCraftName(any) {
+	if (!T.Native.String(any)) {
+		U.throwError('name', 'string');
+	}
+}
+
 const defineBase = Definer.Base(({ Declare }) => {
 	const emitter = new EventEmitter();
 
@@ -71,11 +77,47 @@ const defineBase = Definer.Base(({ Declare }) => {
 		.Method('evaluate', evaluate)
 		.Method('isSource', isSource)
 		.Method('isTarget', isTarget);
+
+	const registry = {};
+
+	const isValid = name => {
+		assertCraftName(name);
+
+		return Object.hasOwn(registry, name);
+	};
+
+	function assertValid(name) {
+		if (!isValid(name)) {
+			throw new Error(`There is no craft(${name}).`);
+		}
+	}
+
+	Declare.Constructor
+		.Method('register', async function (...args) {
+			const craft = await this.create(...args);
+
+			registry[craft.name] = craft;
+
+			return this;
+		})
+		.Accessor('isValid', isValid)
+		.Accessor('assertValid', assertValid)
+		.Method('isCraftSource', (name, source) => {
+			assertValid(name);
+
+			return registry[name].isSource(source);
+		})
+		.Method('isCraftTarget', (name, target) => {
+			assertValid(name);
+
+			return registry[name].isTarget(target);
+		});
 });
 
 export const BaseCraft = Model.define({
 	name: 'Craft',
 	creatable: true,
 	data: Data.normalize,
+	abstract: Definer.Abstract({}, { getNameList: null }),
 	base: defineBase,
 });

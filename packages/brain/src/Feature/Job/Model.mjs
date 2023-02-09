@@ -25,22 +25,23 @@ const At = key => [key, function atGetter() {
 }];
 
 export function defineJobModel(Craft) {
-	const DataSchema = Cust(S.Object({
-		...Data.SchemaOptions,
-		craft: P.Enum(Craft.nameList, null),
-	}), (_v, _e, next) => {
+	const DataSchema = Cust(Data.Schema, (_v, _e, next) => {
 		const data = next();
-		const craft = Craft.get(data.craft);
-
-		if (!craft.isSource(data.source)) {
-			U.throwError('.source', `${data.craft} source.`);
-		}
-
-		if (!craft.isTarget(data.target)) {
-			U.throwError('.target', `${data.craft} target.`);
-		}
+		const { craft, target, source, status } = data;
 
 		Data.assertAts(data);
+
+		if (!Craft.isValid(craft)) {
+			throw new Error(`There is NOT a craft named "${craft}".`);
+		}
+
+		if (!Craft.isCraftSource(craft, source)) {
+			throw new Error('Bad ".source".');
+		}
+
+		if (status === STATUS.OK && !Craft.isCraftTarget(craft, target)) {
+			throw new Error('Bad ".target".');
+		}
 
 		return data;
 	});
