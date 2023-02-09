@@ -1,7 +1,7 @@
 import { defineRouter } from '@produck/duck-web-koa-forker';
 
 export const Router = defineRouter(function OrderRouter(router, {
-	Environment
+	Environment,
 }) {
 	router
 		.use(async function fetchProductOrder(ctx, next) {

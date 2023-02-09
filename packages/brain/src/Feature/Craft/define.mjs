@@ -11,25 +11,41 @@ function assertCraftName(any) {
 	}
 }
 
-export function defineCraft(_options) {
-	const options = Options.normalize(_options);
+export function defineCraft(...args) {
+	const options = Options.normalize(...args);
 
 	return Entity.define({
 		name: options.name,
 		Model: BaseCraft,
 		define: Definer.Custom({}, {
-			_get(name) {
+			async _get(name) {
 				assertCraftName(name);
 
-				return options.get(name);
+				if (!await this.has(name)) {
+					throw new Error(`Undefined craft(${name}).`);
+				}
+
+				const data = await options.get(name);
+
+				if (data === null) {
+					throw new Error(`There MUST be a craft named "${name}".`);
+				}
+
+				return data;
 			},
-			_has(name) {
+			async _has(name) {
 				assertCraftName(name);
 
-				return options.has(name);
+				return await options.has(name);
 			},
-			_create(_data) {
-				return options.create(Data.normalize(_data));
+			async _create(name, _options) {
+				assertCraftName(name);
+
+				if (await this.has(name)) {
+					throw new Error(`Duplicated craft name(${name}).`);
+				}
+
+				return await options.create({ name, ...Data.normalizeOptions(_options) });
 			},
 		}),
 	});

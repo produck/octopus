@@ -8,24 +8,24 @@ export class Evaluator {
 	#Job = NULL_RECORD_SET;
 	#Tentacle = NULL_RECORD_SET;
 
-	#assign(tentacleId, jobId) {
-		if (!T.Native.String(tentacleId)) {
-			U.throwError('tentacleId', 'string');
-		}
-
+	#assign(jobId, tentacleId) {
 		if (!T.Native.String(jobId)) {
 			U.throwError('jobId', 'string');
 		}
 
-		if (!this.#Tentacle.has(tentacleId)) {
-			throw new Error(`Non-existent tentacle(${tentacleId}).`);
+		if (!T.Native.String(tentacleId)) {
+			U.throwError('tentacleId', 'string');
 		}
 
 		if (!this.#Job.has(jobId)) {
 			throw new Error(`Non-existent job(${jobId}).`);
 		}
 
-		this.#matched[tentacleId, jobId];
+		if (!this.#Tentacle.has(tentacleId)) {
+			throw new Error(`Non-existent tentacle(${tentacleId}).`);
+		}
+
+		this.#matched[jobId] = tentacleId;
 	}
 
 	constructor(jobList, tentacleList, matched) {

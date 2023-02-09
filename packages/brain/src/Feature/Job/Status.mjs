@@ -1,7 +1,6 @@
-export const LIST = [
-	{ name: 'NEW', value: 0 },
-	{ name: 'OK', value: 100 },
-	{ name: 'ERROR', value: 200 },
-	{ name: 'TIMEOUT', value: 201 },
-	{ name: 'ABORTED', value: 202 },
-];
+export const
+	NEW = 0,
+	OK = 100,
+	ERROR = 200,
+	TIMEOUT = 201,
+	ABORTED = 202;

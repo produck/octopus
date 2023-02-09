@@ -3,7 +3,11 @@ import { S, P, Normalizer } from '@produck/mold';
 
 import * as Data from './Data.mjs';
 
-const EXAMPLE = Data.normalize({ id: crypto.randomUUID() });
+export const EXAMPLE = Data.normalize({
+	id: crypto.randomUUID(),
+	product: crypto.randomUUID(),
+	craft: 'example',
+});
 
 const QuerySchema = S.Object({
 	All: P.Function(() => []),

@@ -6,7 +6,7 @@ import * as Data from './Data.mjs';
 import { Evaluator } from './Evaluator.mjs';
 
 const EMITTER_PROXY_KEYS = ['on', 'off', 'once'];
-const PLAIN_KEYS = ['id', 'owner', 'model', 'status', 'message'];
+const PLAIN_KEYS = ['name'];
 
 const Plain = key => [key, function () {
 	return _(this)[key];
@@ -29,19 +29,22 @@ const defineBase = Definer.Base(({ Declare }) => {
 		Declare.Prototype.Accessor(...Plain(key));
 	}
 
-	function evaluate(taskList, tentacleList) {
+	function evaluate(jobList, tentacleList) {
 		const matched = {};
-		const evaluator = new Evaluator(taskList, tentacleList, matched);
+		const evaluator = new Evaluator(jobList, tentacleList, matched);
 
 		try {
 			_(this).policy(evaluator);
-
-			return matched;
 		} catch (cause) {
 			emitter.emit('policy-error', cause);
 
-			throw new Error('Craft policy error.', { cause });
+			throw new Error('Bad craft policy.', { cause });
 		}
+
+		Object.freeze(matched);
+		emitter.emit('assign', matched);
+
+		return matched;
 	}
 
 	function isSource(any) {

@@ -5,8 +5,8 @@ import { BaseApplication } from './Model.mjs';
 import * as Options from './Options.mjs';
 import * as Data from './Data.mjs';
 
-export function defineApplication(_options = {}) {
-	const options = Options.normalize(_options);
+export function defineApplication(...args) {
+	const options = Options.normalize(...args);
 
 	return Entity.define({
 		name: options.name,
