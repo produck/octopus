@@ -111,6 +111,82 @@ describe('::Feature::Craft', function () {
 			}
 		});
 
+		describe('::register()', function () {
+			it('should register a craft.', async function () {
+				const NativeCraft = defineCraft({
+					has: () => false,
+					get: () => EXAMPLE,
+					create: () => EXAMPLE,
+				});
+
+				const { name, ...options } = EXAMPLE;
+				const craft = await NativeCraft.register(name, options);
+
+				assert.equal(craft.name, EXAMPLE.name);
+			});
+		});
+
+		describe('::isValid()', function () {
+			it('should be true.', async function () {
+				const NativeCraft = defineCraft({
+					has: () => false,
+					get: () => EXAMPLE,
+					create: () => EXAMPLE,
+				});
+
+				const { name, ...options } = EXAMPLE;
+
+				await NativeCraft.register(name, options);
+
+				assert.equal(NativeCraft.isValid(name), true);
+			});
+		});
+
+		describe('::assertValid()', function () {
+			it('should throw if bad name.', async function () {
+				const NativeCraft = defineCraft({
+					has: () => false,
+					get: () => EXAMPLE,
+					create: () => EXAMPLE,
+				});
+
+				assert.throws(() => NativeCraft.assertValid('foo'), {
+					name: 'Error',
+					message: 'There is no craft(foo).',
+				});
+			});
+		});
+
+		describe('::isCraftSource()', function () {
+			it('should be true.', async function () {
+				const NativeCraft = defineCraft({
+					has: () => false,
+					get: () => EXAMPLE,
+					create: () => EXAMPLE,
+				});
+
+				const { name, ...options } = EXAMPLE;
+
+				await NativeCraft.register(name, options);
+				assert.equal(NativeCraft.isCraftSource('example', ''), true);
+			});
+		});
+
+		describe('::isCraftTarget()', function () {
+			it('should be true.', async function () {
+				const NativeCraft = defineCraft({
+					has: () => false,
+					get: () => EXAMPLE,
+					create: () => EXAMPLE,
+				});
+
+				const { name, ...options } = EXAMPLE;
+
+				await NativeCraft.register(name, options);
+				assert.equal(NativeCraft.isCraftTarget('example', ''), true);
+			});
+		});
+
 		describe('.evaluate()', function () {
 			it('should evalute 1 time.', async function () {
 				const NativeCraft = defineCraft({

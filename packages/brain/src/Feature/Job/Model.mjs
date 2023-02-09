@@ -30,10 +30,7 @@ export function defineJobModel(Craft) {
 		const { craft, target, source, status } = data;
 
 		Data.assertAts(data);
-
-		if (!Craft.isValid(craft)) {
-			throw new Error(`There is NOT a craft named "${craft}".`);
-		}
+		Craft.assertValid(craft);
 
 		if (!Craft.isCraftSource(craft, source)) {
 			throw new Error('Bad ".source".');

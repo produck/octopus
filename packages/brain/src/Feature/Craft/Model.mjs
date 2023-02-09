@@ -98,10 +98,10 @@ const defineBase = Definer.Base(({ Declare }) => {
 
 			registry[craft.name] = craft;
 
-			return this;
+			return craft;
 		})
-		.Accessor('isValid', isValid)
-		.Accessor('assertValid', assertValid)
+		.Method('isValid', isValid)
+		.Method('assertValid', assertValid)
 		.Method('isCraftSource', (name, source) => {
 			assertValid(name);
 
