@@ -1,13 +1,22 @@
 import { webcrypto as crypto } from 'node:crypto';
 import * as assert from 'node:assert/strict';
-import { describe, it } from 'mocha';
+import { describe, it, before } from 'mocha';
 
 import * as Craft from '../Craft/index.mjs';
-import { defineJob, Options } from './index.mjs';
+import { defineJob, Options, STATUS } from './index.mjs';
 
-// const NativeCraft = Craft.define();
+const NativeCraft = Craft.define({
+	create: data => data,
+});
 
-describe.skip('::Feature::Job', function () {
+describe('::Feature::Job', function () {
+	this.beforeAll(async () => {
+		await NativeCraft.register('example', {
+			source: any => any !== null,
+			target: any => any !== null,
+		});
+	});
+
 	describe('::defineJob()', function () {
 		it('should create a CustomJob.', function () {
 			const CustomJob = defineJob();
@@ -17,8 +26,16 @@ describe.skip('::Feature::Job', function () {
 	});
 
 	describe('::TestJob', function () {
-		const SAMPLE_OPTIONS = { name: 'Test' };
-		const EXAMPLE = { ...Options.EXAMPLE };
+		const SAMPLE_OPTIONS = Options.normalize({
+			name: 'Test',
+			Craft: NativeCraft,
+		});
+
+		const EXAMPLE = {
+			...Options.EXAMPLE,
+			source: true,
+			target: true,
+		};
 
 		describe('::has()', function () {
 			it('should get false.', async function () {
@@ -50,6 +67,30 @@ describe.skip('::Feature::Job', function () {
 				const job = await TestJob.get(EXAMPLE.id);
 
 				assert.equal(job.id, EXAMPLE.id);
+			});
+
+			it('should throw if bad job.source.', async function () {
+				const TestJob = defineJob({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...EXAMPLE, source: null }),
+				});
+
+				await assert.rejects(async () => await TestJob.get(EXAMPLE.id), {
+					name: 'JobImplementError',
+					message: 'Bad Job data.',
+				});
+			});
+
+			it('should throw if bad job.target.', async function () {
+				const TestJob = defineJob({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...EXAMPLE, target: null, status: STATUS.OK }),
+				});
+
+				await assert.rejects(async () => await TestJob.get(EXAMPLE.id), {
+					name: 'JobImplementError',
+					message: 'Bad Job data.',
+				});
 			});
 		});
 
@@ -196,7 +237,7 @@ describe.skip('::Feature::Job', function () {
 				const job = await TestJob.get(example.id);
 
 				assert.equal(example.visitedAt, null);
-				await job.visit();
+				await job.visit().save();
 				assert.notEqual(example.visitedAt, null);
 			});
 		});
@@ -214,7 +255,7 @@ describe.skip('::Feature::Job', function () {
 				const job = await TestJob.get(example.id);
 
 				assert.equal(example.assignedAt, null);
-				await job.assign();
+				await job.assign().save();
 				assert.notEqual(example.assignedAt, null);
 			});
 
@@ -251,7 +292,7 @@ describe.skip('::Feature::Job', function () {
 				const job = await TestJob.get(example.id);
 
 				assert.equal(example.startedAt, null);
-				await job.start();
+				await job.start().save();
 				assert.notEqual(example.startedAt, null);
 			});
 
@@ -304,9 +345,48 @@ describe.skip('::Feature::Job', function () {
 
 				const job = await TestJob.get(example.id);
 
-				await job.finish(0, 'ok');
+				await job.finish(0, 'ok').save();
 				assert.equal(example.message, 'ok');
 				assert.notEqual(example.finishedAt, null);
+			});
+		});
+
+		describe('.complete()', function () {
+			it('should update job.', async function () {
+				const example = { ...EXAMPLE, createdAt: Date.now() };
+
+				const TestJob = defineJob({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...example }),
+					save: data => Object.assign(example, data),
+				});
+
+				const job = await TestJob.get(example.id);
+
+				await job.complete({}).save();
+				assert.equal(example.status, STATUS.OK);
+				assert.deepEqual(example.target, {});
+				assert.notEqual(example.finishedAt, null);
+			});
+
+			it('should throw if bad target.', async function () {
+				const example = {
+					...EXAMPLE,
+					createdAt: Date.now(),
+				};
+
+				const TestJob = defineJob({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...example }),
+					save: data => Object.assign(example, data),
+				});
+
+				const job = await TestJob.get(example.id);
+
+				assert.throws(() => job.complete(null), {
+					name: 'TypeError',
+					message: 'Invalid "target", one "example target" expected.',
+				});
 			});
 		});
 	});

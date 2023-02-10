@@ -191,6 +191,7 @@ describe('::Feature::Craft', function () {
 			it('should evalute 1 time.', async function () {
 				const NativeCraft = defineCraft({
 					get: () => EXAMPLE,
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -207,6 +208,7 @@ describe('::Feature::Craft', function () {
 							throw new Error('foo');
 						},
 					}),
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -220,6 +222,7 @@ describe('::Feature::Craft', function () {
 			it('should assign and get a matched.', async function () {
 				const NativeCraft = defineCraft({
 					get: () => EXAMPLE,
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -241,6 +244,7 @@ describe('::Feature::Craft', function () {
 						...EXAMPLE,
 						policy: ({ assign }) => assign(null),
 					}),
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -254,6 +258,7 @@ describe('::Feature::Craft', function () {
 						...EXAMPLE,
 						policy: ({ assign }) => assign('', null),
 					}),
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -267,6 +272,7 @@ describe('::Feature::Craft', function () {
 						...EXAMPLE,
 						policy: ({ assign }) => assign('', null),
 					}),
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -280,6 +286,7 @@ describe('::Feature::Craft', function () {
 						...EXAMPLE,
 						policy: ({ assign }) => assign('', ''),
 					}),
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -293,6 +300,7 @@ describe('::Feature::Craft', function () {
 						...EXAMPLE,
 						policy: ({ assign }) => assign('foo', ''),
 					}),
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -305,6 +313,7 @@ describe('::Feature::Craft', function () {
 			it('should be true', async function () {
 				const NativeCraft = defineCraft({
 					get: () => EXAMPLE,
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -318,6 +327,7 @@ describe('::Feature::Craft', function () {
 						...EXAMPLE,
 						source: () => null,
 					}),
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -333,6 +343,7 @@ describe('::Feature::Craft', function () {
 			it('should be true', async function () {
 				const NativeCraft = defineCraft({
 					get: () => EXAMPLE,
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');
@@ -346,6 +357,7 @@ describe('::Feature::Craft', function () {
 						...EXAMPLE,
 						target: () => null,
 					}),
+					has: () => true,
 				});
 
 				const craft = await NativeCraft.get('example');

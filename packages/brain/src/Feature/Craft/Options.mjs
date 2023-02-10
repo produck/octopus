@@ -8,8 +8,8 @@ export const EXAMPLE = Data.normalize({ name: 'example' });
 export const Schema = S.Object({
 	name: P.String('Native'),
 	get: P.Function(() => ({ ...EXAMPLE })),
-	has: P.Function(() => true),
-	create: P.Function(() => {}),
+	has: P.Function(() => false),
+	create: P.Function(() => ({ ...EXAMPLE })),
 });
 
 export const normalize = Normalizer(Schema);

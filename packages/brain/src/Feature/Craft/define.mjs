@@ -32,14 +32,17 @@ export function defineCraft(...args) {
 
 				return await options.has(name);
 			},
-			async _create(name, _options) {
+			async _create(name, ...args) {
 				assertCraftName(name);
 
 				if (await this.has(name)) {
 					throw new Error(`Duplicated craft name(${name}).`);
 				}
 
-				return await options.create({ name, ...Data.normalizeOptions(_options) });
+				return await options.create({
+					name,
+					...Data.normalizeOptions(...args),
+				});
 			},
 		}),
 	});

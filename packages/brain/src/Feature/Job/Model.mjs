@@ -91,13 +91,13 @@ export function defineJobModel(Craft) {
 					return this;
 				})
 				.Method('complete', function (_target) {
-					const craft = Craft.get(this.craft);
+					const data = _(this);
 
-					if (!craft.isTarget(_target)) {
-						Throw('Bad target');
+					if (!Craft.isCraftTarget(data.craft, _target)) {
+						U.throwError('target', `${data.craft} target`);
 					}
 
-					_(this).target = _target;
+					data.target = _target;
 					this.finish(STATUS.OK);
 
 					return this;

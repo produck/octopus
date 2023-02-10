@@ -8,12 +8,12 @@ import * as Filter from './Filter.mjs';
 
 const FILTER_ALL = Filter.Preset.All.normalize();
 
-export function defineJob(_options = {}, Craft) {
+export function defineJob(_options = {}) {
 	const options = Options.normalize(_options);
 
 	return Entity.define({
 		name: options.name,
-		Model: defineJobModel(Craft),
+		Model: defineJobModel(options.Craft),
 		define: Definer.Custom({
 			async _load(data) {
 				return await options.get(data.id);

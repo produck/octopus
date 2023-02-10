@@ -22,6 +22,7 @@ export const Schema = S.Object({
 	create: P.Function(() => EXAMPLE),
 	save: P.Function(() => EXAMPLE),
 	destroy: P.Function(() => {}),
+	Craft: P.Function(() => {}),
 });
 
 export const normalize = Normalizer(Schema);
