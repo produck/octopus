@@ -23,6 +23,7 @@ export class Context {
 	finished = {};
 	creating = [];
 	crafts = {};
+	done = false;
 
 	constructor(_data) {
 		const data = normalizeData(_data);
@@ -44,12 +45,12 @@ export class Context {
 		return history[index] = value;
 	}
 
-	fetchJob(id) {
-		return this.finished[id];
-	}
-
 	hasJob(jobId) {
 		return Object.hasOwn(this.finished, jobId);
+	}
+
+	fetchJob(id) {
+		return this.finished[id];
 	}
 
 	assertCraftAndSource(name, source) {
@@ -63,6 +64,7 @@ export class Context {
 	}
 
 	planJob(id, craft, source) {
+		this.assertCraftAndSource(craft, source);
 		this.creating.push({ id, craft, source });
 	}
 }

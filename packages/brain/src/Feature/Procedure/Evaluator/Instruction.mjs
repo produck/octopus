@@ -27,15 +27,15 @@ class RunInstruction extends Instruction {
 		if (!vm.context.hasJob(id)) {
 			const [craft, source] = getArgs(this);
 
-			vm.context.assertCraftAndSource(craft, source);
+			vm.context.planJob(id, craft, source);
 			scope.blocked = true;
 		} else {
-			const { ok, message, target } = vm.context.fetchJob(id);
+			const { ok, error, target } = vm.context.fetchJob(id);
 
 			if (ok) {
 				return target;
 			} else {
-				throw new Error(message);
+				throw new Error(error);
 			}
 		}
 	}
@@ -51,10 +51,6 @@ class CallInstruction extends Instruction {
 	execute(vm, scope) {
 		const [routine] = getArgs(this);
 		const childScope = vm.call(routine);
-
-		if (childScope.thrown) {
-			throw childScope.error;
-		}
 
 		scope.blocked ||= childScope.blocked;
 

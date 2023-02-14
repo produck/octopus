@@ -1,7 +1,20 @@
+import { Normalizer, P, PROPERTY, S } from '@produck/mold';
+
 import * as Instruction from './Instruction.mjs';
 
+const GeneratorFunction = (function* () {})().constructor.constructor;
+
+const ScriptSchema = S.Object({
+	main: P.Instance(GeneratorFunction),
+	[PROPERTY]: P.Instance(GeneratorFunction),
+});
+
+const normalizeScript = Normalizer(ScriptSchema);
+
 export class Program {
-	constructor(script) {
+	constructor(_script) {
+		const script = normalizeScript(_script);
+
 		for (const name in script) {
 			const fn = script[name];
 

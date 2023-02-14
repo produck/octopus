@@ -2,8 +2,6 @@ import * as net from 'node:net';
 import { Normalizer, P, S } from '@produck/mold';
 
 const sec = n => n * 1000;
-const min = n => n * sec(1);
-
 const IPv4Schema = S.Value(net.isIPv4, 'IPv4 string', () => '0.0.0.0');
 
 export const PropertySchemas = {
