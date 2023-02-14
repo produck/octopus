@@ -6,8 +6,6 @@ import { Engine, Context, Program } from './index.mjs';
 
 function SampleData() {
 	return {
-		history: [],
-		finished: {},
 		crafts: {
 			example: () => {},
 		},
@@ -120,7 +118,7 @@ describe('Feature::Procedure::Evaluator', function () {
 
 				const context = new Context({
 					...SampleData(),
-					history: ['foo'],
+					dump: { values: ['foo'], children: [] },
 					finished: {
 						foo: {
 							id: 'foo',
@@ -165,7 +163,7 @@ describe('Feature::Procedure::Evaluator', function () {
 
 				const context = new Context({
 					...SampleData(),
-					history: ['foo'],
+					dump: { values: ['foo'], children: [] },
 					finished: {
 						foo: {
 							id: 'foo',
@@ -173,9 +171,6 @@ describe('Feature::Procedure::Evaluator', function () {
 							error: 'baz',
 							target: null,
 						},
-					},
-					crafts: {
-						example: () => true,
 					},
 				});
 
@@ -254,5 +249,62 @@ describe('Feature::Procedure::Evaluator', function () {
 				assert.deepEqual(vm.execute(program, context), ['foo', 'bar']);
 			});
 		});
+	});
+
+	it('should pass a complex case.', function () {
+		const MAX_SAT_TIMES = 3;
+
+		const program = new Program({
+			*SAT() {
+				let count = 0, cause = null, ok = false;
+
+				while (!ok && count < MAX_SAT_TIMES) {
+					try {
+						return yield this.run('foo', {});
+					} catch (error) {
+						cause = error;
+					}
+
+					count++;
+				}
+
+				throw new Error('SAT failed 3 time.', { cause });
+			},
+			*main() {
+				return yield this.all([
+					this.SAT(),
+					this.SAT(),
+				]);
+			},
+		});
+
+		const context = new Context({
+			...SampleData(),
+			crafts: { foo: () => true },
+			dump: {
+				values: [],
+				children: [
+					{ values: ['a', 'b'] },
+					{ values: ['c'] },
+				],
+			},
+			finished: {
+				a: { id: 'a', ok: false, error: 'test', target: null },
+				b: { id: 'b', ok: false, error: 'testtest', target: null },
+				c: { id: 'c', ok: true, error: null, target: 'world' },
+			},
+		});
+
+		const vm = new Engine();
+
+		vm.execute(program, context);
+		assert.equal(context.done, false);
+
+		context.finished[context.dump.children[0].values[2]] = {
+			id: '...', ok: true, error: null, target: 'hello',
+		};
+
+		assert.deepEqual(vm.execute(program, context), ['hello', 'world']);
+		assert.equal(context.done, true);
 	});
 });

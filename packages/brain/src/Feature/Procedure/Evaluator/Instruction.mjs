@@ -15,14 +15,14 @@ export class Instruction {
 }
 
 class ValueInstruction extends Instruction {
-	execute(vm) {
-		return vm.context.fetchValue(...getArgs(this));
+	execute(_vm, scope) {
+		return scope.dump.fetchValue(...getArgs(this));
 	}
 }
 
 class RunInstruction extends Instruction {
 	execute(vm, scope) {
-		const id = vm.context.fetchValue(crypto.randomUUID());
+		const id = scope.dump.fetchValue(crypto.randomUUID());
 
 		if (!vm.context.hasJob(id)) {
 			const [craft, source] = getArgs(this);
@@ -50,7 +50,7 @@ class RunInstruction extends Instruction {
 class CallInstruction extends Instruction {
 	execute(vm, scope) {
 		const [routine] = getArgs(this);
-		const childScope = vm.call(routine);
+		const childScope = vm.call(routine, scope.dump.fetchChild());
 
 		scope.blocked ||= childScope.blocked;
 

@@ -1,7 +1,12 @@
-import { Normalizer, P, PROPERTY, S } from '@produck/mold';
+import { Circ, Normalizer, P, PROPERTY, S } from '@produck/mold';
+
+const DumpSchema = Circ(SelfSchema => S.Object({
+	values: S.Array(),
+	children: S.Array({ items: SelfSchema }),
+}));
 
 const DataSchema = S.Object({
-	history: S.Array({ items: P.Any() }),
+	dump: DumpSchema,
 	finished: S.Object({
 		[PROPERTY]: S.Object({
 			id: P.String(),
@@ -18,8 +23,7 @@ const DataSchema = S.Object({
 const normalizeData = Normalizer(DataSchema);
 
 export class Context {
-	history = [];
-	index = 0;
+	dump = null;
 	finished = {};
 	creating = [];
 	crafts = {};
@@ -28,21 +32,9 @@ export class Context {
 	constructor(_data) {
 		const data = normalizeData(_data);
 
-		this.history = data.history;
+		this.dump = data.dump;
 		this.finished = data.finished;
 		this.crafts = data.crafts;
-	}
-
-	fetchValue(value) {
-		const { history, index } = this;
-
-		this.index++;
-
-		if (index < history.length) {
-			return history[index];
-		}
-
-		return history[index] = value;
 	}
 
 	hasJob(jobId) {

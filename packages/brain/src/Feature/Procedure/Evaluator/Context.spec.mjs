@@ -6,41 +6,15 @@ import { Context } from './Context.mjs';
 describe('Feature::Procedure::Evaluator::Context', function () {
 	function SampleData() {
 		return {
-			history: [],
+			dump: { values: [], children: [] },
 			finished: {},
-			crafts: {
-				example: () => {},
-			},
+			crafts: { example: () => {} },
 		};
 	}
 
 	describe('constructor()', function () {
 		it('should create a context.', function () {
 			new Context(SampleData());
-		});
-	});
-
-	describe('fetchValue()', function () {
-		it('shoud append a new value.', function () {
-			const context = new Context(SampleData());
-
-			assert.equal(context.index, 0);
-			assert.deepEqual(context.history, []);
-			assert.equal(context.fetchValue(1), 1);
-			assert.equal(context.index, 1);
-			assert.deepEqual(context.history, [1]);
-		});
-
-		it('should get a history value.', function () {
-			const context = new Context({
-				...SampleData(),
-				history: ['foo'],
-			});
-
-			assert.equal(context.fetchValue(1), 'foo');
-			assert.equal(context.index, 1);
-			assert.equal(context.fetchValue(1), 1);
-			assert.deepEqual(context.history, ['foo', 1]);
 		});
 	});
 
