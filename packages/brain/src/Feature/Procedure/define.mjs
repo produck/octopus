@@ -4,8 +4,8 @@ import { BaseProcedure, assertProcedureName } from './Model.mjs';
 import * as Options from './Options.mjs';
 import * as Data from './Data.mjs';
 
-export function defineProcedure(_options) {
-	const options = Options.normalize(_options);
+export function defineProcedure(...args) {
+	const options = Options.normalize(...args);
 
 	return Entity.define({
 		name: options.name,

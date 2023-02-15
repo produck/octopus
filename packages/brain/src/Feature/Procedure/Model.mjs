@@ -37,10 +37,8 @@ function compileSelfScript() {
 }
 
 const defineBase = Definer.Base(({ Declare }) => {
-	function evaluate(order, dump, finished) {
-		const context = new Evaluator.Context({
-			dump, finished, crafts: this._crafts(),
-		});
+	function evaluate(order, contextData = {}) {
+		const context = new Evaluator.Context(contextData);
 
 		try {
 			const artifact = vm.execute(this.program, context, order);
@@ -61,6 +59,9 @@ const defineBase = Definer.Base(({ Declare }) => {
 	}
 
 	Declare.Prototype
+		.Accessor('name', function () {
+			return _(this).name;
+		})
 		.Accessor('program', compileSelfScript)
 		.Method('isOrder', isOrder)
 		.Method('isArtifact', isArtifact)

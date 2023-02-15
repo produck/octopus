@@ -68,7 +68,7 @@ export class Engine {
 	* #boot(MAIN_CALL) {
 		const mainScope = yield MAIN_CALL;
 
-		this.context.done = !mainScope.blocked;
+		this.context.done = true;
 
 		return mainScope;
 	}
