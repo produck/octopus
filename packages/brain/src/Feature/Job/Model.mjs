@@ -1,5 +1,5 @@
-import { Cust, Normalizer, P, S, U } from '@produck/mold';
-import { Definer, Model, _, _Data } from '@produck/shop';
+import { Cust, Normalizer, U } from '@produck/mold';
+import { Definer, Model, _ } from '@produck/shop';
 
 import * as Data from './Data.mjs';
 import * as STATUS from './Status.mjs';
@@ -49,7 +49,7 @@ export function defineJobModel(Craft) {
 		deletable: true,
 		updatable: true,
 		data: Normalizer(DataSchema),
-		base: Definer.Base(({ Declare, Throw }) => {
+		base: Definer.Base(({ Declare }) => {
 			Declare.Prototype.notDestroyedRequired()
 				.Method('visit', function () {
 					_(this).visitedAt = Date.now();

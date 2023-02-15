@@ -39,10 +39,7 @@ export function defineCraft(...args) {
 					throw new Error(`Duplicated craft name(${name}).`);
 				}
 
-				return await options.create({
-					name,
-					...Data.normalizeOptions(...args),
-				});
+				return await options.create({ name, ...Data.normalizeOptions(...args) });
 			},
 		}),
 	});

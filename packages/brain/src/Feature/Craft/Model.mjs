@@ -18,6 +18,26 @@ export function assertCraftName(any) {
 	}
 }
 
+function isSource(any) {
+	const _flag = _(this).source(any);
+
+	if (!T.Native.Boolean(_flag)) {
+		U.throwError('flag <= data.source()', 'boolean');
+	}
+
+	return _flag;
+}
+
+function isTarget(any) {
+	const _flag = _(this).target(any);
+
+	if (!T.Native.Boolean(_flag)) {
+		U.throwError('flag <= data.target()', 'boolean');
+	}
+
+	return _flag;
+}
+
 const defineBase = Definer.Base(({ Declare }) => {
 	const emitter = new EventEmitter();
 
@@ -51,26 +71,6 @@ const defineBase = Definer.Base(({ Declare }) => {
 		emitter.emit('assign', matched);
 
 		return matched;
-	}
-
-	function isSource(any) {
-		const _flag = _(this).source(any);
-
-		if (!T.Native.Boolean(_flag)) {
-			U.throwError('flag <= data.source()', 'boolean');
-		}
-
-		return _flag;
-	}
-
-	function isTarget(any) {
-		const _flag = _(this).target(any);
-
-		if (!T.Native.Boolean(_flag)) {
-			U.throwError('flag <= data.target()', 'boolean');
-		}
-
-		return _flag;
 	}
 
 	Declare.Prototype
@@ -118,6 +118,5 @@ export const BaseCraft = Model.define({
 	name: 'Craft',
 	creatable: true,
 	data: Data.normalize,
-	abstract: Definer.Abstract({}, { getNameList: null }),
 	base: defineBase,
 });

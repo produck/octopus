@@ -4,7 +4,7 @@ import * as Instruction from './Instruction.mjs';
 
 const GeneratorFunction = (function* () {})().constructor.constructor;
 
-const ScriptSchema = S.Object({
+export const ScriptSchema = S.Object({
 	main: P.Instance(GeneratorFunction),
 	[PROPERTY]: P.Instance(GeneratorFunction),
 });
