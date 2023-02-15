@@ -1,6 +1,6 @@
 import { webcrypto as crypto } from 'node:crypto';
 import * as assert from 'node:assert/strict';
-import { describe, it, before } from 'mocha';
+import { describe, it } from 'mocha';
 
 import * as Craft from '../Craft/index.mjs';
 import { defineJob, Options, STATUS } from './index.mjs';

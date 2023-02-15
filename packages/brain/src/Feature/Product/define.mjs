@@ -1,7 +1,7 @@
 import { Definer, Entity } from '@produck/shop';
 
 import { normalizeUUID as normalizeId } from '../Utils.mjs';
-import { BaseProduct } from './Model.mjs';
+import { defineProductBase } from './Model.mjs';
 import * as Data from './Data.mjs';
 import * as Options from './Options.mjs';
 import * as Filter from './Filter.mjs';
@@ -13,7 +13,7 @@ export function defineProduct(...args) {
 
 	return Entity.define({
 		name: options.name,
-		Model: BaseProduct,
+		Model: defineProductBase(options.Procedure),
 		define: Definer.Custom({
 			async _load(data) {
 				return await options.get(data.id);

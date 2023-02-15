@@ -2,9 +2,22 @@ import { webcrypto as crypto } from 'node:crypto';
 import * as assert from 'node:assert';
 import { describe, it } from 'mocha';
 
-import { Data, defineProduct } from './index.mjs';
+import * as Procedure from '../Procedure/index.mjs';
+import { Data, defineProduct, Options, STATUS } from './index.mjs';
+
+const NativeProcedure = Procedure.define({
+	create: data => data,
+});
 
 describe('::Feature::Product', function () {
+	this.beforeAll(async () => {
+		await NativeProcedure.register('example', {
+			order: any => any !== null,
+			artifact: any => any !== null,
+			script: { *main() {} },
+		});
+	});
+
 	describe('::defineProduct()', function () {
 		it('should create a CustomProduct.', function () {
 			const CustomProduct = defineProduct();
@@ -14,11 +27,16 @@ describe('::Feature::Product', function () {
 	});
 
 	describe('::TestProduct', function () {
-		const SAMPLE_OPTIONS = { name: 'Test' };
+		const SAMPLE_OPTIONS = Options.normalize({
+			name: 'Test',
+			Procedure: NativeProcedure,
+		});
 
 		const EXAMPLE = Data.normalize({
 			id: crypto.randomUUID(),
 			owner: crypto.randomUUID(),
+			model: 'example',
+			order: 1,
 		});
 
 		describe('::has()', function () {
@@ -44,6 +62,30 @@ describe('::Feature::Product', function () {
 				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.id, EXAMPLE.id);
+			});
+
+			it('shoul throw if bad data.order.', async function () {
+				const TestProduct = defineProduct({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...EXAMPLE, order: null }),
+				});
+
+				await assert.rejects(async () => await TestProduct.get(EXAMPLE.id), {
+					name: 'ProductImplementError',
+					message: 'Bad Product data.',
+				});
+			});
+
+			it('shoul throw if bad data.artifact.', async function () {
+				const TestProduct = defineProduct({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...EXAMPLE, artifact: null, status: STATUS.OK }),
+				});
+
+				await assert.rejects(async () => await TestProduct.get(EXAMPLE.id), {
+					name: 'ProductImplementError',
+					message: 'Bad Product data.',
+				});
 			});
 		});
 
@@ -99,6 +141,7 @@ describe('::Feature::Product', function () {
 				const TestProduct = defineProduct({
 					...SAMPLE_OPTIONS,
 					get: () => ({ ...EXAMPLE }),
+					save: data => data,
 				});
 
 				const product = await TestProduct.get(EXAMPLE.id);
@@ -173,7 +216,7 @@ describe('::Feature::Product', function () {
 			});
 		});
 
-		describe('.order()', function () {
+		describe('.setOrder()', function () {
 			it('should update product.', async function () {
 				const example = { ...EXAMPLE };
 
@@ -186,7 +229,7 @@ describe('::Feature::Product', function () {
 				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.orderedAt, null);
-				await product.order();
+				await product.setOrder();
 				assert.notEqual(product.orderedAt, null);
 			});
 
@@ -202,9 +245,9 @@ describe('::Feature::Product', function () {
 				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.orderedAt, null);
-				await product.order();
+				await product.setOrder();
 
-				await assert.rejects(async () => await product.order(), {
+				await assert.rejects(async () => await product.setOrder(), {
 					name: 'Error',
 					message: 'This product has been ordered.',
 				});
@@ -281,9 +324,45 @@ describe('::Feature::Product', function () {
 				const product = await TestProduct.get(EXAMPLE.id);
 
 				assert.equal(product.finishedAt, null);
-				await product.finish(0, 'ok');
+				await product.finish(0, 'ok').save();
 				assert.equal(product.message, 'ok');
 				assert.notEqual(product.finishedAt, null);
+			});
+		});
+
+		describe('.complete()', function () {
+			it('should update a product.', async function () {
+				const example = { ...EXAMPLE, orderedAt: Date.now() };
+
+				const TestProduct = defineProduct({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...example }),
+					save: data => Object.assign(example, data),
+				});
+
+				const product = await TestProduct.get(EXAMPLE.id);
+
+				assert.equal(product.finishedAt, null);
+				await product.complete('ok').save();
+				assert.equal(product.artifact, 'ok');
+				assert.notEqual(product.finishedAt, null);
+			});
+
+			it('should throw if bad artifact.', async function () {
+				const example = { ...EXAMPLE, orderedAt: Date.now() };
+
+				const TestProduct = defineProduct({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...example }),
+					save: data => Object.assign(example, data),
+				});
+
+				const product = await TestProduct.get(EXAMPLE.id);
+
+				assert.throws(() => product.complete(null), {
+					name: 'TypeError',
+					message: 'Invalid "artifact", one "example artifact" expected.',
+				});
 			});
 		});
 	});

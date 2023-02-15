@@ -6,6 +6,7 @@ import * as Data from './Data.mjs';
 const EXAMPLE = Data.normalize({
 	id: crypto.randomUUID(),
 	owner: crypto.randomUUID(),
+	model: 'example',
 });
 
 const QuerySchema = S.Object({
@@ -22,6 +23,7 @@ export const Schema = S.Object({
 	create: P.Function(() => EXAMPLE),
 	save: P.Function(() => EXAMPLE),
 	destroy: P.Function(() => {}),
+	Procedure: P.Function(() => {}),
 });
 
 export const normalize = Normalizer(Schema);
