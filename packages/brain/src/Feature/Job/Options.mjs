@@ -3,7 +3,7 @@ import { S, P, Normalizer } from '@produck/mold';
 
 import * as Data from './Data.mjs';
 
-export const EXAMPLE = Data.normalize({
+const EXAMPLE = Data.normalize({
 	id: crypto.randomUUID(),
 	product: crypto.randomUUID(),
 	craft: 'example',

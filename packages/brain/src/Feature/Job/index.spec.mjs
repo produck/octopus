@@ -3,7 +3,7 @@ import * as assert from 'node:assert/strict';
 import { describe, it } from 'mocha';
 
 import * as Craft from '../Craft/index.mjs';
-import { defineJob, Options, STATUS } from './index.mjs';
+import { defineJob, Options, STATUS, Data } from './index.mjs';
 
 const NativeCraft = Craft.define({
 	create: data => data,
@@ -31,11 +31,13 @@ describe('::Feature::Job', function () {
 			Craft: NativeCraft,
 		});
 
-		const EXAMPLE = {
-			...Options.EXAMPLE,
+		const EXAMPLE = Data.normalize({
+			id: crypto.randomUUID(),
+			product: crypto.randomUUID(),
+			craft: 'example',
 			source: true,
 			target: true,
-		};
+		});
 
 		describe('::has()', function () {
 			it('should get false.', async function () {

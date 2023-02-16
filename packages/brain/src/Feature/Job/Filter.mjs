@@ -12,15 +12,9 @@ const FilterOfProductSchemna = S.Object({
 	product: UUIDSchema,
 });
 
-const FilterOfTentacleSchemna = S.Object({
-	name: P.Constant('OfTentacle'),
-	tentacle: UUIDSchema,
-});
-
 export const Preset = {
 	All: FilterDescriptor(FilterAllSchema),
 	OfProduct: FilterDescriptor(FilterOfProductSchemna),
-	OfTentacle: FilterDescriptor(FilterOfTentacleSchemna),
 };
 
 const FilterSchema = S.Object({
