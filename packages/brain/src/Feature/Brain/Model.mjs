@@ -35,7 +35,7 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 	}
 
 	const EmitterMethodProxy = key => [key, function proxy(...args) {
-		context.emitter[key](...args);
+		emitter[key](...args);
 
 		return this;
 	}];
@@ -48,26 +48,22 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 		Declare.Constructor.Accessor(...ExternalAccessor(key));
 	}
 
-	const context = {
-		current: null,
-		active: false,
-		emitter: new EventEmitter(),
-	};
+	let current = null, active = false, emitter = new EventEmitter();
 
 	async function boot (_selfData) {
-		if (context.active) {
+		if (active) {
 			throw new Error('A brain is alive currently.');
 		}
 
-		context.active = true;
+		active = true;
 
 		const isAlive = brain => this.NOW - brain.visitedAt < this.MAX_ALIVE_GAP;
 		const self = await this.get(Data.normalize(_selfData));
 
-		context.current = self;
+		current = self;
 
 		(async function watch(Brain) {
-			if (context.current !== self) {
+			if (current !== self) {
 				return;
 			}
 
@@ -84,11 +80,11 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 
 				if (aliveList.length > 0) {
 					if (aliveList[0].id === self.id) {
-						context.emitter.emit('grant');
+						emitter.emit('grant');
 					}
 				}
 			} catch (error) {
-				context.emitter.emit('watch-error', error);
+				emitter.emit('watch-error', error);
 			}
 
 			setTimeout(() => watch(Brain), Brain.WATCHING_INTERVAL);
@@ -98,15 +94,15 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 	}
 
 	function halt() {
-		context.active = false;
-		context.current = null;
+		active = false;
+		current = null;
 
 		return this;
 	}
 
 	Declare.Constructor
-		.Accessor('isActive', () => context.active)
-		.Accessor('current', () => context.current)
+		.Accessor('isActive', () => active)
+		.Accessor('current', () => current)
 		.Method('boot', boot)
 		.Method('halt', halt);
 });

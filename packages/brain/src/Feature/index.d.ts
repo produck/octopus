@@ -1,6 +1,4 @@
-export * as Workshop from './Workshop';
 export * as Application from './Application';
-export * as Agent from './Agent';
-export { BaseEnvironment as Environment } from './Environment';
-export { Scheduler } from './Scheduler';
-export { Group } from './Octopus';
+export * as Brain from './Brain';
+export * as Craft from './Craft';
+export * as Environment from './Environment';

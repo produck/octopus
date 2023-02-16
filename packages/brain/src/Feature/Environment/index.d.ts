@@ -30,7 +30,18 @@ export module Property {
 	export type Value = Map[keyof Property.Map];
 }
 
-type EventListenerMap = {
+export module Options {
+	interface Object {
+		name?: string;
+		fetch?: () => Promise<Property.Map>;
+		set?: (name: Property.Key, value: Property.Value) => Promise<void>;
+	}
+
+	export function normalize(_options: Object): Object;
+	export const Schema: Schema<Object>;
+}
+
+type EventMap = {
 	'fetch': () => void;
 	'fetch-error': (error: Error) => void;
 	'set': <T extends Property.Key>(name: T, value: Property.Map[T]) => void;
@@ -38,12 +49,12 @@ type EventListenerMap = {
 	'data-error': (error: Error) => void;
 }
 
-export type EventName = keyof EventListenerMap;
+export type EventName = keyof EventMap;
 
-export class BaseEnvironment extends EventEmitter {
-	on<T extends EventName>(eventName: T, listener: EventListenerMap[T]): this;
-	off<T extends EventName>(eventName: T, listener: EventListenerMap[T]): this;
-	once<T extends EventName>(eventName: T, listener: EventListenerMap[T]): this;
+declare class BaseEnvironment extends EventEmitter {
+	on<T extends EventName>(eventName: T, listener: EventMap[T]): this;
+	off<T extends EventName>(eventName: T, listener: EventMap[T]): this;
+	once<T extends EventName>(eventName: T, listener: EventMap[T]): this;
 
 	_fetch(): Promise<void>;
 
@@ -62,21 +73,10 @@ export class BaseEnvironment extends EventEmitter {
 	install(map: Property.Map): Promise<void>;
 }
 
-export module Options {
-	interface Object {
-		name?: string;
-		fetch?: () => Promise<Property.Map>;
-		set?: (name: Property.Key, value: Property.Value) => Promise<void>;
-	}
-
-	export function normalize(_options: Object): Object;
-	export const Schema: Schema<Object>;
-}
-
 declare class CustomEnvironment extends BaseEnvironment {}
 
 export function defineEnvironment(
-	_options: Options.Object
+	options: Options.Object
 ): typeof CustomEnvironment;
 
 export { defineEnvironment as define };

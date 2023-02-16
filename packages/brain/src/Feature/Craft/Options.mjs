@@ -6,8 +6,8 @@ export const EXAMPLE = Data.normalize({ name: 'example' });
 
 export const Schema = S.Object({
 	name: P.StringPattern(/^[A-Z][a-zA-Z]*$/)('Native'),
-	get: P.Function(() => ({ ...EXAMPLE })),
 	has: P.Function(() => false),
+	get: P.Function(() => ({ ...EXAMPLE })),
 	create: P.Function(() => ({ ...EXAMPLE })),
 });
 

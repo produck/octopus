@@ -12,7 +12,7 @@ export const FIFO = ({ Job, Tentacle, assign }) => {
 	}
 };
 
-export const OptionsSchemaOptions = {
+const OptionsSchemaOptions = {
 	policy: P.Function(FIFO),
 	source: P.Function(() => true),
 	target: P.Function(() => true),
