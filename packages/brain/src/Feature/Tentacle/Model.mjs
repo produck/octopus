@@ -24,12 +24,18 @@ export const BaseTentacle = Model.define({
 		Declare.Prototype.notDestroyedRequired()
 			.Method('visit', async function () {
 				_(this).visitedAt = Date.now();
+
+				return this;
 			})
 			.Method('pick', async function (_jobId) {
 				_(this).job = normalizeUUID(_jobId);
+
+				return this;
 			})
 			.Method('free', async function () {
 				_(this).job = null;
+
+				return this;
 			});
 
 		for (const key of PLAIN_KEYS) {

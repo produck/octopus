@@ -1,4 +1,4 @@
-import * as Shop from '@produck/shop';
+import { Entity } from '@produck/shop';
 import { Schema } from '@produck/mold';
 
 export module Data {
@@ -14,13 +14,40 @@ export module Data {
 }
 
 export module Filter {
+	interface Abstract {
+		name: 'All' | 'OfOwner';
+		[key: string]: any;
+	}
 
+	export const FilterSchema: Schema<Abstract>
+	export function normalize(filter: Abstract): Abstract;
+
+	export namespace Preset {
+		export interface All {
+			name: 'All';
+		}
+
+		export const All: {
+			Schema: Schema<All>;
+			normalize: (filter: All) => All;
+		}
+
+		export interface OfOwner {
+			name: 'OfOwner';
+			owner: string;
+		}
+
+		export const OfOwner: {
+			Schema: Schema<OfOwner>;
+			normalzie: (filter: OfOwner) => OfOwner;
+		}
+	}
 }
 
 export module Options {
 	interface Query {
-		All: () => Promise<Data.Value[]>;
-		OfOwner: () => Promise<Data.Value[]>;
+		All: (filter: Filter.Preset.All) => Promise<Data.Value[]>;
+		OfOwner: (filter: Filter.Preset.OfOwner) => Promise<Data.Value[]>;
 	}
 
 	interface Value {
@@ -34,14 +61,16 @@ export module Options {
 	}
 }
 
-export interface PublicKey extends Shop.Entity.Proxy.Model {
+export interface PublicKey extends Entity.Proxy.Model {
 	readonly id: string;
 	readonly owner: string;
 	readonly createdAt: Date;
 	verify(plain: string, signature: string): boolean;
 }
 
-export interface PublicKeyConstructor extends Shop.Entity.Proxy.ModelConstructor {
+export interface PublicKeyConstructor extends Entity.Proxy.ModelConstructor {
 	new(): PublicKey;
-	get(data: Data.Value): Promise<PublicKey>;
 }
+
+export function definePublicKey(options: Options.Value): PublicKeyConstructor;
+export { definePublicKey as define };

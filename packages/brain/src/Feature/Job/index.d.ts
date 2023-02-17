@@ -75,7 +75,7 @@ export module Filter {
 export module Options {
 	interface Query {
 		All: (filter: Filter.Preset.All) => Promise<Array<Data.Value>>;
-		OfProduct: (filter: Filter.Preset.OfProduct) => Promise<Array<DataView>>;
+		OfProduct: (filter: Filter.Preset.OfProduct) => Promise<Array<Data.Value>>;
 	}
 
 	interface Value {

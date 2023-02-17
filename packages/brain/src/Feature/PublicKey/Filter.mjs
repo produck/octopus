@@ -9,7 +9,7 @@ const FilterAllSchema = S.Object({ name: P.Constant('All', false) });
 
 const FilterOfOwnerSchemna = S.Object({
 	name: P.Constant('OfOwner'),
-	id: UUIDSchema,
+	owner: UUIDSchema,
 });
 
 export const Preset = {
