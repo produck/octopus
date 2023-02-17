@@ -43,7 +43,7 @@ export module Data {
 
 export module Filter {
 	interface Abstract {
-		name: 'All' | 'OfProduct';
+		name: 'All' | 'OfOwner';
 		[key: string]: any;
 	}
 
@@ -107,8 +107,8 @@ export interface Job extends Entity.Proxy.Model {
 	readonly target: any;
 	visit(): this;
 	start(): this;
-	finish(): this;
-	complete(): this;
+	finish(status: Status, message: Data.Message): this;
+	complete(target: any): this;
 }
 
 export interface JobConstructor extends Entity.Proxy.ModelConstructor {

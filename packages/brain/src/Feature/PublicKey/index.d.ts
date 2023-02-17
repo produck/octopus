@@ -1,6 +1,5 @@
 import * as Shop from '@produck/shop';
 import { Schema } from '@produck/mold';
-import exp = require('constants');
 
 export module Data {
 	interface Value {

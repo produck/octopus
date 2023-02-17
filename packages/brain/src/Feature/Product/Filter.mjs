@@ -19,7 +19,7 @@ export const Preset = {
 		...StateSchemas,
 	})),
 	OfOwner: FilterDescriptor(S.Object({
-		name: P.Constant('OfProduct'),
+		name: P.Constant('OfOwner'),
 		owner: UUIDSchema,
 		...StateSchemas,
 	})),

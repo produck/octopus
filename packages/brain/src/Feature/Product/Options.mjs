@@ -12,7 +12,6 @@ const EXAMPLE = Data.normalize({
 const QuerySchema = S.Object({
 	All: P.Function(() => []),
 	OfOwner: P.Function(() => []),
-	OfProduct: P.Function(() => []),
 });
 
 export const Schema = S.Object({
