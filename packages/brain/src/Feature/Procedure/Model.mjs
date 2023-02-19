@@ -45,7 +45,7 @@ const defineBase = Definer.Base(({ Declare }) => {
 			const { done } = context;
 
 			if (!done) {
-				return { done, ok: true };
+				return { done, ok: true, creating: context.creating };
 			}
 
 			if (!this.isArtifact(artifact)) {
@@ -100,6 +100,11 @@ const defineBase = Definer.Base(({ Declare }) => {
 			assertValid(name);
 
 			return registry[name].isArtifact(any);
+		})
+		.Method('evaluate', (name, ...args) => {
+			this.assertValid(name);
+
+			return registry[name].evaluate(...args);
 		});
 });
 

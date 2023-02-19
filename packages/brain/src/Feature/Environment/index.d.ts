@@ -73,7 +73,7 @@ declare class BaseEnvironment extends EventEmitter {
 	install(map: Property.Map): Promise<void>;
 }
 
-declare class CustomEnvironment extends BaseEnvironment {}
+export class CustomEnvironment extends BaseEnvironment {}
 
 export function defineEnvironment(
 	options: Options.Object

@@ -6,7 +6,7 @@ interface Script {
 	[key: string]: GeneratorFunction;
 }
 
-interface ContextDump {
+export interface ContextDump {
 	values: any[];
 	children: ContextDump[];
 }
@@ -61,8 +61,9 @@ export module Options {
 interface Result {
 	done: boolean;
 	ok: boolean;
-	error?: string;
+	error?: string | null;
 	artifact?: any;
+	creating: Array<{ id: string, source: any, craft: string }>
 }
 
 export interface Procedure extends Entity.Proxy.Model {
@@ -81,6 +82,7 @@ export interface ProcedureConstructor extends Entity.Proxy.ModelConstructor {
 	assertValid(name: string): void;
 	isProcedureOrder(name: string, order: any): boolean;
 	isProcedureArtifact(name: string, artifact: any): boolean;
+	evaluate(name: string, order: any, context: Context): Result;
 }
 
 export function defineProcedure(options: Options.Value): ProcedureConstructor;

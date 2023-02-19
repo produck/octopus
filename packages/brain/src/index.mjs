@@ -40,13 +40,13 @@ export const OctopusHead = Duck.define({
 		DuckLog.Component(),
 	],
 }, function OctopusHead({
-	CLI, Kit, Workshop, Environment,
+	CLI, Kit, Bus, Workshop, Environment,
 }, options) {
 	Kit.Options = options;
 
 	return Object.freeze({
 		boot: async () => await CLI.parser(),
-		shutdown: async () => {},
+		halt: async () => Bus.emit('halt-request'),
 		Model: () => {},
 		Craft: () => {},
 	});

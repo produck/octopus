@@ -3,3 +3,7 @@ export * as Brain from './Brain';
 export * as Craft from './Craft';
 export * as Environment from './Environment';
 export * as Job from './Job';
+export * as Procedure from './Procedure';
+export * as Product from './Product';
+export * as PublicKey from './PublicKey';
+export * as Tentacle from './Tentacle';

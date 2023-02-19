@@ -103,6 +103,7 @@ export interface Product extends Entity.Proxy.Model {
 	model: string;
 	status: Status;
 	message: Data.Message;
+	dump: Procedure.ContextDump;
 	readonly createdAt: Date;
 	readonly orderedAt: Date | null;
 	readonly startedAt: Date | null;
@@ -117,6 +118,7 @@ export interface Product extends Entity.Proxy.Model {
 
 export interface ProductConstructor extends Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Product;
+	query(filter: Filter.Abstract): Promise<Array<Product>>;
 }
 
 export function defineProduct(options: Options.Value): Options.Value;

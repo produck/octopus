@@ -22,14 +22,14 @@ export module Data {
 		id: string;
 		product: string;
 		craft: string;
-		createdAt: number;
-		visitedAt: number;
-		startedAt: number | null;
-		finishedAt: number | null;
-		status: Status;
-		message: Message;
+		createdAt?: number;
+		visitedAt?: number;
+		startedAt?: number | null;
+		finishedAt?: number | null;
+		status?: Status;
+		message?: Message;
 		source: any;
-		target: any;
+		target?: any;
 	}
 
 	export const StatusSchema: Schema<Status>;
@@ -113,6 +113,8 @@ export interface Job extends Entity.Proxy.Model {
 
 export interface JobConstructor extends Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Job;
+	query(filter: Filter.Abstract): Promise<Array<Job>>;
+	create(data: Data.Value): Promise<Job>;
 }
 
 export function defineJob(options: Options.Value): Options.Value;
