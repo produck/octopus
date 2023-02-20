@@ -83,10 +83,15 @@ export interface Tentacle extends Entity.Proxy.Model {
 	ready: boolean;
 	createdAt: Date;
 	visitedAt: Date;
+	visit(): this;
+	pick(jobId: string): this;
+	free(): this;
+	toValue(): { id: string };
 }
 
 export interface TentacleConstructor extends Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Tentacle;
+	query(filter: Filter.Abstract): Promise<Array<Tentacle>>;
 }
 
 export function defineTentacle(options: Options.Value): TentacleConstructor;

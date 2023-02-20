@@ -86,12 +86,6 @@ const defineBase = Definer.Base(({ Declare }) => {
 		return Object.hasOwn(registry, name);
 	};
 
-	function assertValid(name) {
-		if (!isValid(name)) {
-			throw new Error(`There is no craft(${name}).`);
-		}
-	}
-
 	Declare.Constructor
 		.Method('register', async function (...args) {
 			const craft = await this.create(...args);
@@ -101,16 +95,12 @@ const defineBase = Definer.Base(({ Declare }) => {
 			return craft;
 		})
 		.Method('isValid', isValid)
-		.Method('assertValid', assertValid)
-		.Method('isCraftSource', (name, source) => {
-			assertValid(name);
+		.Method('use', (name) => {
+			if (!isValid(name)) {
+				throw new Error(`There is no craft(${name}).`);
+			}
 
-			return registry[name].isSource(source);
-		})
-		.Method('isCraftTarget', (name, target) => {
-			assertValid(name);
-
-			return registry[name].isTarget(target);
+			return registry[name];
 		});
 });
 

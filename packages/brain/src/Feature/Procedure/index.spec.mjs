@@ -135,51 +135,6 @@ describe('::Feature::Procedure', function () {
 			});
 		});
 
-		describe('::assertValid()', function () {
-			it('should throw if bad name.', async function () {
-				const NativeProcedure = defineProcedure({
-					has: () => false,
-					get: () => EXAMPLE,
-					create: () => EXAMPLE,
-				});
-
-				assert.throws(() => NativeProcedure.assertValid('foo'), {
-					name: 'Error',
-					message: 'There is no procedure(foo).',
-				});
-			});
-		});
-
-		describe('::isProcedureOrder()', function () {
-			it('should be true.', async function () {
-				const NativeProcedure = defineProcedure({
-					has: () => false,
-					get: () => EXAMPLE,
-					create: () => EXAMPLE,
-				});
-
-				const { name, ...options } = EXAMPLE;
-
-				await NativeProcedure.register(name, options);
-				assert.equal(NativeProcedure.isProcedureOrder('example', ''), true);
-			});
-		});
-
-		describe('::isProcedureArtifact()', function () {
-			it('should be true.', async function () {
-				const NativeProcedure = defineProcedure({
-					has: () => false,
-					get: () => EXAMPLE,
-					create: () => EXAMPLE,
-				});
-
-				const { name, ...options } = EXAMPLE;
-
-				await NativeProcedure.register(name, options);
-				assert.equal(NativeProcedure.isProcedureArtifact('example', ''), true);
-			});
-		});
-
 		describe('.isOrder()', function () {
 			it('should be true', async function () {
 				const NativeProcedure = defineProcedure({

@@ -9,6 +9,7 @@ import * as DuckCLICommander from '@produck/duck-cli-commander';
 
 import * as meta from './version.mjs';
 import * as CLI from './cli.mjs';
+import * as Installer from './Installer.mjs';
 import * as WebApp from './Web/index.mjs';
 import * as Runner from './Runner/index.mjs';
 
@@ -43,6 +44,8 @@ export const OctopusHead = Duck.define({
 	CLI, Kit, Bus, Workshop, Environment,
 }, options) {
 	Kit.Options = options;
+
+	Installer.install(Kit);
 
 	return Object.freeze({
 		boot: async () => await CLI.parser(),

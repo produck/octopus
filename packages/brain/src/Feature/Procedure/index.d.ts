@@ -81,9 +81,7 @@ export interface ProcedureConstructor extends Entity.Proxy.ModelConstructor {
 	register(name: string, options: Data.ValueOptions): Promise<Procedure>;
 	isValid(name: string): boolean;
 	assertValid(name: string): void;
-	isProcedureOrder(name: string, order: any): boolean;
-	isProcedureArtifact(name: string, artifact: any): boolean;
-	evaluate(name: string, order: any, context: Context): Result;
+	use(name: string): Procedure;
 }
 
 export function defineProcedure(options: Options.Value): ProcedureConstructor;

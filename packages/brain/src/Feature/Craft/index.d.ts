@@ -79,9 +79,7 @@ export interface CraftConstructor extends Entity.Proxy.ModelConstructor {
 
 	register(name: string, options: Data.ValueOptions): Promise<Craft>;
 	isValid(name: string): boolean;
-	assertValid(name: string): void;
-	isCraftSource(name: string, source: any): boolean;
-	isCraftTarget(name: string, target: any): boolean;
+	use(name: string): Craft;
 }
 
 export function defineCraft(options: Options.Value): CraftConstructor;

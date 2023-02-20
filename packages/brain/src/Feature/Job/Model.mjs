@@ -27,16 +27,17 @@ const At = key => [key, function atGetter() {
 export function defineJobModel(Craft) {
 	const DataSchema = Cust(Data.Schema, (_v, _e, next) => {
 		const data = next();
-		const { craft, target, source, status } = data;
+		const { craft: craftName, target, source, status } = data;
 
 		Data.assertAts(data);
-		Craft.assertValid(craft);
 
-		if (!Craft.isCraftSource(craft, source)) {
+		const craft = Craft.use(craftName);
+
+		if (!craft.isSource(source)) {
 			throw new Error('Bad ".source".');
 		}
 
-		if (status === STATUS.OK && !Craft.isCraftTarget(craft, target)) {
+		if (status === STATUS.OK && !craft.isTarget(target)) {
 			throw new Error('Bad ".target".');
 		}
 
@@ -80,7 +81,7 @@ export function defineJobModel(Craft) {
 				.Method('complete', function (_target) {
 					const data = _(this);
 
-					if (!Craft.isCraftTarget(data.craft, _target)) {
+					if (!Craft.use(data.craft).isTarget(_target)) {
 						U.throwError('target', `${data.craft} target`);
 					}
 

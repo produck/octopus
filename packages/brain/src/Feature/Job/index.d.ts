@@ -109,6 +109,7 @@ export interface Job extends Entity.Proxy.Model {
 	start(): this;
 	finish(status: Status, message: Data.Message): this;
 	complete(target: any): this;
+	toValue(): { id: string; createdAt: number };
 }
 
 export interface JobConstructor extends Entity.Proxy.ModelConstructor {

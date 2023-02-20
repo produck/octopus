@@ -16,12 +16,9 @@ export const defineFeature = Duck.inject(function ({
 });
 
 export const setProductEvaluator = Duck.inject(function ({
-	Brain, Craft, Procedure, Product, Job, Options,
+	Brain, Craft, Procedure, Product, Job, Tentacle, Options,
 }) {
-	const isJobNotDone = job => job.finishedAt === null;
-	const jobToRecord = job => ({ id: job.id, target: job.target });
-
-	Brain.on('grant', async () => {
+	async function evaluateProductProgress() {
 		if (!await Options.isEvaluatable()) {
 			return;
 		}
@@ -32,7 +29,7 @@ export const setProductEvaluator = Duck.inject(function ({
 		const updatingList = workingProductList.map(async product => {
 			const jobList = await Job.query();
 
-			if (jobList.some(isJobNotDone)) {
+			if (jobList.some(job => job.finishedAt === null)) {
 				return;
 			}
 
@@ -51,7 +48,8 @@ export const setProductEvaluator = Duck.inject(function ({
 			}
 
 			const { model, order, dump } = product;
-			const result = Procedure.evaluate(model, order, { dump, finished, crafts });
+			const procedure = Procedure.use(model);
+			const result = procedure.evaluate(order, { dump, finished, crafts });
 
 			if (result.done) {
 				if (result.ok) {
@@ -73,6 +71,57 @@ export const setProductEvaluator = Duck.inject(function ({
 		});
 
 		await Promise.allSettled(updatingList);
+	}
+
+	async function matchJobToTentacle() {
+		const allJobList = await Job.query();
+		const allTentacleList = await Tentacle.query();
+		const jobListByCraft = {};
+		const updatingList = [];
+
+		for (const job of allJobList) {
+			if (!Object.hasOwn(jobListByCraft, job.craft)) {
+				jobListByCraft[job.craft] = [];
+			}
+
+			jobListByCraft[job.craft].push(job);
+		}
+
+		for (const name in jobListByCraft) {
+			const tentacleList = allTentacleList
+				.filter(tentacle => tentacle.craft === name);
+
+			if (tentacleList.length === 0) {
+				continue;
+			}
+
+			const craft = Craft.use(name);
+			const jobList = jobListByCraft[name];
+
+			const matched = craft.evaluate(
+				jobList.map(job => job.toValue()),
+				tentacleList.map(tentacle => tentacle.toValue()),
+			);
+
+			for (const jobId in matched) {
+				const tentacleId = matched[jobId];
+
+				const tentacle = tentacleList
+					.find(tentacle => tentacle.id === tentacleId);
+
+				const job = jobList.find(job => job.id === jobId);
+
+				updatingList.push(tentacle.pick(jobId).save());
+				updatingList.push(job.start().save());
+			}
+		}
+
+		await Promise.allSettled(updatingList);
+	}
+
+	Brain.on('grant', async () => {
+		await evaluateProductProgress();
+		await matchJobToTentacle();
 	});
 });
 

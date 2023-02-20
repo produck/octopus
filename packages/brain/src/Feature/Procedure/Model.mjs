@@ -79,12 +79,6 @@ const defineBase = Definer.Base(({ Declare }) => {
 		return Object.hasOwn(registry, name);
 	};
 
-	const assertValid = name => {
-		if (!isValid(name)) {
-			throw new Error(`There is no procedure(${name}).`);
-		}
-	};
-
 	Declare.Constructor
 		.Method('register', async function register(...args) {
 			const procedure = await this.create(...args);
@@ -94,21 +88,12 @@ const defineBase = Definer.Base(({ Declare }) => {
 			return procedure;
 		})
 		.Method('isValid', isValid)
-		.Method('assertValid', assertValid)
-		.Method('isProcedureOrder', (name, any) => {
-			assertValid(name);
+		.Method('use', function use(name) {
+			if (!isValid(name)) {
+				throw new Error(`There is no procedure(${name}).`);
+			}
 
-			return registry[name].isOrder(any);
-		})
-		.Method('isProcedureArtifact', (name, any) => {
-			assertValid(name);
-
-			return registry[name].isArtifact(any);
-		})
-		.Method('evaluate', (name, ...args) => {
-			this.assertValid(name);
-
-			return registry[name].evaluate(...args);
+			return registry[name];
 		});
 });
 

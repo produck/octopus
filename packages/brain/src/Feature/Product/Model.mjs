@@ -1,13 +1,14 @@
 import { Cust, Normalizer, U } from '@produck/mold';
 import { Definer, Model, _ } from '@produck/shop';
 
+import * as Evaluator from '../Evaluator/index.mjs';
 import * as Data from './Data.mjs';
 import * as STATUS from './Status.mjs';
 
 const AT_KEYS = ['createdAt', 'orderedAt', 'startedAt', 'finishedAt'];
 
 const PLAIN_KEYS = [
-	'id', 'owner', 'model', 'dump',
+	'id', 'owner', 'model',
 	'status', 'message',
 	'order', 'artifact',
 ];
@@ -34,21 +35,25 @@ function toJSON() {
 		object[key] = NullOrDate(data[key]);
 	}
 
+	object.dump = _(this).dump;
+
 	return object;
 }
+
+const normalizeDump = Normalizer(Evaluator.DumpSchema);
 
 export function defineProductBase(Procedure) {
 	const DataSchema = Cust(Data.Schema, (_v, _e, next) => {
 		const data = next();
 		const { model, order, artifact, status } = data;
 
-		Procedure.assertValid(model);
+		const procedure = Procedure.use(model);
 
-		if (!Procedure.isProcedureOrder(model, order)) {
+		if (!procedure.isOrder(order)) {
 			throw new Error('bad ".order".');
 		}
 
-		if (status === STATUS.OK && !Procedure.isProcedureArtifact(model, artifact)) {
+		if (status === STATUS.OK && !procedure.isArtifact(artifact)) {
 			throw new Error('Bad ".artifact".');
 		}
 
@@ -100,7 +105,7 @@ export function defineProductBase(Procedure) {
 				.Method('complete', function (_artifact) {
 					const data = _(this);
 
-					if (!Procedure.isProcedureArtifact(data.model, _artifact)) {
+					if (!Procedure.use(data.model).isArtifact(_artifact)) {
 						U.throwError('artifact', `${data.model} artifact`);
 					}
 
@@ -108,6 +113,11 @@ export function defineProductBase(Procedure) {
 					this.finish(STATUS.OK);
 
 					return this;
+				})
+				.Accessor('dump', function () {
+					return _(this).dump;
+				}, function (_dump) {
+					_(this).dump = normalizeDump(_dump);
 				});
 
 			for (const key of PLAIN_KEYS) {
