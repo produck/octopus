@@ -1,5 +1,5 @@
 import { webcrypto as crypto } from 'node:crypto';
-import * as assert from 'node:assert';
+import * as assert from 'node:assert/strict';
 import { describe, it } from 'mocha';
 
 import * as Procedure from '../Procedure/index.mjs';

@@ -13,7 +13,6 @@ export const Schema = S.Object({
 	craft: P.String(),
 	createdAt: AtSchema,
 	visitedAt: AtSchema,
-	assignedAt: AtSchema,
 	startedAt: AtSchema,
 	finishedAt: AtSchema,
 	status: StatusSchema,

@@ -1,6 +1,7 @@
 import { Normalizer, P, S } from '@produck/mold';
 
 import { UUIDSchema as IdSchema } from '../Utils.mjs';
+import * as Evaluator from '../Evaluator/index.mjs';
 import { NEW, OK, ERROR, TIMEOUT, ABORTED } from './Status.mjs';
 
 const AtSchema = P.OrNull(P.Integer());
@@ -11,6 +12,7 @@ export const Schema = S.Object({
 	id: IdSchema,
 	owner: IdSchema,
 	model: P.String(),
+	dump: P.OrNull(Evaluator.DumpSchema),
 	createdAt: AtSchema,
 	orderedAt: AtSchema,
 	startedAt: AtSchema,

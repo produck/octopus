@@ -63,7 +63,8 @@ interface Result {
 	ok: boolean;
 	error?: string | null;
 	artifact?: any;
-	creating: Array<{ id: string, source: any, craft: string }>
+	creating: Array<{ id: string, source: any, craft: string }>;
+	dump: ContextDump;
 }
 
 export interface Procedure extends Entity.Proxy.Model {

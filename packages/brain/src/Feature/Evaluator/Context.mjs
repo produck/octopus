@@ -1,6 +1,6 @@
 import { Circ, Normalizer, P, PROPERTY, S } from '@produck/mold';
 
-const DumpSchema = Circ(SelfSchema => S.Object({
+export const DumpSchema = Circ(SelfSchema => S.Object({
 	values: S.Array(),
 	children: S.Array({ items: SelfSchema }),
 }));

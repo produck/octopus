@@ -285,11 +285,17 @@ describe('::Feature::Procedure', function () {
 
 				const procedure = await NativeProcedure.get('example');
 
-				assert.deepEqual(procedure.evaluate(null, {
+				const result = procedure.evaluate(null, {
 					crafts: { example: () => true },
-				}), {
+				});
+
+				const newId = result.dump.values[0];
+
+				assert.deepEqual(result, {
 					ok: true,
 					done: false,
+					creating: [{ craft: 'example', id: newId, source: undefined }],
+					dump: { values: [newId], children: [] },
 				});
 			});
 		});

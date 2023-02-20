@@ -45,7 +45,11 @@ const defineBase = Definer.Base(({ Declare }) => {
 			const { done } = context;
 
 			if (!done) {
-				return { done, ok: true, creating: context.creating };
+				return {
+					done, ok: true,
+					creating: context.creating,
+					dump: context.dump,
+				};
 			}
 
 			if (!this.isArtifact(artifact)) {

@@ -175,7 +175,7 @@ describe('::Feature::Job', function () {
 		const ats = {};
 
 		for (const key of [
-			'visited', 'created', 'assigned', 'started', 'finished',
+			'visited', 'created', 'started', 'finished',
 		].map(atKey => `${atKey}At`)) {
 			describe(`.${key}`, function () {
 				it('should get null', async function () {
@@ -244,46 +244,9 @@ describe('::Feature::Job', function () {
 			});
 		});
 
-		describe('.assign()', function () {
-			it('should update job', async function () {
-				const example = { ...EXAMPLE };
-
-				const TestJob = defineJob({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...example }),
-					save: data => Object.assign(example, data),
-				});
-
-				const job = await TestJob.get(example.id);
-
-				assert.equal(example.assignedAt, null);
-				await job.assign().save();
-				assert.notEqual(example.assignedAt, null);
-			});
-
-			it('should throw if has been assigned.', async function () {
-				const example = { ...EXAMPLE };
-
-				const TestJob = defineJob({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...example }),
-					save: data => Object.assign(example, data),
-				});
-
-				const job = await TestJob.get(example.id);
-
-				await job.assign();
-
-				await assert.rejects(async () => await job.assign(), {
-					name: 'Error',
-					message: 'This job has been assigned.',
-				});
-			});
-		});
-
 		describe('.start()', function () {
 			it('should update job', async function () {
-				const example = { ...EXAMPLE, assignedAt: Date.now() };
+				const example = { ...EXAMPLE };
 
 				const TestJob = defineJob({
 					...SAMPLE_OPTIONS,
@@ -298,25 +261,8 @@ describe('::Feature::Job', function () {
 				assert.notEqual(example.startedAt, null);
 			});
 
-			it('should throw if has not been assigned.', async function () {
-				const example = { ...EXAMPLE };
-
-				const TestJob = defineJob({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...example }),
-					save: data => Object.assign(example, data),
-				});
-
-				const job = await TestJob.get(example.id);
-
-				await assert.rejects(async () => await job.start(), {
-					name: 'Error',
-					message: 'This job is NOT assigned.',
-				});
-			});
-
 			it('should throw if has been started.', async function () {
-				const example = { ...EXAMPLE, assignedAt: Date.now() };
+				const example = { ...EXAMPLE };
 
 				const TestJob = defineJob({
 					...SAMPLE_OPTIONS,

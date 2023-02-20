@@ -7,7 +7,7 @@ import * as STATUS from './Status.mjs';
 const AT_KEYS = ['createdAt', 'orderedAt', 'startedAt', 'finishedAt'];
 
 const PLAIN_KEYS = [
-	'id', 'owner', 'model',
+	'id', 'owner', 'model', 'dump',
 	'status', 'message',
 	'order', 'artifact',
 ];

@@ -5,7 +5,7 @@ import * as Data from './Data.mjs';
 import * as STATUS from './Status.mjs';
 
 const AT_KEYS = [
-	'visitedAt', 'createdAt', 'assignedAt', 'startedAt', 'finishedAt',
+	'visitedAt', 'createdAt', 'startedAt', 'finishedAt',
 ];
 
 const PLAIN_KEYS = [
@@ -56,20 +56,7 @@ export function defineJobModel(Craft) {
 
 					return this;
 				})
-				.Method('assign', function () {
-					if (this.assignedAt !== null) {
-						throw new Error('This job has been assigned.');
-					}
-
-					_(this).assignedAt = Date.now();
-
-					return this;
-				})
 				.Method('start', function () {
-					if (this.assignedAt === null) {
-						throw new Error('This job is NOT assigned.');
-					}
-
 					if (this.startedAt !== null) {
 						throw new Error('This job has been started.');
 					}
