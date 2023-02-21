@@ -1,23 +1,10 @@
-import * as Duck from '@produck/duck';
-import * as Feature from './Feature/index.mjs';
+import { definePlay } from '@produck/duck-runner';
 
-export const defineFeature = Duck.inject(function ({
-	Kit, Options,
+export const play = definePlay(async function Principal({
+	Log, Brain, Craft, Procedure, Product, Job, Tentacle, Options,
 }) {
-	Kit.Application = Feature.Application.define(Options.Application);
-	Kit.Brain = Feature.Application.define(Options.Brain);
-	Kit.Craft = Feature.Craft.define(Options.Craft);
-	Kit.Environment = Feature.Environment.define(Options.Environment);
-	Kit.Job = Feature.Job.define(Options.Job);
-	Kit.Procedure = Feature.Procedure.define(Options.Procedure);
-	Kit.Product = Feature.Product.define(Options.Product);
-	Kit.PublikKey = Feature.PublicKey.define(Options.PublicKey);
-	Kit.Tentacle = Feature.Tentacle.define(Options.Tentacle);
-});
+	Log('principal');
 
-export const setProductEvaluator = Duck.inject(function ({
-	Brain, Craft, Procedure, Product, Job, Tentacle, Options,
-}) {
 	async function evaluateProductProgress() {
 		if (!await Options.isEvaluatable()) {
 			return;
@@ -41,7 +28,7 @@ export const setProductEvaluator = Duck.inject(function ({
 
 				finished[id] = {
 					id,
-					ok: status === Feature.Job.STATUS.OK,
+					ok: status === 100,
 					error: message === null ? 'unknown' : message,
 					target,
 				};
@@ -122,10 +109,9 @@ export const setProductEvaluator = Duck.inject(function ({
 	Brain.on('grant', async () => {
 		await evaluateProductProgress();
 		await matchJobToTentacle();
+	}).boot({
+		id: '',
+		name: Options.name,
+		version: Options.version,
 	});
-});
-
-export const install = Duck.inject(function (Kit) {
-	defineFeature(Kit);
-	setProductEvaluator(Kit);
 });

@@ -1,7 +1,7 @@
 import { defineFactory } from '@produck/duck-cli';
 
 export const factory = defineFactory(({
-	Kit, Workspace, Runner, Commander, setProgram,
+	Kit, Workspace, Runner, Commander, setProgram, Options,
 }) => {
 	const program = new Commander();
 

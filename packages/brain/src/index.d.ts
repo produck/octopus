@@ -31,6 +31,9 @@ interface Settings {
 }
 
 interface Options {
+	name: string;
+	version: string;
+
 	Application: Feature.Application.Options.Value;
 	Brain: Feature.Brain.Options.Value;
 	Craft: Feature.Craft.Options.Value;

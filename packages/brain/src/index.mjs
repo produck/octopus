@@ -9,12 +9,13 @@ import * as DuckCLICommander from '@produck/duck-cli-commander';
 
 import * as meta from './version.mjs';
 import * as CLI from './cli.mjs';
-import * as Installer from './Installer.mjs';
+import * as Feature from './Feature/index.mjs';
 import * as WebApp from './Web/index.mjs';
 import * as Runner from './Runner/index.mjs';
+import * as Options from './Options.mjs';
 
-export const OctopusHead = Duck.define({
-	id: 'org.produck.octopus.head',
+export const Brain = Duck.define({
+	id: 'org.produck.octopus.brain',
 	name: meta.name,
 	version: meta.version,
 	description: meta.description,
@@ -30,10 +31,14 @@ export const OctopusHead = Duck.define({
 			{ id: 'Agent', provider: WebApp.Agent },
 		]),
 		DuckRunner.Component({
+			modes: {
+				solo: DuckRunner.Template.Solo(),
+				processes: DuckRunner.Template.Processes(),
+			},
 			roles: {
 				AgentServer: Runner.Play.AgentServer,
 				ApplicationServer: Runner.Play.ApplicationServer,
-				Scheduler: Runner.Play.Scheduler,
+				Principal: Runner.Play.Principal,
 				System: Runner.Play.System,
 			},
 		}),
@@ -41,16 +46,34 @@ export const OctopusHead = Duck.define({
 		DuckLog.Component(),
 	],
 }, function OctopusHead({
-	CLI, Kit, Bus, Workshop, Environment,
-}, options) {
-	Kit.Options = options;
+	CLI, Kit, Bus,
+}, ...args) {
+	const options = Kit.Options = Options.normalize(...args);
+	const Craft = Kit.Craft = Feature.Craft.define(options.Craft);
+	const Procedure = Kit.Procedure = Feature.Procedure.define(options.Procedure);
 
-	Installer.install(Kit);
+	Kit.Application = Feature.Application.define(options.Application);
+	Kit.Brain = Feature.Brain.define(options.Brain);
+	Kit.Environment = Feature.Environment.define(options.Environment);
+	Kit.Job = Feature.Job.define(options.Job);
+	Kit.Product = Feature.Product.define(options.Product);
+	Kit.PublikKey = Feature.PublicKey.define(options.PublicKey);
+	Kit.Tentacle = Feature.Tentacle.define(options.Tentacle);
 
-	return Object.freeze({
+	const brain = Object.freeze({
 		boot: async () => await CLI.parser(),
 		halt: async () => Bus.emit('halt-request'),
-		Model: () => {},
-		Craft: () => {},
+		Model(...args) {
+			Procedure.register(...args);
+
+			return brain;
+		},
+		Craft(...args) {
+			Craft.register(...args);
+
+			return brain;
+		},
 	});
+
+	return brain;
 });
