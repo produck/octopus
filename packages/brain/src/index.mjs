@@ -11,8 +11,9 @@ import * as meta from './version.mjs';
 import * as CLI from './cli.mjs';
 import * as Feature from './Feature/index.mjs';
 import * as WebApp from './Web/index.mjs';
-import * as Runner from './Runner/index.mjs';
+import * as Play from './Play/index.mjs';
 import * as Options from './Options.mjs';
+import * as Configuration from './Configuration.mjs';
 
 export const Brain = Duck.define({
 	id: 'org.produck.octopus.brain',
@@ -36,10 +37,10 @@ export const Brain = Duck.define({
 				processes: DuckRunner.Template.Processes(),
 			},
 			roles: {
-				AgentServer: Runner.Play.AgentServer,
-				ApplicationServer: Runner.Play.ApplicationServer,
-				Principal: Runner.Play.Principal,
-				System: Runner.Play.System,
+				AgentServer: Play.AgentServer,
+				ApplicationServer: Play.ApplicationServer,
+				Principal: Play.Principal,
+				System: Play.System,
 			},
 		}),
 		DuckCLI.Component(CLI.factory, DuckCLICommander.Provider),
@@ -59,10 +60,18 @@ export const Brain = Duck.define({
 	Kit.Product = Feature.Product.define(options.Product);
 	Kit.PublikKey = Feature.PublicKey.define(options.PublicKey);
 	Kit.Tentacle = Feature.Tentacle.define(options.Tentacle);
+	Kit.Configuration = Configuration.normalize();
+
+	async function halt() {
+		Bus.emit('halt-request');
+	}
 
 	const brain = Object.freeze({
-		boot: async () => await CLI.parser(),
-		halt: async () => Bus.emit('halt-request'),
+		halt,
+		async boot(...args) {
+			await CLI.parser(...args);
+
+		},
 		Model(...args) {
 			Procedure.register(...args);
 

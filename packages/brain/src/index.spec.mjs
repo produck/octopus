@@ -23,4 +23,21 @@ describe('OctopusBrain()', function () {
 			TestBrain.Craft('foo');
 		});
 	});
+
+	describe('.halt()', function () {
+		it('should be halted.', async function () {
+			const TestBrain = Octopus.Brain();
+
+			await TestBrain.halt();
+		});
+	});
+
+	describe('.boot()', function () {
+		it('should be booted.', async function () {
+			const brain = Octopus.Brain();
+
+			await brain.boot();
+
+		});
+	});
 });

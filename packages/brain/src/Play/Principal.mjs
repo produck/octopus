@@ -1,10 +1,10 @@
+import { webcrypto as crypto } from 'node:crypto';
+import * as Duck from '@produck/duck';
 import { definePlay } from '@produck/duck-runner';
 
-export const play = definePlay(async function Principal({
-	Log, Brain, Craft, Procedure, Product, Job, Tentacle, Options,
+const ScheduleLoop = Duck.inject(function ({
+	Brain, Craft, Procedure, Product, Job, Tentacle,
 }) {
-	Log('principal');
-
 	async function evaluateProductProgress() {
 		if (!await Options.isEvaluatable()) {
 			return;
@@ -109,8 +109,17 @@ export const play = definePlay(async function Principal({
 	Brain.on('grant', async () => {
 		await evaluateProductProgress();
 		await matchJobToTentacle();
-	}).boot({
-		id: '',
+	});
+});
+
+export const play = definePlay(async function Principal({
+	Kit, Log, Brain, Options, Configuration,
+}) {
+	Log('principal');
+	ScheduleLoop(Kit);
+
+	await Brain.boot({
+		id: Configuration.id,
 		name: Options.name,
 		version: Options.version,
 	});

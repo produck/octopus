@@ -7,15 +7,15 @@ import * as DuckLogQuack from '@produck/duck-log-quack';
 import { definePlay } from '@produck/duck-runner';
 
 const Mode = {
-	HTTP: function HttpOnly(app, { Log, Bus, Settings }) {
-		const { port, host } = Settings.application.http;
+	HTTP: function HttpOnly(app, { Log, Bus, Configuration }) {
+		const { port, host } = Configuration.application.http;
 		const server = http.createServer(app).listen(port, host);
 
 		Log.Application(`Http server is listening: host=${host} port=${port}`);
 		Bus.once('hang', () => server.close());
 	},
-	HTTPS: function HttpsOnly(app, { Log, Bus, Workspace, Settings }) {
-		const { host, port, key, cert } = Settings.application.https;
+	HTTPS: function HttpsOnly(app, { Log, Bus, Workspace, Configuration }) {
+		const { host, port, key, cert } = Configuration.application.https;
 		const keyPath = Workspace.resolve('tls', key);
 		const certPath = Workspace.resolve('tls', cert);
 
@@ -35,10 +35,10 @@ const Mode = {
 		Log.Application(`Https server is listening: host=${host} port=${port}`);
 		Bus.once('hang', () => server.close());
 	},
-	REDIRECT: function Redirect(app, { Log, Bus, Web, Kit, Settings }) {
+	REDIRECT: function Redirect(app, { Log, Bus, Web, Kit, Configuration }) {
 		Mode.HTTPS(app, Kit);
 
-		const { port, host } = Settings.application.http;
+		const { port, host } = Configuration.application.http;
 		const rapp = Web.Applicaton('Redirect');
 		const _rapp = Quack.Format.Apache.HttpAdapter(rapp, Log.ApplicationAccess);
 
@@ -56,7 +56,7 @@ const Mode = {
 };
 
 export const play = definePlay(function ApplicationServer({
-	Kit, Log, Web, Settings,
+	Kit, Log, Web, Configuration,
 }) {
 	Log('Application');
 
@@ -66,10 +66,9 @@ export const play = definePlay(function ApplicationServer({
 		}),
 	});
 
-	const mode = Settings.application.mode;
+	const mode = Configuration.application.mode;
 	const app = Web.Application('Application');
-	const _app = Quack.Format.Apache.HttpAdapter(app, Log.ApplicationAccess);
 
-	Mode[mode](_app, Kit);
+	Mode[mode](Kit, Quack.Format.Apache.HttpAdapter(app, Log.ApplicationAccess));
 	Log.Application(`Running in "${mode}" mode.`);
 });

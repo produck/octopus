@@ -5,7 +5,7 @@ import * as DuckLogQuack from '@produck/duck-log-quack';
 import { definePlay } from '@produck/duck-runner';
 
 export const play = definePlay(function AgentServer({
-	Log, Web, Settings,
+	Log, Web, Configuration,
 }) {
 	Log('Agent');
 
@@ -17,7 +17,7 @@ export const play = definePlay(function AgentServer({
 
 	const app = Web.Application('Agent');
 	const _app = Quack.Format.Apache.HttpAdapter(app, Log.AgentAccess);
-	const { host, port } = Settings.agent.local;
+	const { host, port } = Configuration.agent;
 
 	http.createServer(_app).listen(port, host);
 	Log.Application(`Agent RJSP server is listening: host=${host} port=${port}.`);

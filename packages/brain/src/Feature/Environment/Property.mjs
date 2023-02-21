@@ -1,8 +1,6 @@
-import * as net from 'node:net';
 import { Normalizer, P, S } from '@produck/mold';
 
 const sec = n => n * 1000;
-const IPv4Schema = S.Value(net.isIPv4, 'IPv4 string', () => '0.0.0.0');
 
 export const PropertySchemas = {
 	'ENVIRONMENT.REFRESH.INTERVAL': P.UINT32(sec(5)),
@@ -23,7 +21,7 @@ export const PropertySchemas = {
 	'TENTACLE.SYNC.TIMEOUT': P.UINT32(sec(5)),
 	'TENTACLE.SYNC.RETRY.INTERVAL': P.UINT32(sec(0)),
 
-	'RJSP.SERVER.HOST': IPv4Schema,
+	'RJSP.SERVER.HOST': P.String('127.0.0.1'),
 	'RJSP.SERVER.PORT': P.UINT32(9173),
 	'RJSP.REDIRECT.ENABLED': P.Boolean(false),
 };
