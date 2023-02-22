@@ -5,7 +5,7 @@ import * as DuckWebKoaForker from '@produck/duck-web-koa-forker';
 import * as RJSP from './RJSP.mjs';
 
 const RJSPRouter = DuckWebKoaForker.defineRouter(function RJSPRouter(router, {
-	Environment, Workshop, Agent,
+	Environment, Tentacle, Craft, Job,
 }) {
 	function Configuration() {
 		return {
@@ -19,29 +19,16 @@ const RJSPRouter = DuckWebKoaForker.defineRouter(function RJSPRouter(router, {
 	}
 
 	router
-		.put('/sync', KoaBody(), async function handleData(ctx) {
+		.put('/sync', KoaBody.default(), async function handleData(ctx) {
 			const data = RJSP.normalize(ctx.request.body);
 
-			if (!Workshop.Job.Craft.has(data.meta.craft)) {
+			if (!Craft.isValid(data.meta.craft)) {
 				return ctx.throw(403, 'Unavailable craft.');
 			}
 
-			const agent = await Agent.fetch(data.id, data.meta);
+			const tentacle = await Tentacle.fetch();
 
-			agent.activate();
-			agent.setJob(data.job);
-
-			if (data.rpc.length > 0) {
-				agent.receive(data.rpc);
-			}
-
-			ctx.body = {
-				...data,
-				config: Configuration(),
-				rpc: agent.consume(),
-			};
-
-			await agent.commit();
+			ctx.body = await tentacle.visit().save();
 		})
 		.get('/job/request', async function getCurrentJob() {
 

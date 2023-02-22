@@ -61,14 +61,16 @@ export const play = definePlay(function ApplicationServer({
 	Log('Application');
 
 	Log('ApplicationAccess', {
-		Transcriber: DuckLogQuack.Transcribe({
+		label: 'application',
+		Transcriber: DuckLogQuack.Transcriber({
 			format: Quack.Format.Apache.Preset.CLF,
+			assert: () => true,
 		}),
 	});
 
 	const mode = Configuration.application.mode;
 	const app = Web.Application('Application');
 
-	Mode[mode](Kit, Quack.Format.Apache.HttpAdapter(app, Log.ApplicationAccess));
-	Log.Application(`Running in "${mode}" mode.`);
+	Mode[mode](Quack.Format.Apache.HttpAdapter(app, Log.ApplicationAccess), Kit);
+	Log.main(`Running in "${mode}" mode.`);
 });

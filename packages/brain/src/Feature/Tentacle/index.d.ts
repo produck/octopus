@@ -92,6 +92,7 @@ export interface Tentacle extends Entity.Proxy.Model {
 export interface TentacleConstructor extends Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Tentacle;
 	query(filter: Filter.Abstract): Promise<Array<Tentacle>>;
+	fetch(data: Data.Value): Promise<Tentacle>;
 }
 
 export function defineTentacle(options: Options.Value): TentacleConstructor;

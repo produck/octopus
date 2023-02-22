@@ -5,14 +5,15 @@ export const factory = defineFactory(({
 	Kit, Workspace, Runner, Commander, setProgram, Options, Configuration,
 }) => {
 	const program = new Commander({
-		options: Options.cli.global,
+		name: 'root',
+		options: Options.cli.options.global,
 	});
 
 	const CustomKit = Kit('Custom::CLI::Installer');
 
 	const start = new Commander({
 		name: 'start',
-		options: Options.cli.start,
+		options: Options.cli.options.start,
 		handler: async function start(_args, opts) {
 			await Options.cli.start(opts, CustomKit);
 			ConfigurationData.normalize(Configuration);
@@ -22,6 +23,7 @@ export const factory = defineFactory(({
 
 	const install = new Commander({
 		name: 'install',
+		options: Options.cli.options.install,
 		handler: async function install(_args, opts) {
 			CustomKit.setProgram = null;
 			CustomKit.Commander = null;

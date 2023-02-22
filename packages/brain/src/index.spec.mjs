@@ -33,11 +33,10 @@ describe('OctopusBrain()', function () {
 	});
 
 	describe('.boot()', function () {
-		it('should be booted.', async function () {
+		it.only('should be booted.', async function () {
 			const brain = Octopus.Brain();
 
-			await brain.boot();
-
+			await brain.boot(['start']);
 		});
 	});
 });

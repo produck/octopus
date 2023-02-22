@@ -10,7 +10,8 @@ export const play = definePlay(function AgentServer({
 	Log('Agent');
 
 	Log('AgentAccess', {
-		Transcriber: DuckLogQuack.Transcribe({
+		label: 'agent',
+		Transcriber: DuckLogQuack.Transcriber({
 			format: Quack.Format.Apache.Preset.CLF,
 		}),
 	});
@@ -20,5 +21,5 @@ export const play = definePlay(function AgentServer({
 	const { host, port } = Configuration.agent;
 
 	http.createServer(_app).listen(port, host);
-	Log.Application(`Agent RJSP server is listening: host=${host} port=${port}.`);
+	Log.main(`Agent RJSP server is listening: host=${host} port=${port}.`);
 });

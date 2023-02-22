@@ -119,6 +119,7 @@ export interface Product extends Entity.Proxy.Model {
 export interface ProductConstructor extends Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Product;
 	query(filter: Filter.Abstract): Promise<Array<Product>>;
+	get(id: string): Promise<Product>;
 }
 
 export function defineProduct(options: Options.Value): Options.Value;

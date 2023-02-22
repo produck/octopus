@@ -44,7 +44,9 @@ export const Brain = Duck.define({
 			},
 		}),
 		DuckCLI.Component(CLI.factory, DuckCLICommander.Provider),
-		DuckLog.Component(),
+		DuckLog.Component({
+			main: {},
+		}),
 	],
 }, function OctopusHead({
 	CLI, Kit, Bus,
@@ -69,7 +71,7 @@ export const Brain = Duck.define({
 	const brain = Object.freeze({
 		halt,
 		async boot(...args) {
-			await CLI.parser(...args);
+			await CLI.parse(...args);
 
 		},
 		Model(...args) {

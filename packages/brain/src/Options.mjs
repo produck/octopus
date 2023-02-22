@@ -1,5 +1,6 @@
 import * as Semver from 'semver';
 import { Normalizer, P, S } from '@produck/mold';
+import * as DuckCLI from '@produck/duck-cli';
 import * as Feature from './Feature/index.mjs';
 
 export const Schema = S.Object({
@@ -17,6 +18,17 @@ export const Schema = S.Object({
 	Tentacle: Feature.Tentacle.Options.Schema,
 
 	isEvaluatable: P.Function(() => false),
+
+	cli: S.Object({
+		options: S.Object({
+			global: DuckCLI.Bridge.Feature.OptionsSchema,
+			start: DuckCLI.Bridge.Feature.OptionsSchema,
+			install: DuckCLI.Bridge.Feature.OptionsSchema,
+		}),
+		start: P.Function(() => {}),
+		install: P.Function(() => {}),
+		extend: P.Function(() => {}),
+	}),
 });
 
 export const normalize = Normalizer(Schema);

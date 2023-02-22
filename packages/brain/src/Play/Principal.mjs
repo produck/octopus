@@ -1,9 +1,8 @@
-import { webcrypto as crypto } from 'node:crypto';
 import * as Duck from '@produck/duck';
 import { definePlay } from '@produck/duck-runner';
 
 const ScheduleLoop = Duck.inject(function ({
-	Brain, Craft, Procedure, Product, Job, Tentacle,
+	Brain, Craft, Procedure, Product, Job, Tentacle, Options,
 }) {
 	async function evaluateProductProgress() {
 		if (!await Options.isEvaluatable()) {

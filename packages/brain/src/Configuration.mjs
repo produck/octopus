@@ -3,6 +3,7 @@ import { Normalizer, P, S } from '@produck/mold';
 
 export const Schema = S.Object({
 	id: P.String(crypto.randomUUID()),
+	runtime: P.Enum(['SOLO', 'PROCESSES']),
 	application: S.Object({
 		mode: P.Enum(['HTTP', 'HTTPS', 'REDIRECT', 'BOTH']),
 		http: S.Object({

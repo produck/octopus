@@ -73,6 +73,8 @@ export type EventName = keyof EventMap;
 export interface CraftConstructor extends Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Craft;
 
+	get(name: string): Promise<Craft>;
+
 	on<T extends EventName>(eventName: T, listener: EventMap[T]): this;
 	off<T extends EventName>(eventName: T, listener: EventMap[T]): this;
 	once<T extends EventName>(eventName: T, listener: EventMap[T]): this;

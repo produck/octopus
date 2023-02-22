@@ -1,4 +1,3 @@
-import { T, U } from '@produck/mold';
 import { Definer, Entity } from '@produck/shop';
 
 import { BaseCraft, assertCraftName } from './Model.mjs';
