@@ -22,8 +22,11 @@ export const BaseTentacle = Model.define({
 	data: Data.normalize,
 	base: Definer.Base(({ Declare }) => {
 		Declare.Prototype.notDestroyedRequired()
-			.Method('visit', async function () {
-				_(this).visitedAt = Date.now();
+			.Method('visit', async function (ready = true) {
+				const _data = _(this);
+
+				_data.visitedAt = Date.now();
+				_data.ready = ready;
 
 				return this;
 			})

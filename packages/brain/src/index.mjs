@@ -3,9 +3,10 @@ import * as DuckWorkspace from '@produck/duck-workspace';
 import * as DuckWeb from '@produck/duck-web';
 import * as DuckRunner from '@produck/duck-runner';
 import * as DuckCLI from '@produck/duck-cli';
-import * as DuckLog from '@produck/duck-log';
-
 import * as DuckCLICommander from '@produck/duck-cli-commander';
+import * as DuckLog from '@produck/duck-log';
+import * as Quack from '@produck/quack';
+import * as DuckLogQuack from '@produck/duck-log-quack';
 
 import * as meta from './version.mjs';
 import * as CLI from './cli.mjs';
@@ -22,9 +23,8 @@ export const Brain = Duck.define({
 	description: meta.description,
 	components: [
 		DuckWorkspace.Component({
-			log: 'log',
-			temp: 'tmp',
-			tls: 'tls',
+			root: '.data',
+			log: 'log', temp: 'tmp', tls: 'tls',
 		}),
 		DuckWeb.Component([
 			{ id: 'Redirect', provider: DuckWeb.Preset.RedirectHttps },
@@ -45,16 +45,20 @@ export const Brain = Duck.define({
 		}),
 		DuckCLI.Component(CLI.factory, DuckCLICommander.Provider),
 		DuckLog.Component({
-			main: {},
+			Agent: {},
+			Application: {},
 		}),
 	],
 }, function OctopusHead({
-	CLI, Kit, Bus,
+	Kit, Log, CLI, Bus,
 }, ...args) {
 	const options = Kit.Options = Options.normalize(...args);
-	const Craft = Kit.Craft = Feature.Craft.define(options.Craft);
-	const Procedure = Kit.Procedure = Feature.Procedure.define(options.Procedure);
+	const Craft = Feature.Craft.define(options.Craft);
+	const Procedure = Feature.Procedure.define(options.Procedure);
+	const configuration = Configuration.normalize();
 
+	Kit.Craft = Craft;
+	Kit.Procedure =  Procedure;
 	Kit.Application = Feature.Application.define(options.Application);
 	Kit.Brain = Feature.Brain.define(options.Brain);
 	Kit.Environment = Feature.Environment.define(options.Environment);
@@ -62,17 +66,31 @@ export const Brain = Duck.define({
 	Kit.Product = Feature.Product.define(options.Product);
 	Kit.PublikKey = Feature.PublicKey.define(options.PublicKey);
 	Kit.Tentacle = Feature.Tentacle.define(options.Tentacle);
-	Kit.Configuration = Configuration.normalize();
+	Kit.Configuration = configuration;
+
+	Log('AgentAccess', {
+		label: 'agent',
+		Transcriber: DuckLogQuack.Transcriber({
+			format: Quack.Format.Apache.Preset.CLF,
+		}),
+	});
+
+	Log('ApplicationAccess', {
+		label: 'application',
+		Transcriber: DuckLogQuack.Transcriber({
+			format: Quack.Format.Apache.Preset.CLF,
+			assert: () => true,
+		}),
+	});
 
 	async function halt() {
 		Bus.emit('halt-request');
 	}
 
 	const brain = Object.freeze({
-		halt,
+		halt, configuration,
 		async boot(...args) {
 			await CLI.parse(...args);
-
 		},
 		Model(...args) {
 			Procedure.register(...args);

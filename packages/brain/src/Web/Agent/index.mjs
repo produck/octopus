@@ -15,6 +15,7 @@ const RJSPRouter = DuckWebKoaForker.defineRouter(function RJSPRouter(router, {
 			syncRetryInterval: Environment.get('AGENT.SYNC.RETRY.INTERVAL'),
 			host: Environment.get('RJSP.SERVER.HOST'),
 			port: Environment.get('RJSP.SERVER.PORT'),
+			redirect: Environment.get('RJSP.REDIRECT.ENABLED'),
 		};
 	}
 
@@ -26,17 +27,27 @@ const RJSPRouter = DuckWebKoaForker.defineRouter(function RJSPRouter(router, {
 				return ctx.throw(403, 'Unavailable craft.');
 			}
 
-			const tentacle = await Tentacle.fetch();
+			const tentacle = await Tentacle.fetch({
+				id: data.id,
+				craft: data.craft,
+				version: data.version,
+			});
 
-			ctx.body = await tentacle.visit().save();
+			await tentacle.visit().save();
+
+			ctx.body = {
+				...data,
+				job: tentacle.job,
+				config: Configuration(),
+			};
 		})
-		.get('/job/request', async function getCurrentJob() {
+		.get('/job/{jobId}/source', async function getCurrentJob() {
 
 		})
-		.post('/job/response', async function finishJob() {
+		.post('/job/{jobId}/target', async function finishJob() {
 
 		})
-		.post('/job/error', async function catchJob() {
+		.post('/job/{jobId}/error', async function catchJob() {
 
 		});
 });

@@ -79,6 +79,7 @@ declare module '@produck/duck' {
 }
 
 interface Brain {
+	readonly configuration: Configuration;
 	boot(command?: string): Promise<void>;
 	halt(): Promise<void>;
 	Model(name: string, options: any): this;

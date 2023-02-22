@@ -112,7 +112,7 @@ const ScheduleLoop = Duck.inject(function ({
 });
 
 export const play = definePlay(async function Principal({
-	Kit, Log, Brain, Options, Configuration,
+	Kit, Log, Bus, Brain, Options, Configuration,
 }) {
 	Log('principal');
 	ScheduleLoop(Kit);
@@ -122,4 +122,6 @@ export const play = definePlay(async function Principal({
 		name: Options.name,
 		version: Options.version,
 	});
+
+	Bus.on('halt-request', () => Brain.halt());
 });

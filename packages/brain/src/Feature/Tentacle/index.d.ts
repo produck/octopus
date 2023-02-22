@@ -83,7 +83,7 @@ export interface Tentacle extends Entity.Proxy.Model {
 	ready: boolean;
 	createdAt: Date;
 	visitedAt: Date;
-	visit(): this;
+	visit(ready?: boolean): this;
 	pick(jobId: string): this;
 	free(): this;
 	toValue(): { id: string };
