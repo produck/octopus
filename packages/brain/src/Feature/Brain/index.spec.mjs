@@ -90,7 +90,7 @@ describe('Feature::Brain', function () {
 				});
 
 				const granted = new Promise(resolve => {
-					TestBrain.on('grant', function (error) {
+					TestBrain.on('grant', function () {
 						assert.equal(TestBrain.current.id, a.id);
 						TestBrain.halt();
 						resolve();

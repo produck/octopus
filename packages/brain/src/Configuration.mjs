@@ -1,8 +1,16 @@
 import { webcrypto as crypto } from 'node:crypto';
 import { Normalizer, P, S } from '@produck/mold';
 
+const BANNER = [
+	'  ____  _______________  ___  __  ______',
+	' / __ \\/ ___/_  __/ __ \\/ _ \\/ / / / __/',
+	'/ /_/ / /__  / / / /_/ / ___/ /_/ /\\ \\  ',
+	'\\____/\\___/ /_/  \\____/_/   \\____/___/  ',
+];
+
 export const Schema = S.Object({
 	id: P.String(crypto.randomUUID()),
+	banner: S.Array({ items: P.String() }, () => [...BANNER]),
 	runtime: P.Enum(['SOLO', 'PROCESSES']),
 	workspace: P.String('.data'),
 	application: S.Object({

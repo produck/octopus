@@ -6,7 +6,8 @@ type RuntimeMode = 'SOLO' | 'PROCESSES';
 
 interface ConfigurationData {
 	id: string;
-	runtime: RuntimeMode,
+	runtime: RuntimeMode;
+	banner: Array<string>;
 	application: {
 		mode: ServerMode;
 		http: {
@@ -18,7 +19,7 @@ interface ConfigurationData {
 			port: number;
 			key: string;
 			cert: string;
-		}
+		};
 	};
 	agent: {
 		host: string;

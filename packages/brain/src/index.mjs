@@ -47,6 +47,7 @@ export const Brain = Duck.define({
 		DuckLog.Component({
 			Agent: {},
 			Application: {},
+			System: {},
 		}),
 	],
 }, function OctopusHead({

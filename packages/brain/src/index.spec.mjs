@@ -5,7 +5,7 @@ import { describe, it } from 'mocha';
 
 import * as Octopus from './index.mjs';
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms = 1000) => new Promise(resolve => setTimeout(resolve, ms));
 
 describe('OctopusBrain()', function () {
 	it('should create a OctopusBrain.', function () {
@@ -53,7 +53,7 @@ describe('OctopusBrain()', function () {
 				const brain = Octopus.Brain();
 
 				await brain.boot(['start']);
-				await sleep(3000);
+				await sleep();
 				brain.halt();
 			});
 		});
@@ -72,8 +72,7 @@ describe('OctopusBrain()', function () {
 					{ force: true, recursive: true },
 				);
 			}).afterEach(async () => {
-				await brain.boot(['start']);
-				await sleep(3000);
+				await sleep();
 				brain.halt();
 				await fs.rm(targetPath, { recursive: true });
 				brain = null;
@@ -81,14 +80,37 @@ describe('OctopusBrain()', function () {
 
 			it('should be booted in SOLO/HTTPS', async function () {
 				brain.configuration.application.mode = 'HTTPS';
+				await brain.boot(['start']);
 			});
 
 			it('should be booted in SOLO/REDIRECT', async function () {
 				brain.configuration.application.mode = 'REDIRECT';
+				await brain.boot(['start']);
 			});
 
 			it('should be booted in SOLO/BOTH', async function () {
 				brain.configuration.application.mode = 'BOTH';
+				await brain.boot(['start']);
+			});
+
+			it('shoud throw if no tls in SOLO/HTTPS.', async function () {
+				brain.configuration.application.mode = 'HTTPS';
+				brain.configuration.application.https.key = 'foo.pem';
+
+				await assert.rejects(async () => brain.boot(['start']), {
+					name: 'Error',
+					message: /^Can NOT found "key.pem" in /,
+				});
+			});
+
+			it('shoud throw if no tls in SOLO/HTTPS.', async function () {
+				brain.configuration.application.mode = 'HTTPS';
+				brain.configuration.application.https.cert = 'foo.pem';
+
+				await assert.rejects(async () => brain.boot(['start']), {
+					name: 'Error',
+					message: /^Can NOT found "cert.pem" in /,
+				});
 			});
 		});
 	});
