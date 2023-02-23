@@ -86,7 +86,7 @@ describe('::Ferture::Environment', function () {
 			const env = new CustomEnvironment();
 
 			it('should get a value.', function () {
-				assert.ok(typeof env.get('ENVIRONMENT.MODIFIED') === 'number');
+				assert.ok(typeof env.get('ENVIRONMENT.AT') === 'number');
 			});
 
 			it('should throw if bad name.', function () {

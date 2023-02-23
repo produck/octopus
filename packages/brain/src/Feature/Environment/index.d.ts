@@ -4,13 +4,10 @@ import { Schema } from '@produck/mold';
 export module Property {
 	interface Map {
 		'ENVIRONMENT.REFRESH.INTERVAL': number;
-		'ENVIRONMENT.AGE': number;
+		'ENVIRONMENT.AT': number;
 
-		'GROUP.ACTIVITY.TIMEOUT': number;
-		'GROUP.WATCHING.INTERVAL': number;
-		'GROUP.KICKOUT.TIMEOUT': number;
-
-		'SCHEDULER.EVALUATING.INTERVAL': number;
+		'BRAIN.ALIVE.TIMEOUT': number;
+		'BRAIN.ALIVE.INTERVAL': number;
 
 		'APPLICATION.REQUEST.TIMEOUT': number;
 

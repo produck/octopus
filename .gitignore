@@ -111,6 +111,7 @@ dist
 
 # Development debug
 .debug.mjs
+*.ign.*
 
 # Duck dist
 packages/**/index.cjs

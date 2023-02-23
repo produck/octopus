@@ -105,7 +105,7 @@ export interface Job extends Entity.Proxy.Model {
 	readonly message: Data.Message;
 	readonly source: any;
 	readonly target: any;
-	visit(): this;
+	readonly isFinished: boolean;
 	start(): this;
 	finish(status: Status, message: Data.Message): this;
 	complete(target: any): this;
@@ -116,6 +116,7 @@ export interface JobConstructor extends Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Job;
 	query(filter: Filter.Abstract): Promise<Array<Job>>;
 	create(data: Data.Value): Promise<Job>;
+	get(id: string): Promise<Job | null>;
 }
 
 export function defineJob(options: Options.Value): Options.Value;
