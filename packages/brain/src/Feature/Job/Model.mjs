@@ -52,6 +52,9 @@ export function defineJobModel(Craft) {
 		data: Normalizer(DataSchema),
 		base: Definer.Base(({ Declare }) => {
 			Declare.Prototype.notDestroyedRequired()
+				.Accessor('isFinished', function () {
+					return _(this).finishedAt !== null;
+				})
 				.Method('visit', function () {
 					_(this).visitedAt = Date.now();
 

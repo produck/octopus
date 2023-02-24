@@ -1,11 +1,13 @@
 import { webcrypto as crypto } from 'node:crypto';
 import { Normalizer, P, S } from '@produck/mold';
+import * as meta from './meta.gen.mjs';
 
 const BANNER = [
-	'  ____  _______________  ___  __  ______',
-	' / __ \\/ ___/_  __/ __ \\/ _ \\/ / / / __/',
-	'/ /_/ / /__  / / / /_/ / ___/ /_/ /\\ \\  ',
-	'\\____/\\___/ /_/  \\____/_/   \\____/___/  ',
+	'  ____   _____ ______ ____   ___   __  __ ____',
+	' / __ \\ / ___//_  __// __ \\ / _ \\ / / / // __/',
+	'/ /_/ // /__   / /  / /_/ // ___// /_/ /_\\ \\  ',
+	'\\____/ \\___/  /_/   \\____//_/    \\____//___/ ',
+	`${meta.name}@${meta.version}`,
 ];
 
 export const Schema = S.Object({

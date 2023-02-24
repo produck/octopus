@@ -1,4 +1,4 @@
-import { Normalizer, P, S } from '@produck/mold';
+import { P, S } from '@produck/mold';
 import { defineRouter } from '@produck/duck-web-koa-forker';
 
 const ConfigurationSchema = S.Object({

@@ -16,7 +16,6 @@ export module Property {
 
 		'AGENT.SYNC.INTERVAL': number;
 		'AGENT.SYNC.TIMEOUT': number;
-		'AGENT.SYNC.RETRY.INTERVAL': number;
 
 		'RJSP.SERVER.HOST': string;
 		'RJSP.SERVER.PORT': number;

@@ -8,7 +8,7 @@ import * as DuckLog from '@produck/duck-log';
 import * as Quack from '@produck/quack';
 import * as DuckLogQuack from '@produck/duck-log-quack';
 
-import * as meta from './version.mjs';
+import * as meta from './meta.gen.mjs';
 import * as CLI from './cli.mjs';
 import * as Feature from './Feature/index.mjs';
 import * as WebApp from './Web/index.mjs';
@@ -53,21 +53,29 @@ export const Brain = Duck.define({
 }, function OctopusHead({
 	Kit, Log, CLI, Bus,
 }, ...args) {
-	const options = Kit.Options = Options.normalize(...args);
-	const Craft = Feature.Craft.define(options.Craft);
-	const Procedure = Feature.Procedure.define(options.Procedure);
+	const options = Options.normalize(...args);
 	const configuration = Configuration.normalize();
+
+	Kit.Options = options;
+	Kit.Configuration = configuration;
+
+	const Craft = Feature.Craft.define({ ...options.Craft });
+	const Procedure = Feature.Procedure.define({ ...options.Procedure });
+
+	const CustomEnvironment = Feature.Environment.define({ ...options.Environment });
+
+	Kit.Environment = new CustomEnvironment();
 
 	Kit.Craft = Craft;
 	Kit.Procedure =  Procedure;
-	Kit.Application = Feature.Application.define(options.Application);
-	Kit.Brain = Feature.Brain.define(options.Brain);
-	Kit.Environment = Feature.Environment.define(options.Environment);
-	Kit.Job = Feature.Job.define(options.Job);
-	Kit.Product = Feature.Product.define(options.Product);
-	Kit.PublikKey = Feature.PublicKey.define(options.PublicKey);
-	Kit.Tentacle = Feature.Tentacle.define(options.Tentacle);
-	Kit.Configuration = configuration;
+
+	Kit.Job = Feature.Job.define({ ...options.Job, Craft });
+	Kit.Product = Feature.Product.define({ ...options.Product, Procedure });
+
+	Kit.Application = Feature.Application.define({ ...options.Application });
+	Kit.Brain = Feature.Brain.define({ ...options.Brain });
+	Kit.PublikKey = Feature.PublicKey.define({ ...options.PublicKey });
+	Kit.Tentacle = Feature.Tentacle.define({ ...options.Tentacle });
 
 	Log('AgentAccess', {
 		label: 'agent',
