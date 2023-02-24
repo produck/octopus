@@ -48,6 +48,14 @@ export const BaseTentacle = Model.define({
 		for (const atKey of AT_KEYS) {
 			Declare.Prototype.Accessor(...At(atKey));
 		}
+
+		Declare.Constructor.Method('fetch', async function (_data) {
+			const data = Data.normalize(_data);
+
+			return await this.has(data.id)
+				? await this.get(data.id)
+				: await this.create(data);
+		});
 	}),
 	toJSON() {
 		const data = _(this);

@@ -3,11 +3,11 @@ import { Normalizer, P, S } from '@produck/mold';
 
 import { UUIDSchema as IdSchema } from '../Utils.mjs';
 
-const AtSchema = P.Integer();
+const AtSchema = P.Integer(0);
 
 export const Schema = S.Object({
 	id: IdSchema,
-	craft: P.String(),
+	craft: P.String('example'),
 	version: S.Value(Semver.valid, 'semver string', () => '0.0.0'),
 	ready: P.Boolean(false),
 	job: P.OrNull(IdSchema),

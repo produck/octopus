@@ -73,6 +73,35 @@ describe('::Feature::Tentacle', function () {
 			});
 		});
 
+		describe('::fetch()', function () {
+			it('should get to fetch a tentacle.', async function () {
+				const id = crypto.randomUUID();
+
+				const TestTentacle = defineTentacle({
+					...SAMPLE_OPTIONS,
+					has: () => true,
+					get: () => ({ ...EXAMPLE }),
+				});
+
+				const tentacle = await TestTentacle.fetch({ id });
+
+				assert.equal(tentacle.id, EXAMPLE.id);
+			});
+
+			it('should create to fetch a tentacle.', async function () {
+				const id = crypto.randomUUID();
+
+				const TestTentacle = defineTentacle({
+					...SAMPLE_OPTIONS,
+					create: () => ({ ...EXAMPLE }),
+				});
+
+				const tentacle = await TestTentacle.fetch({ id });
+
+				assert.equal(tentacle.id, EXAMPLE.id);
+			});
+		});
+
 		describe('.load()', function () {
 			it('should update the tentacle.', async function () {
 				const example = { ...EXAMPLE };
