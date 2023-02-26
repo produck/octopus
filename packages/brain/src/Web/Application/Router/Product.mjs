@@ -49,7 +49,7 @@ export const Router = defineRouter(function ProductRouter(router, {
 		.get('/{productId}', async function getProduct(ctx) {
 			ctx.body = ctx.state.product;
 		})
-		.delete('/{productId}', async function deleteProduct(ctx) {
+		.put('/{productId}/state', async function deleteProduct(ctx) {
 			const { product } = ctx.state;
 
 			if (!product.isFinished) {

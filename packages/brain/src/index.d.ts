@@ -1,4 +1,5 @@
 import * as DuckCLI from '@produck/duck-cli';
+import { Middleware } from 'koa';
 import * as Feature from './Feature';
 
 type ServerMode = 'HTTP' | 'HTTPS' | 'REDIRECT' | 'BOTH';
@@ -49,17 +50,22 @@ interface Options {
 
 	cli?: {
 		options: {
-			global?: DuckCLI.Bridge.Feature.Options,
-			start?: DuckCLI.Bridge.Feature.Options,
-			install?: DuckCLI.Bridge.Feature.Options,
-		},
+			global?: DuckCLI.Bridge.Feature.Options;
+			start?: DuckCLI.Bridge.Feature.Options;
+			install?: DuckCLI.Bridge.Feature.Options;
+		};
+
 		start: (opts: object) => any;
 		install: (opts: object) => any;
 		extend?: (
 			program: DuckCLI.Bridge.Commander,
 			Commander: typeof DuckCLI.Bridge.Commander
-		) => void
-	}
+		) => void;
+	};
+
+	web?: {
+		external?: Middleware
+	};
 }
 
 declare module '@produck/duck' {

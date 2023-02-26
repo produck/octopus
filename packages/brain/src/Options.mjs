@@ -29,6 +29,10 @@ export const Schema = S.Object({
 		install: P.Function(() => {}),
 		extend: P.Function(() => {}),
 	}),
+
+	web: S.Object({
+		external: P.Function(() => {}),
+	}),
 });
 
 export const normalize = Normalizer(Schema);

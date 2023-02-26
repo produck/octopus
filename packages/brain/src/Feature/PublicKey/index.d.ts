@@ -70,6 +70,7 @@ export interface PublicKey extends Entity.Proxy.Model {
 
 export interface PublicKeyConstructor extends Entity.Proxy.ModelConstructor {
 	new(): PublicKey;
+	query(filter: Filter.Abstract): Promise<Array<PublicKey>>;
 }
 
 export function definePublicKey(options: Options.Value): PublicKeyConstructor;

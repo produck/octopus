@@ -1,50 +1,67 @@
 
-import { Normalizer, P, PROPERTY, S } from '@produck/mold';
+import { Normalizer, P, S } from '@produck/mold';
 import { defineRouter } from '@produck/duck-web-koa-forker';
 
-const QuerySchema = S.Object({
+const CredentialSchema = S.Object({
 	app: P.StringPattern(/^[0-9a-f]$/i, 'application id')(),
 	time: P.StringPattern(/^[0-9]$/i, 'timestamp')(),
 	sign: P.StringPattern(/^[0-9a-f]+$/i, 'signature')(),
-	[PROPERTY]: P.String(),
 });
 
-const normalizeQuery = Normalizer(QuerySchema);
+const isCredential = (data) => {
+	try {
+		CredentialSchema(data, false);
+
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+const normalizeCredential = Normalizer(CredentialSchema);
 
 export const Router = defineRouter(function APIRouter(router, {
-	Application, Environment,
+	Environment, Application, PublikKey,
 }) {
-	router
-		.use(async function authenticate(ctx, next) {
-			const query = ctx.query;
+	router.use(async function authenticate(ctx, next) {
+		const _credential = ctx.query;
 
-			try {
-				normalizeQuery(query);
-			} catch {
-				return ctx.throw(400, 'Bad app, time or sign.');
-			}
+		if (!isCredential(_credential)) {
+			return ctx.throw(400, 'Bad ".app", ".time" or ".sign".');
+		}
 
-			const requestedAt = Number(query.time);
-			const offset = Math.abs(Date.now() - requestedAt);
+		const {
+			app: applicationId,
+			time: _requestedAt,
+			sign: signature,
+		} = normalizeCredential(_credential);
 
-			if (offset > Environment.get('APPLICATION.REQUEST.TIMEOUT')) {
-				return ctx.throw(408, 'Expired time.');
-			}
+		const requestedAt = Number(_requestedAt);
+		const offset = Math.abs(Date.now() - requestedAt);
 
-			const application = await Application.get({
-				id: query.app.toLowerCase(),
-			});
+		if (offset > Environment.get('APPLICATION.REQUEST.TIMEOUT')) {
+			return ctx.throw(408, 'Expired time.');
+		}
 
-			if (application === null) {
-				return ctx.throw(404, `Application(${application}) is NOT found.`);
-			}
+		const application = await Application.get(applicationId);
 
-			if (!await application.verify(query.time, query.sign)) {
-				return ctx.throw(401, 'Bad signature.');
-			}
+		if (application === null) {
+			return ctx.throw(404, `Application(${application}) is NOT found.`);
+		}
 
-			ctx.state.application = application;
-
-			return next();
+		const keys = await PublikKey.query({
+			name: 'OfOwner',
+			owner: applicationId,
 		});
+
+		for (const key of keys) {
+			if (key.verify(_requestedAt, signature)) {
+				ctx.state.application = application;
+
+				return next();
+			}
+		}
+
+		return ctx.throw(401, 'Bad signature.');
+	});
 });

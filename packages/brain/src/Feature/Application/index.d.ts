@@ -33,7 +33,7 @@ export interface Application extends Shop.Entity.Proxy.Model {
 export interface ApplicationConstructor extends Shop.Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Application;
 
-	get(data: Data.Value): Promise<Application>;
+	get(data: Data.Value): Promise<Application | null>;
 }
 
 export function define(
