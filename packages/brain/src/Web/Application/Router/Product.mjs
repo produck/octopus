@@ -1,3 +1,4 @@
+import { webcrypto as crypto } from 'node:crypto';
 import { defineRouter } from '@produck/duck-web-koa-forker';
 import KoaBody from 'koa-body';
 
@@ -5,12 +6,13 @@ export const Router = defineRouter(function ProductRouter(router, {
 	Environment, Procedure, Product,
 }) {
 	router
+		.use(KoaBody.default())
 		.param('productModel', function assertModel(productModel, ctx, next) {
 			if (!Procedure.isValid(productModel)) {
-				return ctx.throw(404, `A model(${productModel}) is NOT found.`);
+				return ctx.throw(400, `Bad product model(${productModel}).`);
 			}
 
-			ctx.state.model = Procedure.use(productModel);
+			ctx.state.procedure = Procedure.use(productModel);
 
 			return next();
 		})
@@ -22,18 +24,23 @@ export const Router = defineRouter(function ProductRouter(router, {
 				owner: application.id,
 			});
 		})
-		.post(KoaBody.default(), async function createProduct(ctx) {
-			const waitingLength = await Product.getWaitingLength();
+		.post(async function createProduct(ctx) {
+			const list = await Product.query({
+				name: 'All',
+				started: false,
+			});
 
-			if (waitingLength > Environment.get('PRODUCT.QUEUE.MAX')) {
+			if (list.length > Environment.get('PRODUCT.QUEUE.MAX')) {
 				return ctx.throw(429, 'Too many waiting product.');
 			}
 
-			try {
-				ctx.body = await Product.create(ctx.request.body);
-			} catch {
-				return ctx.throw(400, 'Bad request body.');
-			}
+			const { application, procedure } = ctx.state;
+
+			ctx.body = await Product.create({
+				id: crypto.randomUUID(),
+				owner: application.id,
+				model: procedure.name,
+			});
 		})
 		.param('productId', async function fetchProduct(productId, ctx, next) {
 			const product = await Product.get(productId);
@@ -52,15 +59,10 @@ export const Router = defineRouter(function ProductRouter(router, {
 		.put('/{productId}/state', async function deleteProduct(ctx) {
 			const { product } = ctx.state;
 
-			if (!product.isFinished) {
-				await product.stop();
+			if (product.isFinished) {
+				return ctx.throw(403, 'Finished.');
 			}
 
-			if (product.isDeleted) {
-				return ctx.throw(404);
-			}
-
-			await product.delete();
-			ctx.body = product;
+			ctx.body = await product.finish(202, 'Stoped by application.').save();
 		});
 });

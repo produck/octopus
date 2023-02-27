@@ -5,6 +5,14 @@ export const Router = defineRouter(function OrderRouter(router) {
 		.get(async function getProductArtifact(ctx) {
 			const { product } = ctx.state;
 
-			ctx.body = await product.getArtifact();
+			if (product.finished === null) {
+				return ctx.throw(404, 'The product is NOT finished.');
+			}
+
+			if (product.status !== 100) {
+				return ctx.throw(404, 'The product failed.');
+			}
+
+			ctx.body = product.artifact;
 		});
 });

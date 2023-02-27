@@ -1,24 +1,33 @@
 import { defineRouter } from '@produck/duck-web-koa-forker';
 
-export const Router = defineRouter(function OrderRouter(router, {
-	Environment,
-}) {
+export const Router = defineRouter(function OrderRouter(router) {
 	router
-		.use(async function fetchProductOrder(ctx, next) {
-			ctx.state.order = await ctx.state.product.setOrder(ctx.request.body);
-
-			return next();
-		})
 		.post(async function createProductOrder(ctx) {
-			const { order } = ctx.state;
+			const { product, procedure } = ctx.state;
 
-			if (order !== null) {
-				return ctx.throw(423, 'Order has been created.');
+			if (product.orderedAt !== null) {
+				return ctx.throw(403, 'The product has been ordered.');
 			}
 
-			ctx.body = order;
+			if (product.isFinished) {
+				return ctx.throw(403, 'The product has been finished.');
+			}
+
+			const { body: order } = ctx.request;
+
+			if (!procedure.isOrder(order)) {
+				return ctx.throw(400, 'Bad order.');
+			}
+
+			ctx.body = await product.setOrder(order).save();
 		})
 		.get(async function getProductOrder(ctx) {
-			ctx.body = ctx.state.order;
+			const { product } = ctx.state;
+
+			if (product.orderedAt === null) {
+				return ctx.throw(404, 'There is no order of the product.');
+			}
+
+			ctx.body = product.order;
 		});
 });

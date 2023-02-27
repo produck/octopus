@@ -45,11 +45,11 @@ const normalizeDump = Normalizer(Evaluator.DumpSchema);
 export function defineProductBase(Procedure) {
 	const DataSchema = Cust(Data.Schema, (_v, _e, next) => {
 		const data = next();
-		const { model, order, artifact, status } = data;
+		const { model, order, artifact, status, orderedAt } = data;
 
 		const procedure = Procedure.use(model);
 
-		if (!procedure.isOrder(order)) {
+		if (orderedAt !== null && !procedure.isOrder(order)) {
 			throw new Error('bad ".order".');
 		}
 

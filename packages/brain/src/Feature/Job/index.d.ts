@@ -43,7 +43,7 @@ export module Data {
 
 export module Filter {
 	interface Abstract {
-		name: 'All' | 'OfOwner';
+		name: 'All' | 'OfProduct';
 		[key: string]: any;
 	}
 
