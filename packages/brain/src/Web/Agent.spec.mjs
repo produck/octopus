@@ -59,7 +59,7 @@ describe('Web::Agent', function () {
 	});
 
 	/**
-	 * @type {ReturnType<import('superagent')>}
+	 * @type {import('superagent')}
 	 */
 	const client = request('http://127.0.0.1:9173');
 

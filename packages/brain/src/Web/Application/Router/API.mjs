@@ -3,9 +3,9 @@ import { Normalizer, P, S } from '@produck/mold';
 import { defineRouter } from '@produck/duck-web-koa-forker';
 
 const CredentialSchema = S.Object({
-	app: P.StringPattern(/^[0-9a-f]$/i, 'application id')(),
-	time: P.StringPattern(/^[0-9]$/i, 'timestamp')(),
-	sign: P.StringPattern(/^[0-9a-f]+$/i, 'signature')(),
+	app: P.StringPattern(/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/, 'UUID')(),
+	time: P.StringPattern(/^[0-9]+$/, 'timestamp')(),
+	sign: P.StringPattern(/^[0-9a-f]+$/, 'signature')(),
 });
 
 const isCredential = (data) => {
@@ -13,7 +13,8 @@ const isCredential = (data) => {
 		CredentialSchema(data, false);
 
 		return true;
-	} catch {
+	} catch(error) {
+		error;
 		return false;
 	}
 };
@@ -63,5 +64,5 @@ export const Router = defineRouter(function APIRouter(router, {
 		}
 
 		return ctx.throw(401, 'Bad signature.');
-	});
+	}).get('/authentication', ctx => ctx.body = 'ok');
 });

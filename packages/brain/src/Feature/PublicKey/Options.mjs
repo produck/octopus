@@ -1,11 +1,14 @@
 import { webcrypto as crypto } from 'node:crypto';
 import { S, P, Normalizer } from '@produck/mold';
 
-const EXAMPLE = {
+import * as Data from './Data.mjs';
+
+const EXAMPLE = Data.normalize({
 	id: crypto.randomUUID(),
+	owner: crypto.randomUUID(),
 	pem: '',
 	createdAt: Date.now(),
-};
+});
 
 const QuerySchema = S.Object({
 	All: P.Function(() => []),

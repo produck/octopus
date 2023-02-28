@@ -67,7 +67,7 @@ describe('::Feature::Product', function () {
 			it('shoul throw if bad data.order.', async function () {
 				const TestProduct = defineProduct({
 					...SAMPLE_OPTIONS,
-					get: () => ({ ...EXAMPLE, order: null }),
+					get: () => ({ ...EXAMPLE, order: null, orderedAt: Date.now() }),
 				});
 
 				await assert.rejects(async () => await TestProduct.get(EXAMPLE.id), {
