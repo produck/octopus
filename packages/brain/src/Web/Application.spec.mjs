@@ -24,6 +24,7 @@ describe('Web::Application', function () {
 	let backend = {
 		application: [],
 		publicKey: [],
+		product: [],
 	};
 
 	const brain = Octopus.Brain({
@@ -39,6 +40,51 @@ describe('Web::Application', function () {
 				},
 			},
 		},
+		Procedure: {
+			create: (data) => data,
+		},
+		Product: {
+			query: {
+				OfOwner: ({ owner, started }) => {
+					return backend.product.filter(data => {
+						if (data.owner !== owner) {
+							return false;
+						}
+
+						if (started !== null) {
+							return (data.startedAt === null) === started;
+						}
+					});
+				},
+				All: ({ started }) => {
+					return backend.product.filter(data => {
+						if (started === null) {
+							return true;
+						}
+
+						return (data.startedAt !== null) === started;
+					});
+				},
+			},
+			get: id => {
+				return backend.product.find(data => data.id === id) || null;
+			},
+			save: (_data) => {
+				const target = backend.product.find(data => data.id === _data.id);
+
+				return Object.assign(target, _data);
+			},
+			create: (_data) => {
+				const data = {
+					..._data,
+					createdAt: Date.now(),
+				};
+
+				backend.product.push(data);
+
+				return { ...data };
+			},
+		},
 	});
 
 	this.beforeAll(async () => {
@@ -49,6 +95,12 @@ describe('Web::Application', function () {
 	});
 
 	brain.configuration.application.http.port = 8080;
+
+	brain.Model('foo', {
+		script: {
+			*main() {},
+		},
+	});
 
 	/**
 	 * @type {import('superagent')}
@@ -134,43 +186,203 @@ describe('Web::Application', function () {
 		});
 	});
 
-	describe('GET  /product/{model}', function () {
-		it('should 400 if bad procedure.', function () {
+	function prepare(data) {
+		const applicationId = crypto.webcrypto.randomUUID();
+		const pair = KeyPairPem();
+		const time = String(Date.now());
+		const signer = crypto.createSign('SHA256');
 
+		signer.update(time).end();
+
+		backend = {
+			application: [
+				{ id: applicationId, createdAt: Date.now() },
+			],
+			publicKey: [
+				{
+					id: crypto.webcrypto.randomUUID(),
+					owner: applicationId,
+					pem: pair.public,
+					createdAt: Date.now(),
+				},
+			],
+			product: [],
+			...data,
+		};
+
+		return [
+			`app=${applicationId}`,
+			`time=${time}`,
+			`sign=${signer.sign(pair.private, 'hex')}`,
+		].join('&');
+	}
+
+	describe('GET  /product/{model}', function () {
+		it('should 404 if bad procedure.', async function () {
+			const credential = prepare();
+
+			await client
+				.get(`/product/bar?${credential}`)
+				.expect(404);
 		});
 
-		it('should get a list of product.', function () {
+		it('should get a empty list of product.', async function () {
+			const credential = prepare({
+				product: [],
+			});
 
+			await client
+				.get(`/product/foo?${credential}`)
+				.expect(200, []);
 		});
 	});
 
 	describe('POST /product/{model}', function () {
-		it('should 429 if queue overflow.', function () {
+		it('should 429 if queue overflow.', async function () {
+			const credential = prepare();
 
+			backend.product.push({
+				id: crypto.webcrypto.randomUUID(),
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			await client
+				.post(`/product/foo?${credential}`)
+				.send({})
+				.expect(429);
 		});
 
-		it('should create a new product.', function () {
+		it('should create a new product.', async function () {
+			const credential = prepare();
 
+			const response = await client
+				.post(`/product/foo?${credential}`)
+				.send({})
+				.expect(201);
+
+			assert.ok(response.body instanceof Object);
+			assert.ok(typeof response.body.createdAt === 'string');
 		});
 	});
 
 	describe('GET  /product/{model}/{productId}', function () {
-		it('should 404 if not found.', function () {
+		it('should 404 if not found.', async function () {
+			const credential = prepare();
 
+			await client
+				.get(`/product/foo/${crypto.webcrypto.randomUUID()}?${credential}`)
+				.expect(404);
 		});
 
-		it('should get a existent product.', function () {
+		it('should get a existent product.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			await client
+				.get(`/product/foo/${productId}?${credential}`)
+				.expect(200);
 		});
 	});
 
 	describe('PUT  /product/{model}/{productId}/state', function () {
-		it('should 403 if product is finished.', function () {
+		it('should 400 if bad state requested.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			await client
+				.put(`/product/foo/${productId}/state?${credential}`)
+				.send({})
+				.expect(400);
 		});
 
-		it('should finish a proudct.', function () {
+		it('should 403 if product is finished.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: Date.now() + 5000,
+				status: 100,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			await client
+				.put(`/product/foo/${productId}/state?${credential}`)
+				.send({ finished: true })
+				.expect(403);
+		});
+
+		it('should finish a proudct.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
+
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			await client
+				.put(`/product/foo/${productId}/state?${credential}`)
+				.send({ finished: true })
+				.expect(200);
 		});
 	});
 

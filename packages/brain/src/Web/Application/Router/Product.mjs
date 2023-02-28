@@ -1,6 +1,21 @@
+import { P, S } from '@produck/mold';
 import { webcrypto as crypto } from 'node:crypto';
 import { defineRouter } from '@produck/duck-web-koa-forker';
 import KoaBody from 'koa-body';
+
+const StateSchema = S.Object({
+	finished: P.Constant(true, true),
+});
+
+const isState = (data) => {
+	try {
+		StateSchema(data, false);
+
+		return true;
+	} catch(error) {
+		return false;
+	}
+};
 
 export const Router = defineRouter(function ProductRouter(router, {
 	Environment, Procedure, Product,
@@ -9,7 +24,7 @@ export const Router = defineRouter(function ProductRouter(router, {
 		.use(KoaBody.default())
 		.param('productModel', function assertModel(productModel, ctx, next) {
 			if (!Procedure.isValid(productModel)) {
-				return ctx.throw(400, `Bad product model(${productModel}).`);
+				return ctx.throw(404, `Bad product model(${productModel}).`);
 			}
 
 			ctx.state.procedure = Procedure.use(productModel);
@@ -30,11 +45,13 @@ export const Router = defineRouter(function ProductRouter(router, {
 				started: false,
 			});
 
-			if (list.length > Environment.get('PRODUCT.QUEUE.MAX')) {
+			if (list.length >= Environment.get('PRODUCT.QUEUE.MAX')) {
 				return ctx.throw(429, 'Too many waiting product.');
 			}
 
 			const { application, procedure } = ctx.state;
+
+			ctx.status = 201;
 
 			ctx.body = await Product.create({
 				id: crypto.randomUUID(),
@@ -43,9 +60,10 @@ export const Router = defineRouter(function ProductRouter(router, {
 			});
 		})
 		.param('productId', async function fetchProduct(productId, ctx, next) {
+			const { application } = ctx.state;
 			const product = await Product.get(productId);
 
-			if (product === null) {
+			if (product === null || product.owner !== application.id) {
 				return ctx.throw(404, `The product(${productId}) is NOT found.`);
 			}
 
@@ -56,13 +74,20 @@ export const Router = defineRouter(function ProductRouter(router, {
 		.get('/{productId}', async function getProduct(ctx) {
 			ctx.body = ctx.state.product;
 		})
-		.put('/{productId}/state', async function deleteProduct(ctx) {
+		.put('/{productId}/state', async function abort(ctx) {
+			const { body: state } = ctx.request;
+
+			if (!isState(state)) {
+				return ctx.throw(400, 'Bad state.');
+			}
+
 			const { product } = ctx.state;
 
-			if (product.isFinished) {
+			if (product.finishedAt !== null) {
 				return ctx.throw(403, 'Finished.');
 			}
 
-			ctx.body = await product.finish(202, 'Stoped by application.').save();
+			await product.finish(202, 'By application.').save();
+			ctx.body = { finished: true };
 		});
 });

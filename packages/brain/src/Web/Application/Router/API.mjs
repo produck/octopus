@@ -13,8 +13,7 @@ const isCredential = (data) => {
 		CredentialSchema(data, false);
 
 		return true;
-	} catch(error) {
-		error;
+	} catch {
 		return false;
 	}
 };

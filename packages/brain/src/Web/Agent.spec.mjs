@@ -26,8 +26,6 @@ describe('Web::Agent', function () {
 	const brain = Octopus.Brain({
 		Craft: {
 			name: 'Test',
-			has: name => Object.hasOwn(backend.crafts, name),
-			get: name => backend.crafts[name] || null,
 			create: (data) => backend.crafts[data.name] = data,
 		},
 		Job: {
