@@ -5,7 +5,7 @@ export const Router = defineRouter(function OrderRouter(router) {
 		.get(async function getProductArtifact(ctx) {
 			const { product } = ctx.state;
 
-			if (product.finished === null) {
+			if (product.finishedAt === null) {
 				return ctx.throw(404, 'The product is NOT finished.');
 			}
 

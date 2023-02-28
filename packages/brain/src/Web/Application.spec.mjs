@@ -11,7 +11,7 @@ function KeyPairPem() {
 		publicKey,
 		privateKey,
 	} = crypto.generateKeyPairSync('rsa', {
-		modulusLength: 2048,
+		modulusLength: 512,
 	});
 
 	return {
@@ -25,6 +25,7 @@ describe('Web::Application', function () {
 		application: [],
 		publicKey: [],
 		product: [],
+		job: [],
 	};
 
 	const brain = Octopus.Brain({
@@ -85,6 +86,11 @@ describe('Web::Application', function () {
 				return { ...data };
 			},
 		},
+		Job: {
+			get: id => {
+				return backend.job.find(data => data.id === id) || null;
+			},
+		},
 	});
 
 	this.beforeAll(async () => {
@@ -97,10 +103,10 @@ describe('Web::Application', function () {
 	brain.configuration.application.http.port = 8080;
 
 	brain.Model('foo', {
-		script: {
-			*main() {},
-		},
-	});
+		script: { *main() {} },
+		order: any => any.a !== false,
+		artifact: any => any.a !== false,
+	}).Craft('example');
 
 	/**
 	 * @type {import('superagent')}
@@ -207,6 +213,7 @@ describe('Web::Application', function () {
 				},
 			],
 			product: [],
+			job: [],
 			...data,
 		};
 
@@ -348,7 +355,7 @@ describe('Web::Application', function () {
 				orderedAt: null,
 				startedAt: null,
 				finishedAt: Date.now() + 5000,
-				status: 100,
+				status: 200,
 				message: null,
 				order: null,
 				artifact: null,
@@ -387,60 +394,347 @@ describe('Web::Application', function () {
 	});
 
 	describe('POST /product/{model}/{productId}/order', function () {
-		it('should 403 if product is ordered.', function () {
+		it('should 403 if product is ordered.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: Date.now() + 1000,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: {},
+				artifact: null,
+			});
+
+			await client
+				.post(`/product/foo/${productId}/order?${credential}`)
+				.send({ finished: true })
+				.expect(403);
 		});
 
-		it('should 403 if product is finished.', function () {
+		it('should 403 if product is finished.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: Date.now() + 1000,
+				status: 0,
+				message: null,
+				order: {},
+				artifact: null,
+			});
+
+			await client
+				.post(`/product/foo/${productId}/order?${credential}`)
+				.send({ finished: true })
+				.expect(403);
 		});
 
-		it('should 400 if bad order data.', function () {
+		it('should 400 if bad order data.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: {},
+				artifact: null,
+			});
+
+			await client
+				.post(`/product/foo/${productId}/order?${credential}`)
+				.send({ a: false })
+				.expect(400);
 		});
 
-		it('should set order of a product.', function () {
+		it('should set order of a product.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: {},
+				artifact: null,
+			});
+
+			await client
+				.post(`/product/foo/${productId}/order?${credential}`)
+				.send({ a: true })
+				.expect(200);
 		});
 	});
 
 	describe('GET /product/{model}/{productId}/order', function () {
-		it('should 404 if product is not ordered.', function () {
+		it('should 404 if product is not ordered.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: {},
+				artifact: null,
+			});
+
+			await client
+				.get(`/product/foo/${productId}/order?${credential}`)
+				.expect(404);
 		});
 
-		it('should get product order.', function () {
+		it('should get product order.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: Date.now() + 1000,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: { a: true },
+				artifact: null,
+			});
+
+			await client
+				.get(`/product/foo/${productId}/order?${credential}`)
+				.expect(200);
 		});
 	});
 
 	describe('GET /product/{model}/{productId}/job', function () {
-		it('should get a job list.', function () {
+		it('should get a job list.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			await client
+				.get(`/product/foo/${productId}/job?${credential}`)
+				.expect(200);
 		});
 	});
 
 	describe('GET /product/{model}/{productId}/job/{jobId}', function () {
-		it('should 404 if job not found.', function () {
+		it('should 404 if job not found.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			const jobId = crypto.webcrypto.randomUUID();
+
+			await client
+				.get(`/product/foo/${productId}/job/${jobId}?${credential}`)
+				.expect(404);
 		});
 
-		it('should 404 if job does not belong to product.', function () {
+		it('should 404 if job does not belong to product.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			const jobId = crypto.webcrypto.randomUUID();
+
+			await client
+				.get(`/product/foo/${productId}/job/${jobId}?${credential}`)
+				.expect(404);
 		});
 
-		it('should get a job.', function () {
+		it('should get a job.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
+			const jobId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			backend.job.push({
+				id: jobId,
+				product: productId,
+				craft: 'example',
+				createdAt: Date.now(),
+				visitedAt: Date.now(),
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				source: null,
+				target: null,
+			});
+
+			await client
+				.get(`/product/foo/${productId}/job/${jobId}?${credential}`)
+				.expect(200);
 		});
 	});
 
 	describe('GET /product/{model}/{productId}/artifact', function () {
-		it('should 404 if unfinished.', function () {
+		it('should 404 if unfinished.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: null,
+				status: 0,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			await client
+				.get(`/product/foo/${productId}/artifact?${credential}`)
+				.expect(404);
 		});
 
-		it('should 404 if failed.', function () {
+		it('should 404 if failed.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
 
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: null,
+				startedAt: null,
+				finishedAt: Date.now() + 5000,
+				status: 200,
+				message: null,
+				order: null,
+				artifact: null,
+			});
+
+			await client
+				.get(`/product/foo/${productId}/artifact?${credential}`)
+				.expect(404);
+		});
+
+		it('should 200.', async function () {
+			const credential = prepare();
+			const productId = crypto.webcrypto.randomUUID();
+
+			backend.product.push({
+				id: productId,
+				owner: backend.application[0].id,
+				model: 'foo',
+				dump: { values: [], children: [] },
+				createdAt: Date.now(),
+				orderedAt: Date.now() + 1000,
+				startedAt: Date.now() + 2000,
+				finishedAt: Date.now() + 5000,
+				status: 100,
+				message: null,
+				order: {},
+				artifact: { a: true },
+			});
+
+			await client
+				.get(`/product/foo/${productId}/artifact?${credential}`)
+				.expect(200, { a: true });
 		});
 	});
 });

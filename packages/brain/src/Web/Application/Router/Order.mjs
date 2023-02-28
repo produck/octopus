@@ -9,7 +9,7 @@ export const Router = defineRouter(function OrderRouter(router) {
 				return ctx.throw(403, 'The product has been ordered.');
 			}
 
-			if (product.isFinished) {
+			if (product.finishedAt !== null) {
 				return ctx.throw(403, 'The product has been finished.');
 			}
 
