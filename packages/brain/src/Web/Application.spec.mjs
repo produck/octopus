@@ -139,7 +139,7 @@ describe('Web::Application', function () {
 			];
 
 			backend = { application: [], publicKey: [] };
-			await client.get(`/authentication?${query.join('&')}`).expect(404);
+			await client.get(`/authentication?${query.join('&')}`).expect(401);
 		});
 
 		it('should 401 if bad signature.', async function () {

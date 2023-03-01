@@ -9,8 +9,12 @@ export const play = definePlay(function AgentServer({
 	const app = Web.Application('Agent');
 	const _app = Quack.Format.Apache.HttpAdapter(app, Log.AgentAccess);
 	const { host, port } = Configuration.agent;
-	const server = http.createServer(_app).listen(port, host);
+	const server = http.createServer(_app);
 
 	Log.Agent(`Agent RJSP server is listening: host=${host} port=${port}.`);
 	Bus.once('halt-request', () => server.close());
+
+	return function () {
+		server.listen(port, host);
+	};
 });

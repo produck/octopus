@@ -1,12 +1,12 @@
 import { definePlay } from '@produck/duck-runner';
 import * as Observation from './Observation/index.mjs';
 
-export const play = definePlay(async function Principal({
+export const play = definePlay(function Principal({
 	Kit, Bus, Environment, Brain, Options, Configuration,
 }) {
 	const PlayKit = Kit('Octopus::Play::Principal');
 
-	async function observe() {
+	Brain.on('grant', async function observe() {
 		if (!await Options.isEvaluatable()) {
 			return;
 		}
@@ -18,20 +18,20 @@ export const play = definePlay(async function Principal({
 		} catch (error) {
 			console.log(error);
 		}
-	}
-
-	Brain.on('grant', observe);
-	Environment.start();
+	});
 
 	Bus.once('halt-request', () => {
 		Brain.halt();
 		Environment.stop();
-		Brain.off('grant', observe);
 	});
 
-	await Brain.boot({
-		id: Configuration.id,
-		name: Options.name,
-		version: Options.version,
-	});
+	return async function () {
+		Environment.start();
+
+		await Brain.boot({
+			id: Configuration.id,
+			name: Options.name,
+			version: Options.version,
+		});
+	};
 });

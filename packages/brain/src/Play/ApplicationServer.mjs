@@ -61,5 +61,8 @@ export const play = definePlay(function ApplicationServer({
 	const app = Web.Application('Application');
 
 	Log.Application(`Running in "${mode}" mode.`);
-	Mode[mode](Quack.Format.Apache.HttpAdapter(app, Log.ApplicationAccess), Kit);
+
+	return function () {
+		Mode[mode](Quack.Format.Apache.HttpAdapter(app, Log.ApplicationAccess), Kit);
+	};
 });

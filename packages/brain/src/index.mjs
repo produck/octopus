@@ -51,9 +51,9 @@ export const Brain = Duck.define({
 		}),
 	],
 }, function OctopusHead({
-	Kit, Log, CLI, Bus,
+	Kit, Log, CLI, Bus, Runner,
 }, ...args) {
-	const options = Options.normalize(...args);
+	const options = Options.normalize(...args.slice(0, 1));
 	const configuration = Configuration.normalize();
 
 	Kit.Options = options;
@@ -93,6 +93,8 @@ export const Brain = Duck.define({
 	});
 
 	Log('principal');
+
+	Runner.ready();
 
 	async function halt() {
 		Bus.emit('halt-request');

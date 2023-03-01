@@ -93,7 +93,7 @@ describe('OctopusBrain()', function () {
 				await brain.boot(['start']);
 			});
 
-			it('shoud throw if no tls in SOLO/HTTPS.', async function () {
+			it('should throw if no tls in SOLO/HTTPS.', async function () {
 				brain.configuration.application.mode = 'HTTPS';
 				brain.configuration.application.https.key = 'foo.pem';
 
@@ -103,7 +103,7 @@ describe('OctopusBrain()', function () {
 				});
 			});
 
-			it('shoud throw if no tls in SOLO/HTTPS.', async function () {
+			it('should throw if no tls in SOLO/HTTPS.', async function () {
 				brain.configuration.application.mode = 'HTTPS';
 				brain.configuration.application.https.cert = 'foo.pem';
 
