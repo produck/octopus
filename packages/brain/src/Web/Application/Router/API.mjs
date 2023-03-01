@@ -1,11 +1,11 @@
-
-import { Normalizer, P, S } from '@produck/mold';
+import { Normalizer, P, PROPERTY, S } from '@produck/mold';
 import { defineRouter } from '@produck/duck-web-koa-forker';
 
 const CredentialSchema = S.Object({
 	app: P.StringPattern(/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/, 'UUID')(),
 	time: P.StringPattern(/^[0-9]+$/, 'timestamp')(),
 	sign: P.StringPattern(/^[0-9a-f]+$/, 'signature')(),
+	[PROPERTY]: P.String(),
 });
 
 const isCredential = (data) => {
@@ -46,7 +46,7 @@ export const Router = defineRouter(function APIRouter(router, {
 		const application = await Application.get(applicationId);
 
 		if (application === null) {
-			return ctx.throw(404, `Application(${application}) is NOT found.`);
+			return ctx.throw(401, `Application(${application}) is NOT found.`);
 		}
 
 		const keys = await PublikKey.query({

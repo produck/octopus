@@ -92,6 +92,8 @@ export const Brain = Duck.define({
 		}),
 	});
 
+	Log('principal');
+
 	async function halt() {
 		Bus.emit('halt-request');
 	}

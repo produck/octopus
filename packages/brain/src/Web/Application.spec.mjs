@@ -10,8 +10,9 @@ function KeyPairPem() {
 	const {
 		publicKey,
 		privateKey,
-	} = crypto.generateKeyPairSync('rsa', {
-		modulusLength: 512,
+	} = crypto.generateKeyPairSync('ec', {
+		// modulusLength: 512,
+		namedCurve: 'sect239k1',
 	});
 
 	return {
