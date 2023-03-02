@@ -31,7 +31,7 @@ export const Schema = S.Object({
 	}),
 
 	web: S.Object({
-		external: P.Function(() => {}),
+		external: P.Function(() => () => {}),
 	}),
 });
 

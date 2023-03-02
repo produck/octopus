@@ -12,6 +12,19 @@ describe('OctopusBrain()', function () {
 		Octopus.Brain();
 	});
 
+	it('should throw if bad options.web.external.', function () {
+		assert.throws(() => {
+			Octopus.Brain({
+				web: {
+					external: () => {},
+				},
+			});
+		}, {
+			name: 'TypeError',
+			message: 'Invalid "middleware <= Options.web.external()", one "function" expected.',
+		});
+	});
+
 	describe('.Model()', function () {
 		it('should register a new model.', function () {
 			const TestBrain = Octopus.Brain();

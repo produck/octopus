@@ -5,8 +5,6 @@ import * as DuckRunner from '@produck/duck-runner';
 import * as DuckCLI from '@produck/duck-cli';
 import * as DuckCLICommander from '@produck/duck-cli-commander';
 import * as DuckLog from '@produck/duck-log';
-import * as Quack from '@produck/quack';
-import * as DuckLogQuack from '@produck/duck-log-quack';
 
 import * as meta from './meta.gen.mjs';
 import * as CLI from './cli.mjs';
@@ -51,7 +49,7 @@ export const Brain = Duck.define({
 		}),
 	],
 }, function Brain({
-	Kit, Log, CLI, Bus, Runner,
+	Kit, CLI, Bus, Runner,
 }, ...args) {
 	const options = Options.normalize(...args.slice(0, 1));
 	const configuration = Configuration.normalize();
@@ -63,8 +61,9 @@ export const Brain = Duck.define({
 	const Procedure = Feature.Procedure.define({ ...options.Procedure });
 
 	const CustomEnvironment = Feature.Environment.define({ ...options.Environment });
+	const environment = new CustomEnvironment();
 
-	Kit.Environment = new CustomEnvironment();
+	Kit.Environment = environment;
 
 	Kit.Craft = Craft;
 	Kit.Procedure =  Procedure;
@@ -73,27 +72,26 @@ export const Brain = Duck.define({
 	Kit.Product = Feature.Product.define({ ...options.Product, Procedure });
 
 	Kit.Application = Feature.Application.define({ ...options.Application });
-	Kit.Brain = Feature.Brain.define({ ...options.Brain });
 	Kit.PublikKey = Feature.PublicKey.define({ ...options.PublicKey });
 	Kit.Tentacle = Feature.Tentacle.define({ ...options.Tentacle });
 
-	Log('AgentAccess', {
-		label: 'agent',
-		Transcriber: DuckLogQuack.Transcriber({
-			format: Quack.Format.Apache.Preset.CLF,
-		}),
-	});
+	const BrainExternalAccessor = {
+		MAX_ALIVE_GAP: () => environment.get('BRAIN.ALIVE.TIMEOUT'),
+		WATCHING_INTERVAL: () => environment.get('BRAIN.WATCH.INTERVAL'),
+	};
 
-	Log('principal');
+	Kit.Brain = Feature.Brain.define({
+		...options.Brain,
+		external: key => BrainExternalAccessor[key](),
+	});
 
 	Runner.ready();
 
-	async function halt() {
-		Bus.emit('halt-request');
-	}
-
 	const brain = Object.freeze({
-		halt, configuration,
+		configuration,
+		halt() {
+			Bus.emit('halt-request');
+		},
 		async boot(...args) {
 			await CLI.parse(...args);
 		},
