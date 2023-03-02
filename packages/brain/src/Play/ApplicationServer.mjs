@@ -4,6 +4,7 @@ import * as https from 'node:https';
 
 import * as Quack from '@produck/quack';
 import { definePlay } from '@produck/duck-runner';
+import * as DuckLogQuack from '@produck/duck-log-quack';
 
 const Mode = {
 	HTTP: function HttpOnly(app, { Log, Bus, Configuration }) {
@@ -57,12 +58,20 @@ const Mode = {
 export const play = definePlay(function ApplicationServer({
 	Kit, Log, Web, Configuration,
 }) {
-	const mode = Configuration.application.mode;
+	Log('ApplicationAccess', {
+		label: 'application',
+		Transcriber: DuckLogQuack.Transcriber({
+			format: Quack.Format.Apache.Preset.CLF,
+			assert: () => true,
+		}),
+	});
+
 	const app = Web.Application('Application');
 
-	Log.Application(`Running in "${mode}" mode.`);
-
 	return function () {
+		const mode = Configuration.application.mode;
+
+		Log.Application(`Running in "${mode}" mode.`);
 		Mode[mode](Quack.Format.Apache.HttpAdapter(app, Log.ApplicationAccess), Kit);
 	};
 });

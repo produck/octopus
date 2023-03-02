@@ -50,7 +50,7 @@ export const Brain = Duck.define({
 			System: {},
 		}),
 	],
-}, function OctopusHead({
+}, function Brain({
 	Kit, Log, CLI, Bus, Runner,
 }, ...args) {
 	const options = Options.normalize(...args.slice(0, 1));
@@ -81,14 +81,6 @@ export const Brain = Duck.define({
 		label: 'agent',
 		Transcriber: DuckLogQuack.Transcriber({
 			format: Quack.Format.Apache.Preset.CLF,
-		}),
-	});
-
-	Log('ApplicationAccess', {
-		label: 'application',
-		Transcriber: DuckLogQuack.Transcriber({
-			format: Quack.Format.Apache.Preset.CLF,
-			assert: () => true,
 		}),
 	});
 
