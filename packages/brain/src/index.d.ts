@@ -46,7 +46,10 @@ interface Options {
 	PublicKey?: Feature.PublicKey.Options.Value;
 	Tentacle?: Feature.Tentacle.Options.Value;
 
-	isEvaluatable?: () => Promise<void>;
+	observer: {
+		lock: (id: string) => Promise<boolean>;
+		unlock: (id: string) => Promise<void>;
+	};
 
 	cli?: {
 		options: {

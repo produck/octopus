@@ -59,7 +59,7 @@ export interface BrainConstructor extends Entity.Proxy.ModelConstructor, Externa
 	once<T extends EventName>(eventName: T, listener: EventMap[T]): this;
 
 	isActive(): boolean;
-	current(): Brain | null;
+	current: Brain | null;
 	boot(selfData: Data.Value): Promise<this>;
 	halt(): this;
 }

@@ -3,12 +3,12 @@ import * as Duck from '@produck/duck';
 export const assignJobToTentacle = Duck.inject(async ({
 	Craft, Tentacle, Job,
 }) => {
-	const allJobList = await Job.query();
-	const allTentacleList = await Tentacle.query();
-	const jobListByCraft = {};
-	const updatingList = [];
+	const notStartedJobList = await Job.query({ name: 'All', started: false });
+	const idleTentacleList = await Tentacle.query({ name: 'All', busy: false });
 
-	for (const job of allJobList) {
+	const jobListByCraft = {};
+
+	for (const job of notStartedJobList) {
 		if (!Object.hasOwn(jobListByCraft, job.craft)) {
 			jobListByCraft[job.craft] = [];
 		}
@@ -16,8 +16,10 @@ export const assignJobToTentacle = Duck.inject(async ({
 		jobListByCraft[job.craft].push(job);
 	}
 
+	const promiseList = [];
+
 	for (const name in jobListByCraft) {
-		const tentacleList = allTentacleList
+		const tentacleList = idleTentacleList
 			.filter(tentacle => tentacle.craft === name);
 
 		if (tentacleList.length === 0) {
@@ -40,12 +42,12 @@ export const assignJobToTentacle = Duck.inject(async ({
 
 			const job = jobList.find(job => job.id === jobId);
 
-			updatingList.push(tentacle.pick(jobId).save());
-			updatingList.push(job.start().save());
+			promiseList.push(tentacle.pick(jobId).save());
+			promiseList.push(job.start().save());
 		}
 	}
 
-	await Promise.allSettled(updatingList);
+	await Promise.allSettled(promiseList);
 });
 
 export { assignJobToTentacle as assign };

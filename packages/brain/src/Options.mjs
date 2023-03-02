@@ -17,7 +17,10 @@ export const Schema = S.Object({
 	PublicKey: Feature.PublicKey.Options.Schema,
 	Tentacle: Feature.Tentacle.Options.Schema,
 
-	isEvaluatable: P.Function(() => false),
+	observer: S.Object({
+		lock: P.Function(() => false),
+		unlock: P.Function(() => {}),
+	}),
 
 	cli: S.Object({
 		options: S.Object({

@@ -56,7 +56,7 @@ const Mode = {
 };
 
 export const play = definePlay(function ApplicationServer({
-	Kit, Log, Web, Configuration,
+	Kit, Log, Bus, Web, Environment, Configuration,
 }) {
 	Log('ApplicationAccess', {
 		label: 'application',
@@ -65,6 +65,8 @@ export const play = definePlay(function ApplicationServer({
 			assert: () => true,
 		}),
 	});
+
+	Bus.on('environment-updated', () => Environment.fetch());
 
 	const app = Web.Application('Application');
 
