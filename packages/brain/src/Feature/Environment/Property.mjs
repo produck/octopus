@@ -5,10 +5,9 @@ const sec = n => n * 1000;
 export const PropertySchemas = {
 	'ENVIRONMENT.REFRESH.INTERVAL': P.UINT32(sec(1)),
 	'ENVIRONMENT.AT': P.Integer(0),
-	'ENVIRONMENT.NOW': P.Integer(0),
 
 	'BRAIN.ALIVE.TIMEOUT': P.UINT32(sec(30)),
-	'BRAIN.ALIVE.INTERVAL': P.UINT32(sec(1)),
+	'BRAIN.WATCH.INTERVAL': P.UINT32(sec(1)),
 
 	'APPLICATION.REQUEST.TIMEOUT': P.UINT32(sec(60)),
 

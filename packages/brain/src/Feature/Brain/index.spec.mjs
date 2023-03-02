@@ -75,9 +75,6 @@ describe('Feature::Brain', function () {
 				const b = { ...EXAMPLE, ...ats, id: 'aabc4bdc-18dc-49b0-9b66-7be2cede3545' };
 
 				const EXTERNAL = {
-					get NOW() {
-						return Date.now();
-					},
 					MAX_ALIVE_GAP: 5000,
 					WATCHING_INTERVAL: 10,
 				};
@@ -165,14 +162,6 @@ describe('Feature::Brain', function () {
 				assert.equal(TestBrain.isActive, true);
 				TestBrain.halt();
 				assert.equal(TestBrain.isActive, false);
-			});
-		});
-
-		describe('::NOW', function () {
-			it('should be 0.', function () {
-				const TestBrain = defineBrain({ ...SAMPLE_OPTIONS });
-
-				assert.equal(TestBrain.NOW, 0);
 			});
 		});
 

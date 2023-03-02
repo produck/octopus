@@ -61,7 +61,7 @@ export class BaseEnvironment extends AbstractEnvironment {
 			this.emit('data-error', error);
 		}
 
-		return data;
+		return Object.assign(this.#cache, data);
 	}
 
 	start() {
@@ -76,7 +76,7 @@ export class BaseEnvironment extends AbstractEnvironment {
 				return;
 			}
 
-			Object.assign(self.#busy, await self.fetch());
+			await self.fetch();
 			setTimeout(() => loop(self), self.#cache['ENVIRONMENT.REFRESH.INTERVAL']);
 		})(this);
 	}

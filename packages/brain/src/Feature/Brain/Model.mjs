@@ -13,7 +13,7 @@ const At = key => [key, function atGetter() {
 }];
 
 const EMITTER_PROXY_KEYS = ['on', 'off', 'once'];
-const EXTERNAL_KEYS = ['NOW', 'MAX_ALIVE_GAP', 'WATCHING_INTERVAL'];
+const EXTERNAL_KEYS = ['MAX_ALIVE_GAP', 'WATCHING_INTERVAL'];
 const AT_KEYS = ['createdAt', 'visitedAt'];
 const PLAIN_KEYS = ['id', 'name', 'version'];
 const byIdInASC = (brainA, brainB) => brainA.id - brainB.id;
@@ -57,7 +57,6 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 
 		active = true;
 
-		const isAlive = brain => this.NOW - brain.visitedAt < this.MAX_ALIVE_GAP;
 		const self = await this.get(Data.normalize(_selfData));
 
 		current = self;
@@ -76,12 +75,12 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 					Throw.ImplementError('There SHOULD be 1 brain at least.');
 				}
 
-				const aliveList = list.filter(isAlive).sort(byIdInASC);
+				const aliveList = list
+					.filter(brain => self.visitedAt - brain.visitedAt < Brain.MAX_ALIVE_GAP)
+					.sort(byIdInASC);
 
-				if (aliveList.length > 0) {
-					if (aliveList[0].id === self.id) {
-						emitter.emit('grant');
-					}
+				if (aliveList.length > 0 && aliveList[0].id === self.id) {
+					emitter.emit('grant');
 				}
 			} catch (error) {
 				emitter.emit('watch-error', error);

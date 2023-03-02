@@ -7,7 +7,7 @@ export module Property {
 		'ENVIRONMENT.AT': number;
 
 		'BRAIN.ALIVE.TIMEOUT': number;
-		'BRAIN.ALIVE.INTERVAL': number;
+		'BRAIN.WATCH.INTERVAL': number;
 
 		'APPLICATION.REQUEST.TIMEOUT': number;
 
@@ -39,6 +39,7 @@ export module Options {
 
 type EventMap = {
 	'fetch': () => void;
+	'update': () => void;
 	'fetch-error': (error: Error) => void;
 	'set': <T extends Property.Key>(name: T, value: Property.Map[T]) => void;
 	'set-error': (error: Error) => void;

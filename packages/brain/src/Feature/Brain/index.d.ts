@@ -15,7 +15,6 @@ export module Data {
 }
 
 type ExternalNameMap = {
-	NOW: number;
 	MAX_ALIVE_GAP: number;
 	WATCHING_INTERVAL: number;
 }
