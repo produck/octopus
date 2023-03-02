@@ -17,6 +17,8 @@ export module Property {
 		'AGENT.SYNC.INTERVAL': number;
 		'AGENT.SYNC.TIMEOUT': number;
 
+		'TENTACLE.ALIVE.TIMEOUT': number;
+
 		'RJSP.SERVER.HOST': string;
 		'RJSP.SERVER.PORT': number;
 		'RJSP.REDIRECT.ENABLED': boolean;

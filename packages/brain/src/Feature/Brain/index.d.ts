@@ -52,6 +52,8 @@ export type EventName = keyof EventMap;
 export interface BrainConstructor extends Entity.Proxy.ModelConstructor, ExternalNameMap {
 	new(data: Data.Value): Brain;
 
+	get(id: string): Promise<Brain>;
+
 	on<T extends EventName>(eventName: T, listener: EventMap[T]): this;
 	off<T extends EventName>(eventName: T, listener: EventMap[T]): this;
 	once<T extends EventName>(eventName: T, listener: EventMap[T]): this;

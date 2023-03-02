@@ -22,8 +22,11 @@ export function defineBrain(...args) {
 			async _has(_id) {
 				return await options.has(normalizeId(_id));
 			},
-			async _get(_data) {
-				return await options.get(Data.normalize(_data));
+			async _get(_id) {
+				return await options.get(normalizeId(_id));
+			},
+			async _create(_data) {
+				return await options.create(Data.normalize(_data));
 			},
 			async _query() {
 				return await options.query();

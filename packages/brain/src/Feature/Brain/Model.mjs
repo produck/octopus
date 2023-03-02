@@ -57,7 +57,11 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 
 		active = true;
 
-		const self = await this.get(Data.normalize(_selfData));
+		const data = Data.normalize(_selfData);
+
+		const self = await this.has(data.id)
+			? await this.get(data.id)
+			: await this.create(data);
 
 		current = self;
 
@@ -109,6 +113,7 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 export const BaseBrain = Model.define({
 	name: 'Brain',
 	Super: EventEmitter,
+	creatable: true,
 	data: Data.normalize,
 	abstract: Definer.Abstract({}, { _external: null }),
 	base: defineBase,

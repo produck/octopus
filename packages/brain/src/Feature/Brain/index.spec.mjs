@@ -43,7 +43,7 @@ describe('Feature::Brain', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const brain = await TestBrain.get({ ...EXAMPLE });
+				const brain = await TestBrain.get(EXAMPLE.id);
 
 				assert.equal(brain.id, EXAMPLE.id);
 			});
@@ -81,6 +81,7 @@ describe('Feature::Brain', function () {
 
 				const TestBrain = defineBrain({
 					...SAMPLE_OPTIONS,
+					has: () => true,
 					get: () => ({ ...a }),
 					query: () => [a, b],
 					external: key => EXTERNAL[key],
@@ -227,7 +228,7 @@ describe('Feature::Brain', function () {
 						get: () => ({ ...example }),
 					});
 
-					const product = await TestBrain.get(EXAMPLE);
+					const product = await TestBrain.get(EXAMPLE.id);
 
 					assert.ok(product[key] instanceof Date);
 				});
@@ -241,7 +242,7 @@ describe('Feature::Brain', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const brain = await TestBrain.get({ ...EXAMPLE });
+				const brain = await TestBrain.get(EXAMPLE.id);
 
 				await brain.load();
 			});
@@ -254,7 +255,7 @@ describe('Feature::Brain', function () {
 					get: () => ({ ...EXAMPLE }),
 				});
 
-				const brain = await TestBrain.get({ ...EXAMPLE });
+				const brain = await TestBrain.get(EXAMPLE.id);
 				const jsonObject = JSON.parse(JSON.stringify(brain));
 
 				assert.deepEqual(jsonObject, {

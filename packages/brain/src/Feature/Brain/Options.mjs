@@ -16,8 +16,9 @@ const EXAMPLE = Data.normalize({
 export const Schema = S.Object({
 	name: P.StringPattern(/^[A-Z][a-zA-Z]*$/)('Custom'),
 	external: P.Function(() => 0),
-	get: P.Function(() => EXAMPLE),
 	has: P.Function(() => false),
+	get: P.Function(() => EXAMPLE),
+	create: P.Function(() => EXAMPLE),
 	query: P.Function(() => []),
 });
 
