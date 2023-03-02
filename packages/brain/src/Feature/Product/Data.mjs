@@ -7,12 +7,13 @@ import { NEW, OK, ERROR, TIMEOUT, ABORTED } from './Status.mjs';
 const AtSchema = P.OrNull(P.Integer());
 export const StatusSchema = P.Enum([NEW, OK, ERROR, TIMEOUT, ABORTED], 0);
 export const MessageSchemna = P.OrNull(P.String());
+export const DumpSchema = P.OrNull(Evaluator.DumpSchema);
 
 export const Schema = S.Object({
 	id: IdSchema,
 	owner: IdSchema,
 	model: P.String(),
-	dump: P.OrNull(Evaluator.DumpSchema),
+	dump: DumpSchema,
 	createdAt: AtSchema,
 	orderedAt: AtSchema,
 	startedAt: AtSchema,
@@ -26,3 +27,4 @@ export const Schema = S.Object({
 export const normalize = Normalizer(Schema);
 export const normalizeStatus = Normalizer(StatusSchema);
 export const normalizeMessage = Normalizer(MessageSchemna);
+export const normalizeDump = Normalizer(DumpSchema);

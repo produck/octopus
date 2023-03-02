@@ -117,7 +117,7 @@ export function defineProductBase(Procedure) {
 				.Accessor('dump', function () {
 					return _(this).dump;
 				}, function (_dump) {
-					_(this).dump = normalizeDump(_dump);
+					_(this).dump = Data.normalizeDump(_dump);
 				});
 
 			for (const key of PLAIN_KEYS) {

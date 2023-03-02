@@ -87,6 +87,7 @@ const defineBase = Definer.Base(({ Declare }) => {
 	};
 
 	Declare.Constructor
+		.Accessor('names', () => Object.keys(registry))
 		.Method('register', async function (...args) {
 			const craft = await this.create(...args);
 
