@@ -41,41 +41,23 @@ export module Data {
 	export function normalizeMessage(message: Message): Message;
 }
 
-export module Filter {
-	interface Abstract {
-		name: 'All' | 'OfProduct';
-		[key: string]: any;
+declare namespace Filter {
+	interface OfProduct {
+		name: 'OfProduct';
+		product: string;
 	}
 
-	export const FilterSchema: Schema<Abstract>
-	export function normalize(filter: Abstract): Abstract;
-
-	export namespace Preset {
-		export interface All {
-			name: 'All';
-		}
-
-		export const All: {
-			Schema: Schema<All>;
-			normalize: (filter: All) => All;
-		}
-
-		export interface OfProduct {
-			name: 'OfProduct';
-			product: string;
-		}
-
-		export const OfProduct: {
-			Schema: Schema<OfProduct>;
-			normalzie: (filter: OfProduct) => OfProduct;
-		}
+	interface All {
+		name: 'All';
 	}
+
+	type Descriptor = All | OfProduct;
 }
 
 export module Options {
 	interface Query {
-		All: (filter: Filter.Preset.All) => Promise<Array<Data.Value>>;
-		OfProduct: (filter: Filter.Preset.OfProduct) => Promise<Array<Data.Value>>;
+		All: (filter: Filter.All) => Promise<Array<Data.Value>>;
+		OfProduct: (filter: Filter.OfProduct) => Promise<Array<Data.Value>>;
 	}
 
 	interface Value {
@@ -97,7 +79,6 @@ export interface Job extends Entity.Proxy.Model {
 	readonly id: string;
 	readonly product: string;
 	readonly craft: string;
-	readonly visitedAt: Date;
 	readonly createdAt: Date;
 	readonly startedAt: Date | null;
 	readonly finishedAt: Date | null;
@@ -114,7 +95,7 @@ export interface Job extends Entity.Proxy.Model {
 
 export interface JobConstructor extends Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Job;
-	query(filter: Filter.Abstract): Promise<Array<Job>>;
+	query(filter: Filter.Descriptor): Promise<Array<Job>>;
 	create(data: Data.Value): Promise<Job>;
 	get(id: string): Promise<Job | null>;
 }

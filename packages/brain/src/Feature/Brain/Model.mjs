@@ -73,7 +73,7 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 			try {
 				await self.load();
 
-				const list = await Brain.query();
+				const list = await Brain.query({ name: 'All' });
 
 				if (list.length < 1) {
 					Throw.ImplementError('There SHOULD be 1 brain at least.');

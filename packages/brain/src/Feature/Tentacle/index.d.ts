@@ -16,49 +16,17 @@ export module Data {
 	export function normalize(options: Value): Value;
 }
 
-export module Filter {
-	interface Abstract {
-		name: 'All' | 'IsCraft';
-		[key: string]: any;
+declare namespace Filter {
+	interface All {
+		name: 'All';
 	}
 
-	export const FilterSchema: Schema<Abstract>
-	export function normalize(filter: Abstract): Abstract;
-
-	export namespace Preset {
-		interface RangeFilter {
-			busy: boolean | null;
-			ready: boolean | null;
-			visitedIn: number | null;
-			createdIn: number | null;
-		}
-
-
-		export interface All extends RangeFilter {
-			name: 'All';
-		}
-
-		export const All: {
-			Schema: Schema<All>;
-			normalize: (filter: All) => All;
-		}
-
-		export interface IsCraft extends RangeFilter {
-			name: 'IsCraft';
-			product: string;
-		}
-
-		export const IsCraft: {
-			Schema: Schema<IsCraft>;
-			normalzie: (filter: IsCraft) => IsCraft;
-		}
-	}
+	type Descriptor = All;
 }
 
 export module Options {
 	interface Query {
-		All: (filter: Filter.Preset.All) => Promise<Array<Data.Value>>;
-		IsCraft: (filter: Filter.Preset.IsCraft) => Promise<Array<Data.Value>>;
+		All: (filter: Filter.All) => Promise<Array<Data.Value>>;
 	}
 
 	interface Value {
@@ -91,7 +59,7 @@ export interface Tentacle extends Entity.Proxy.Model {
 
 export interface TentacleConstructor extends Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Tentacle;
-	query(filter: Filter.Abstract): Promise<Array<Tentacle>>;
+	query(filter: Filter.Descriptor): Promise<Array<Tentacle>>;
 	fetch(data: Data.Value): Promise<Tentacle>;
 }
 

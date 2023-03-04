@@ -1,31 +1,18 @@
-import { Normalizer, P, PROPERTY, S } from '@produck/mold';
+import { Cust, Normalizer, P, PROPERTY, S } from '@produck/mold';
 
-function FilterDescriptor(Schema) {
-	return { Schema, normalize: Normalizer(Schema) };
-}
-
-const RangeSchemas = {
-	busy: P.OrNull(P.Boolean()),
-	ready: P.OrNull(P.Boolean()),
-	visitedIn: P.OrNull(P.Integer()),
-	createdIn: P.OrNull(P.Integer()),
+const descriptors = {
+	All: S.Object({
+		name: P.Constant('All', true),
+	}),
 };
 
-export const Preset = {
-	All: FilterDescriptor(S.Object({
-		name: P.Constant('All', false),
-		...RangeSchemas,
-	})),
-	IsCraft: FilterDescriptor(S.Object({
-		name: P.Constant('IsCraft', false),
-		craft: P.String(),
-		...RangeSchemas,
-	})),
-};
-
-const FilterSchema = S.Object({
-	name: P.Enum(Object.keys(Preset)),
+const Schema = Cust(S.Object({
+	name: P.Enum(Object.keys(descriptors)),
 	[PROPERTY]: P.Any(),
-});
+}, (_value, _e, next) => {
+	const value = next();
 
-export const normalize = Normalizer(FilterSchema);
+	return descriptors[value.name](value);
+}));
+
+export const normalize = Normalizer(Schema);

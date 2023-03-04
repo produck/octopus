@@ -1,25 +1,23 @@
-import { Normalizer, P, PROPERTY, S } from '@produck/mold';
+import { Cust, Normalizer, P, PROPERTY, S } from '@produck/mold';
 import { UUIDSchema } from '../Utils.mjs';
 
-function FilterDescriptor(Schema) {
-	return { Schema, normalize: Normalizer(Schema) };
-}
-
-const FilterAllSchema = S.Object({ name: P.Constant('All', false) });
-
-const FilterOfProductSchemna = S.Object({
-	name: P.Constant('OfProduct'),
-	product: UUIDSchema,
-});
-
-export const Preset = {
-	All: FilterDescriptor(FilterAllSchema),
-	OfProduct: FilterDescriptor(FilterOfProductSchemna),
+const descriptors = {
+	All: S.Object({
+		name: P.Constant('All', true),
+	}),
+	OfProduct: S.Object({
+		name: P.Constant('OfProduct', true),
+		product: UUIDSchema,
+	}),
 };
 
-const FilterSchema = S.Object({
-	name: P.Enum(Object.keys(Preset)),
+const Schema = Cust(S.Object({
+	name: P.Enum(Object.keys(descriptors)),
 	[PROPERTY]: P.Any(),
+}), (_value, _e, next) => {
+	const value = next();
+
+	return descriptors[value.name](value);
 });
 
-export const normalize = Normalizer(FilterSchema);
+export const normalize = Normalizer(Schema);

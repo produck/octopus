@@ -40,10 +40,7 @@ export const Router = defineRouter(function ProductRouter(router, {
 			});
 		})
 		.post(async function createProduct(ctx) {
-			const list = await Product.query({
-				name: 'All',
-				started: false,
-			});
+			const list = await Product.query({ name: 'All', finished: false });
 
 			if (list.length >= Environment.get('PRODUCT.QUEUE.MAX')) {
 				return ctx.throw(429, 'Too many waiting product.');

@@ -14,7 +14,6 @@ const EXAMPLE = Data.normalize({
 
 const QuerySchema = S.Object({
 	All: P.Function(() => []),
-	IsCraft: P.Function(() => []),
 });
 
 export const Schema = S.Object({

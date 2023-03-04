@@ -49,10 +49,19 @@ type EventMap = {
 
 export type EventName = keyof EventMap;
 
+declare namespace Filter {
+	interface All {
+		name: 'All';
+	}
+
+	type Descriptor = All;
+}
+
 export interface BrainConstructor extends Entity.Proxy.ModelConstructor, ExternalNameMap {
 	new(data: Data.Value): Brain;
 
 	get(id: string): Promise<Brain>;
+	query(filter: Filter.Descriptor): Promise<Array<Brain>>;
 
 	on<T extends EventName>(eventName: T, listener: EventMap[T]): this;
 	off<T extends EventName>(eventName: T, listener: EventMap[T]): this;
