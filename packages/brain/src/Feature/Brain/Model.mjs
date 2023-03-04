@@ -3,6 +3,7 @@ import { Normalizer, P } from '@produck/mold';
 import { Definer, Model, _ } from '@produck/shop';
 
 import * as Data from './Data.mjs';
+import * as Private from './private.mjs';
 
 const Plain = key => [key, function () {
 	return _(this)[key];
@@ -35,7 +36,7 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 	}
 
 	const EmitterMethodProxy = key => [key, function proxy(...args) {
-		emitter[key](...args);
+		Private._(this).emitter[key](...args);
 
 		return this;
 	}];
@@ -48,14 +49,14 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 		Declare.Constructor.Accessor(...ExternalAccessor(key));
 	}
 
-	let current = null, active = false, emitter = new EventEmitter();
-
 	async function boot (_selfData) {
-		if (active) {
+		const context = Private._(this);
+
+		if (context.active) {
 			throw new Error('A brain is alive currently.');
 		}
 
-		active = true;
+		context.active = true;
 
 		const data = Data.normalize(_selfData);
 
@@ -63,10 +64,10 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 			? await this.get(data.id)
 			: await this.create(data);
 
-		current = self;
+		context.current = self;
 
 		(async function watch(Brain) {
-			if (current !== self) {
+			if (context.current !== self) {
 				return;
 			}
 
@@ -84,10 +85,10 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 					.sort(byIdInASC);
 
 				if (aliveList.length > 0 && aliveList[0].id === self.id) {
-					emitter.emit('grant');
+					context.emitter.emit('grant');
 				}
 			} catch (error) {
-				emitter.emit('watch-error', error);
+				context.emitter.emit('watch-error', error);
 			}
 
 			setTimeout(() => watch(Brain), Brain.WATCHING_INTERVAL);
@@ -97,15 +98,21 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 	}
 
 	function halt() {
-		active = false;
-		current = null;
+		const context = Private._(this);
+
+		context.active = false;
+		context.current = null;
 
 		return this;
 	}
 
 	Declare.Constructor
-		.Accessor('isActive', () => active)
-		.Accessor('current', () => current)
+		.Accessor('isActive', function () {
+			return Private._(this).active;
+		})
+		.Accessor('current', function () {
+			return Private._(this).current;
+		})
 		.Method('boot', boot)
 		.Method('halt', halt);
 });

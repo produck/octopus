@@ -1,14 +1,16 @@
+import { EventEmitter } from 'node:events';
 import { Definer, Entity } from '@produck/shop';
 
 import { normalizeUUID as normalizeId } from '../Utils.mjs';
 import { BaseBrain } from './Model.mjs';
 import * as Data from './Data.mjs';
 import * as Options from './Options.mjs';
+import * as Private from './private.mjs';
 
 export function defineBrain(...args) {
 	const options = Options.normalize(...args);
 
-	return Entity.define({
+	const BrainProxy = Entity.define({
 		name: options.name,
 		Model: BaseBrain,
 		define: Definer.Custom({
@@ -33,4 +35,12 @@ export function defineBrain(...args) {
 			},
 		}),
 	});
+
+	Private.set(BrainProxy, {
+		current: null,
+		active: false,
+		emitter: new EventEmitter(),
+	});
+
+	return BrainProxy;
 }
