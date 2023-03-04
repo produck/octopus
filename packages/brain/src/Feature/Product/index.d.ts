@@ -38,47 +38,28 @@ export module Data {
 	export function normalizeMessage(message: Message): Message;
 }
 
-export module Filter {
-	interface Abstract {
-		name: 'All' | 'OfOwner';
-		[key: string]: any;
+declare namespace Filter {
+	interface State {
+		ordered?: boolean | null;
+		finished?: boolean | null;
 	}
 
-	export const FilterSchema: Schema<Abstract>
-	export function normalize(filter: Abstract): Abstract;
-
-	export namespace Preset {
-		interface StateFilter {
-			ordered?: boolean | null;
-			started?: boolean | null;
-			finished?: boolean | null;
-		}
-
-		export interface All extends StateFilter {
-			name: 'All';
-		}
-
-		export const All: {
-			Schema: Schema<All>;
-			normalize: (filter: All) => All;
-		}
-
-		export interface OfOwner extends StateFilter {
-			name: 'OfOwner';
-			owner: string;
-		}
-
-		export const OfOwner: {
-			Schema: Schema<OfOwner>;
-			normalzie: (filter: OfOwner) => OfOwner;
-		}
+	interface OfOwner extends State{
+		name: 'OfProduct';
+		product: string;
 	}
+
+	interface All extends State{
+		name: 'All';
+	}
+
+	type Descriptor = All | OfOwner;
 }
 
 export module Options {
 	interface Query {
-		All: (filter: Filter.Preset.All) => Promise<Array<Data.Value>>;
-		OfOwner: (filter: Filter.Preset.OfOwner) => Promise<Array<Data.Value>>;
+		All: (filter: Filter.All) => Promise<Array<Data.Value>>;
+		OfOwner: (filter: Filter.OfOwner) => Promise<Array<Data.Value>>;
 	}
 
 	interface Value {
@@ -116,7 +97,7 @@ export interface Product extends Entity.Proxy.Model {
 
 export interface ProductConstructor extends Entity.Proxy.ModelConstructor {
 	new(data: Data.Value): Product;
-	query(filter: Filter.Abstract): Promise<Array<Product>>;
+	query(filter: Filter.Descriptor): Promise<Array<Product>>;
 	get(id: string): Promise<Product | null>;
 }
 
