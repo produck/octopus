@@ -47,24 +47,24 @@ describe('Web::Application', function () {
 		},
 		Product: {
 			query: {
-				OfOwner: ({ owner, started }) => {
+				OfOwner: ({ owner, finished }) => {
 					return backend.product.filter(data => {
 						if (data.owner !== owner) {
 							return false;
 						}
 
-						if (started !== null) {
-							return (data.startedAt === null) === started;
+						if (finished !== null) {
+							return (data.finished === null) === finished;
 						}
 					});
 				},
-				All: ({ started }) => {
+				All: ({ finished }) => {
 					return backend.product.filter(data => {
-						if (started === null) {
+						if (finished === null) {
 							return true;
 						}
 
-						return (data.startedAt !== null) === started;
+						return (data.finishedAt !== null) === finished;
 					});
 				},
 			},
@@ -256,7 +256,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -303,7 +302,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -329,7 +327,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -354,7 +351,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: Date.now() + 5000,
 				status: 200,
 				message: null,
@@ -379,7 +375,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -406,7 +401,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: Date.now() + 1000,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -431,7 +425,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: Date.now() + 1000,
 				status: 0,
 				message: null,
@@ -456,7 +449,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -481,7 +473,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -508,7 +499,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -532,7 +522,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: Date.now() + 1000,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -558,7 +547,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -584,7 +572,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -610,7 +597,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -637,7 +623,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -651,7 +636,6 @@ describe('Web::Application', function () {
 				craft: 'example',
 				createdAt: Date.now(),
 				visitedAt: Date.now(),
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -677,7 +661,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: null,
 				status: 0,
 				message: null,
@@ -701,7 +684,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: null,
-				startedAt: null,
 				finishedAt: Date.now() + 5000,
 				status: 200,
 				message: null,
@@ -725,7 +707,6 @@ describe('Web::Application', function () {
 				dump: { values: [], children: [] },
 				createdAt: Date.now(),
 				orderedAt: Date.now() + 1000,
-				startedAt: Date.now() + 2000,
 				finishedAt: Date.now() + 5000,
 				status: 100,
 				message: null,

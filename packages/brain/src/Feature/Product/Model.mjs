@@ -1,11 +1,10 @@
 import { Cust, Normalizer, U } from '@produck/mold';
 import { Definer, Model, _ } from '@produck/shop';
 
-import * as Evaluator from '../Evaluator/index.mjs';
 import * as Data from './Data.mjs';
 import * as STATUS from './Status.mjs';
 
-const AT_KEYS = ['createdAt', 'orderedAt', 'startedAt', 'finishedAt'];
+const AT_KEYS = ['createdAt', 'orderedAt', 'finishedAt'];
 
 const PLAIN_KEYS = [
 	'id', 'owner', 'model',
@@ -40,8 +39,6 @@ function toJSON() {
 	return object;
 }
 
-const normalizeDump = Normalizer(Evaluator.DumpSchema);
-
 export function defineProductBase(Procedure) {
 	const DataSchema = Cust(Data.Schema, (_v, _e, next) => {
 		const data = next();
@@ -74,19 +71,6 @@ export function defineProductBase(Procedure) {
 					}
 
 					_(this).orderedAt = Date.now();
-
-					return this;
-				})
-				.Method('start', function () {
-					if (this.orderedAt === null) {
-						throw new Error('This product is NOT ordered.');
-					}
-
-					if (this.startedAt !== null) {
-						throw new Error('This product has been started.');
-					}
-
-					_(this).startedAt = Date.now();
 
 					return this;
 				})

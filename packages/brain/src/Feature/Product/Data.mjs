@@ -16,7 +16,6 @@ export const Schema = S.Object({
 	dump: DumpSchema,
 	createdAt: AtSchema,
 	orderedAt: AtSchema,
-	startedAt: AtSchema,
 	finishedAt: AtSchema,
 	status: StatusSchema,
 	message: MessageSchemna,

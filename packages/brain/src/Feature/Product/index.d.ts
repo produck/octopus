@@ -22,7 +22,6 @@ export module Data {
 		model: string;
 		createdAt: number;
 		orderedAt: number | null;
-		startedAt: number | null;
 		finishedAt: number | null;
 		status: Status;
 		message: string | null;
@@ -106,7 +105,6 @@ export interface Product extends Entity.Proxy.Model {
 	dump: Procedure.ContextDump;
 	readonly createdAt: Date;
 	readonly orderedAt: Date | null;
-	readonly startedAt: Date | null;
 	readonly finishedAt: Date | null;
 	order: any;
 	artifact: any;

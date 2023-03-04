@@ -166,7 +166,7 @@ describe('::Feature::Product', function () {
 
 		const ats = {};
 
-		for (const key of ['createdAt', 'orderedAt', 'startedAt', 'finishedAt']) {
+		for (const key of ['createdAt', 'orderedAt', 'finishedAt']) {
 			describe(`.${key}`, function () {
 				it('should get null', async function () {
 					const TestProduct = defineProduct({
@@ -250,63 +250,6 @@ describe('::Feature::Product', function () {
 				await assert.rejects(async () => await product.setOrder(), {
 					name: 'Error',
 					message: 'This product has been ordered.',
-				});
-			});
-		});
-
-		describe('.start()', function () {
-			it('should update product.', async function () {
-				const example = { ...EXAMPLE, orderedAt: Date.now() };
-
-				const TestProduct = defineProduct({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...example }),
-					save: data => Object.assign(example, data),
-				});
-
-				const product = await TestProduct.get(EXAMPLE.id);
-
-				assert.equal(product.startedAt, null);
-				await product.start();
-				assert.notEqual(product.startedAt, null);
-			});
-
-			it('should throw if has not been ordered.', async function () {
-				const example = { ...EXAMPLE };
-
-				const TestProduct = defineProduct({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...example }),
-					save: data => Object.assign(example, data),
-				});
-
-				const product = await TestProduct.get(EXAMPLE.id);
-
-				assert.equal(product.startedAt, null);
-
-				await assert.rejects(async () => await product.start(), {
-					name: 'Error',
-					message: 'This product is NOT ordered.',
-				});
-			});
-
-			it('should throw if has been started.', async function () {
-				const example = { ...EXAMPLE, orderedAt: Date.now() };
-
-				const TestProduct = defineProduct({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...example }),
-					save: data => Object.assign(example, data),
-				});
-
-				const product = await TestProduct.get(EXAMPLE.id);
-
-				assert.equal(product.startedAt, null);
-				await product.start();
-
-				await assert.rejects(async () => await product.start(), {
-					name: 'Error',
-					message: 'This product has been started.',
 				});
 			});
 		});
