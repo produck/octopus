@@ -13,13 +13,17 @@ const EXAMPLE = Data.normalize({
 	visitedAt: now,
 });
 
+const QuerySchema = S.Object({
+	All: P.Function(() => []),
+});
+
 export const Schema = S.Object({
 	name: P.StringPattern(/^[A-Z][a-zA-Z]*$/)('Custom'),
 	external: P.Function(() => 0),
 	has: P.Function(() => false),
 	get: P.Function(() => EXAMPLE),
 	create: P.Function(() => EXAMPLE),
-	query: P.Function(() => []),
+	query: QuerySchema,
 });
 
 export const normalize = Normalizer(Schema);

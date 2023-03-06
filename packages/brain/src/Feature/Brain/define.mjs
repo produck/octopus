@@ -5,6 +5,7 @@ import { normalizeUUID as normalizeId } from '../Utils.mjs';
 import { BaseBrain } from './Model.mjs';
 import * as Data from './Data.mjs';
 import * as Options from './Options.mjs';
+import * as Filter from './Filter.mjs';
 import * as Private from './private.mjs';
 
 export function defineBrain(...args) {
@@ -30,8 +31,10 @@ export function defineBrain(...args) {
 			async _create(_data) {
 				return await options.create(Data.normalize(_data));
 			},
-			async _query() {
-				return await options.query();
+			async _query(_filter = { name: 'All' }) {
+				const filter = Filter.normalize(_filter);
+
+				return await options.query[filter.name](filter);
 			},
 		}),
 	});

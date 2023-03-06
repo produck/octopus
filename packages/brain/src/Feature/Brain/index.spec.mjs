@@ -53,7 +53,7 @@ describe('Feature::Brain', function () {
 			it('should get a [Brain].', async function () {
 				const TestBrain = defineBrain({
 					...SAMPLE_OPTIONS,
-					query: () => [{ ...EXAMPLE }],
+					query: { All: () => [{ ...EXAMPLE }] },
 				});
 
 				const brains = await TestBrain.query();
@@ -83,7 +83,7 @@ describe('Feature::Brain', function () {
 					...SAMPLE_OPTIONS,
 					has: () => true,
 					get: () => ({ ...a }),
-					query: () => [a, b],
+					query: { All: () => [a, b] },
 					external: key => EXTERNAL[key],
 				});
 
