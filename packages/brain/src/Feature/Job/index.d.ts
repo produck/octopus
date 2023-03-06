@@ -41,12 +41,17 @@ export module Data {
 }
 
 declare namespace Filter {
-	interface OfProduct {
+	interface State {
+		started?: boolean | null;
+		finished?: boolean | null;
+	}
+
+	interface OfProduct extends State {
 		name: 'OfProduct';
 		product: string;
 	}
 
-	interface All {
+	interface All extends State {
 		name: 'All';
 	}
 

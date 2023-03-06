@@ -67,6 +67,10 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 		_class.current = self;
 
 		(async function watch(Brain) {
+			if (self.isDestroyed) {
+				Throw.ImplementError('The brain should NOT destroyed.');
+			}
+
 			if (_class.current !== self) {
 				return;
 			}

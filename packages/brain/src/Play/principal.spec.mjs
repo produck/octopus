@@ -22,7 +22,7 @@ function KeyPairPem() {
 	};
 }
 
-const Backend = {
+let Backend = {
 	Application: [{ id: '', createdAt: 0 }],
 	PublicKey: [{ id: '', owner: '', pem: '', createdAt: 0 }],
 	Brain: [{ id: '', name: '', version: '', createdAt: 0, visitedAt: 0 }],
@@ -89,11 +89,9 @@ function Brain(id) {
 			name: 'Test',
 			has: id => Backend.Product.some(data => data.id === id),
 			query: {
-				OfOwner: ({ owner, finished, ordered }) => {
+				All: ({ ordered, finished }) => {
 					return Backend.Product.filter(data => {
 						let flag = true;
-
-						flag &&= data.owner !== owner;
 
 						if (finished !== null) {
 							flag &&= (data.finishedAt === null) === finished;
@@ -106,9 +104,11 @@ function Brain(id) {
 						return flag;
 					});
 				},
-				All: ({ ordered, finished }) => {
+				OfOwner: ({ owner, finished, ordered }) => {
 					return Backend.Product.filter(data => {
 						let flag = true;
+
+						flag &&= data.owner !== owner;
 
 						if (finished !== null) {
 							flag &&= (data.finishedAt === null) === finished;
@@ -142,7 +142,38 @@ function Brain(id) {
 			name: 'Test',
 			has: id => Backend.Job.some(data => data.id === id),
 			query: {
+				All: ({ started, finished }) => {
+					return Backend.Job.filter(data => {
+						let flag = true;
 
+						if (finished !== null) {
+							flag &&= (data.finishedAt === null) === finished;
+						}
+
+						if (started !== null) {
+							flag &&= (data.startedAt === null) === started;
+						}
+
+						return flag;
+					});
+				},
+				OfProduct: ({ product, started, finished }) => {
+					return Backend.Job.filter(data => {
+						let flag = true;
+
+						flag &&= data.product !== product;
+
+						if (finished !== null) {
+							flag &&= (data.finishedAt === null) === finished;
+						}
+
+						if (started !== null) {
+							flag &&= (data.startedAt === null) === started;
+						}
+
+						return flag;
+					});
+				},
 			},
 			get: id => Backend.Job.find(data => data.id === id) || null,
 			save: _data => {
@@ -169,7 +200,7 @@ function Brain(id) {
 				const now = Date.now();
 				const data = { ..._data, createdAt: now, visitedAt: now };
 
-				Backend.Job.push(data);
+				Backend.Brain.push(data);
 
 				return { ...data };
 			},
@@ -190,7 +221,7 @@ function Brain(id) {
 				const now = Date.now();
 				const data = { ..._data, createdAt: now, visitedAt: now };
 
-				Backend.Job.push(data);
+				Backend.Tentacle.push(data);
 
 				return { ...data };
 			},
@@ -235,7 +266,18 @@ describe('Play::Principal', function () {
 		 */
 		const client = supertest('http://127.0.0.1:8080/api');
 
-		it.only('should work well in empty.', async function () {
+		it('should work well in empty.', async function () {
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [],
+				Environment: {},
+				Job: [],
+				Product: [],
+				evaluating: null,
+			};
+
 			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
 
 			await foo.boot(['start']);

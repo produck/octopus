@@ -6,6 +6,10 @@ export const assignJobToTentacle = Duck.inject(async ({
 	const notStartedJobList = await Job.query({ name: 'All', started: false });
 	const idleTentacleList = await Tentacle.query({ name: 'All', busy: false });
 
+	if (notStartedJobList.length === 0 || idleTentacleList === 0) {
+		return;
+	}
+
 	const jobListByCraft = {};
 
 	for (const job of notStartedJobList) {

@@ -10,7 +10,7 @@ export const play = definePlay(function Principal({
 
 	Brain.on('grant', async function observe() {
 		try {
-			if (!await Options.observer.lock()) {
+			if (!await Options.observer.lock(Brain.current.id)) {
 				return;
 			}
 
@@ -19,10 +19,13 @@ export const play = definePlay(function Principal({
 			Bus.emit('lock-error');
 		}
 
+		const ObserverKit = PlayKit('Octopus::Play::Principal::Observer');
+
 		try {
-			await Observation.Tentacle.free(PlayKit);
-			await Observation.Product.evaluate(PlayKit);
-			await Observation.Job.assign(PlayKit);
+			await Observation.Tentacle.free(ObserverKit);
+			await Observation.Product.clear(ObserverKit);
+			await Observation.Product.evaluate(ObserverKit);
+			await Observation.Job.assign(ObserverKit);
 			Bus.emit('observe-ok');
 		} catch (error) {
 			Bus.emit('observe-error');

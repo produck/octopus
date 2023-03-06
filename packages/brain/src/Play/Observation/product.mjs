@@ -1,6 +1,6 @@
 import * as Duck from '@produck/duck';
 
-export const clearExpiredProuct = Duck.inject(async ({
+export const clearExpiredProduct = Duck.inject(async ({
 	Brain, Environment, Product,
 }) => {
 	const now = Brain.current.visitedAt;
@@ -70,4 +70,7 @@ export const evaluateProductProgress = Duck.inject(async ({
 	await Promise.allSettled(promiseList);
 });
 
-export { evaluateProductProgress as evaluate };
+export {
+	evaluateProductProgress as evaluate,
+	clearExpiredProduct as clear,
+};

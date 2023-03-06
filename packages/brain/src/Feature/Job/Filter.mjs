@@ -1,13 +1,22 @@
 import { Cust, Normalizer, P, PROPERTY, S } from '@produck/mold';
 import { UUIDSchema } from '../Utils.mjs';
 
+const StateSchema = P.OrNull(P.Boolean());
+
+const StateSchemas = {
+	started: StateSchema,
+	finished: StateSchema,
+};
+
 const descriptors = {
 	All: S.Object({
 		name: P.Constant('All', true),
+		...StateSchemas,
 	}),
 	OfProduct: S.Object({
 		name: P.Constant('OfProduct', true),
 		product: UUIDSchema,
+		...StateSchemas,
 	}),
 };
 
