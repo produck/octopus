@@ -23,7 +23,6 @@ export module Data {
 		product: string;
 		craft: string;
 		createdAt?: number;
-		visitedAt?: number;
 		startedAt?: number | null;
 		finishedAt?: number | null;
 		status?: Status;

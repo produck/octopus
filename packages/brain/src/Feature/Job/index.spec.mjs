@@ -175,7 +175,7 @@ describe('::Feature::Job', function () {
 		const ats = {};
 
 		for (const key of [
-			'visited', 'created', 'started', 'finished',
+			'created', 'started', 'finished',
 		].map(atKey => `${atKey}At`)) {
 			describe(`.${key}`, function () {
 				it('should get null', async function () {
@@ -223,24 +223,6 @@ describe('::Feature::Job', function () {
 					...EXAMPLE,
 					createdAt: new Date(now).toISOString(),
 				});
-			});
-		});
-
-		describe('.visit()', function () {
-			it('should update job.', async function () {
-				const example = { ...EXAMPLE };
-
-				const TestJob = defineJob({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...example }),
-					save: data => Object.assign(example, data),
-				});
-
-				const job = await TestJob.get(example.id);
-
-				assert.equal(example.visitedAt, null);
-				await job.visit().save();
-				assert.notEqual(example.visitedAt, null);
 			});
 		});
 

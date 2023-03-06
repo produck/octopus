@@ -4,9 +4,7 @@ import { Definer, Model, _ } from '@produck/shop';
 import * as Data from './Data.mjs';
 import * as STATUS from './Status.mjs';
 
-const AT_KEYS = [
-	'visitedAt', 'createdAt', 'startedAt', 'finishedAt',
-];
+const AT_KEYS = ['createdAt', 'startedAt', 'finishedAt'];
 
 const PLAIN_KEYS = [
 	'id', 'product',
@@ -54,11 +52,6 @@ export function defineJobModel(Craft) {
 			Declare.Prototype.notDestroyedRequired()
 				.Accessor('isFinished', function () {
 					return _(this).finishedAt !== null;
-				})
-				.Method('visit', function () {
-					_(this).visitedAt = Date.now();
-
-					return this;
 				})
 				.Method('start', function () {
 					if (this.startedAt !== null) {

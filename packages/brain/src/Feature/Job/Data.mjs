@@ -12,7 +12,6 @@ export const Schema = S.Object({
 	product: IdSchema,
 	craft: P.String(),
 	createdAt: AtSchema,
-	visitedAt: AtSchema,
 	startedAt: AtSchema,
 	finishedAt: AtSchema,
 	status: StatusSchema,

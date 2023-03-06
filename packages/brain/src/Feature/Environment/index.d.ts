@@ -12,7 +12,7 @@ export module Property {
 		'APPLICATION.REQUEST.TIMEOUT': number;
 
 		'PRODUCT.QUEUE.MAX': number;
-		'PRODUCT.ORDER.CREATION.TIMEOUT': number;
+		'PRODUCT.ORDER.TIMEOUT': number;
 
 		'AGENT.SYNC.INTERVAL': number;
 		'AGENT.SYNC.TIMEOUT': number;

@@ -635,7 +635,6 @@ describe('Web::Application', function () {
 				product: productId,
 				craft: 'example',
 				createdAt: Date.now(),
-				visitedAt: Date.now(),
 				finishedAt: null,
 				status: 0,
 				message: null,

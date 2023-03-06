@@ -1,9 +1,25 @@
 import * as Duck from '@produck/duck';
 
+export const clearExpiredProuct = Duck.inject(async ({
+	Brain, Environment, Product,
+}) => {
+	const now = Brain.current.visitedAt;
+	const timeout = Environment.get('PRODUCT.ORDER.TIMEOUT');
+	const list = await Product.query({ name: 'All', ordered: false });
+	const expiredList = list.filter(product => now - product.createdAt >= timeout);
+
+	for (const product of expiredList) {
+		await product.finish(201).save();
+	}
+});
+
 export const evaluateProductProgress = Duck.inject(async ({
 	Procedure, Product, Job, Craft,
 }) => {
-	const workingProductList = await Product.query({ name: 'All', finished: false });
+	const workingProductList = await Product.query({
+		name: 'All', finished: false, ordered: true,
+	});
+
 	const crafts = {};
 
 	for (const name of Craft.names) {

@@ -31,7 +31,6 @@ describe('Web::Agent', function () {
 		Job: {
 			get: () => backend.job[0],
 			save: (data) => {
-				backend.job[0].visitedAt = Date.now();
 				backend.job[0].target = data.target;
 				backend.job[0].status = data.status;
 				backend.job[0].message = data.message;
@@ -144,7 +143,6 @@ describe('Web::Agent', function () {
 						product: crypto.randomUUID(),
 						craft: 'example2',
 						createdAt: Date.now() - 5000,
-						visitedAt: Date.now(),
 						startedAt: Date.now(),
 						finishedAt: null,
 						message: null,
@@ -165,8 +163,6 @@ describe('Web::Agent', function () {
 				],
 			};
 
-			const oldVisitedAt = backend.job[0].visitedAt;
-
 			await client.put('/api/sync').send({
 				id: backend.tentacles[0].id,
 				craft: 'example2',
@@ -182,10 +178,6 @@ describe('Web::Agent', function () {
 					redirect: false,
 				},
 			}).expect(200);
-
-			await sleep();
-
-			assert.ok(backend.job[0].visitedAt > oldVisitedAt);
 		});
 	});
 
@@ -207,7 +199,6 @@ describe('Web::Agent', function () {
 						product: crypto.randomUUID(),
 						craft: 'example2',
 						createdAt: Date.now() - 5000,
-						visitedAt: Date.now(),
 						startedAt: Date.now(),
 						finishedAt: null,
 						message: null,
@@ -242,7 +233,6 @@ describe('Web::Agent', function () {
 						product: crypto.randomUUID(),
 						craft: 'example2',
 						createdAt: Date.now() - 5000,
-						visitedAt: Date.now(),
 						startedAt: Date.now(),
 						finishedAt: Date.now(),
 						status: 100,
@@ -268,7 +258,6 @@ describe('Web::Agent', function () {
 						product: crypto.randomUUID(),
 						craft: 'example2',
 						createdAt: Date.now() - 5000,
-						visitedAt: Date.now(),
 						startedAt: Date.now(),
 						finishedAt: null,
 						status: 0,
@@ -294,7 +283,6 @@ describe('Web::Agent', function () {
 						product: crypto.randomUUID(),
 						craft: 'example2',
 						createdAt: Date.now() - 5000,
-						visitedAt: Date.now(),
 						startedAt: Date.now(),
 						finishedAt: null,
 						status: 0,
@@ -333,7 +321,6 @@ describe('Web::Agent', function () {
 						product: crypto.randomUUID(),
 						craft: 'example2',
 						createdAt: Date.now() - 5000,
-						visitedAt: Date.now(),
 						startedAt: Date.now(),
 						finishedAt: Date.now(),
 						status: 100,
@@ -359,7 +346,6 @@ describe('Web::Agent', function () {
 						product: crypto.randomUUID(),
 						craft: 'example2',
 						createdAt: Date.now() - 5000,
-						visitedAt: Date.now(),
 						startedAt: Date.now(),
 						finishedAt: null,
 						status: 0,
@@ -388,7 +374,6 @@ describe('Web::Agent', function () {
 						product: crypto.randomUUID(),
 						craft: 'example2',
 						createdAt: Date.now() - 5000,
-						visitedAt: Date.now(),
 						startedAt: Date.now(),
 						finishedAt: null,
 						status: 0,
