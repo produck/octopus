@@ -1,13 +1,15 @@
+import { EventEmitter } from 'node:events';
 import { Definer, Entity } from '@produck/shop';
 
 import { BaseCraft, assertCraftName } from './Model.mjs';
 import * as Data from './Data.mjs';
 import * as Options from './Options.mjs';
+import * as Private from './private.mjs';
 
 export function defineCraft(...args) {
 	const options = Options.normalize(...args);
 
-	return Entity.define({
+	const CraftProxy = Entity.define({
 		name: options.name,
 		Model: BaseCraft,
 		define: Definer.Custom({}, {
@@ -42,4 +44,11 @@ export function defineCraft(...args) {
 			},
 		}),
 	});
+
+	Private.set(CraftProxy, {
+		registry: {},
+		emitter: new EventEmitter(),
+	});
+
+	return CraftProxy;
 }

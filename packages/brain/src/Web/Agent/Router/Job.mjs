@@ -19,7 +19,7 @@ export const Router = defineRouter(function JobRouter(router, {
 			ctx.body = ctx.state.job.source;
 		})
 		.use(function ensureUnfinished(ctx, next) {
-			if (ctx.state.job.isFinished) {
+			if (ctx.state.job.finished !== null) {
 				return ctx.throw(423, 'Job has been finished.');
 			}
 

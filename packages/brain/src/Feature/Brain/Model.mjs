@@ -50,13 +50,13 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 	}
 
 	async function boot (_selfData) {
-		const context = Private._(this);
+		const _class = Private._(this);
 
-		if (context.active) {
+		if (_class.active) {
 			throw new Error('A brain is alive currently.');
 		}
 
-		context.active = true;
+		_class.active = true;
 
 		const data = Data.normalize(_selfData);
 
@@ -64,10 +64,10 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 			? await this.get(data.id)
 			: await this.create(data);
 
-		context.current = self;
+		_class.current = self;
 
 		(async function watch(Brain) {
-			if (context.current !== self) {
+			if (_class.current !== self) {
 				return;
 			}
 
@@ -85,10 +85,10 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 					.sort(byIdInASC);
 
 				if (aliveList.length > 0 && aliveList[0].id === self.id) {
-					context.emitter.emit('grant');
+					_class.emitter.emit('grant');
 				}
 			} catch (error) {
-				context.emitter.emit('watch-error', error);
+				_class.emitter.emit('watch-error', error);
 			}
 
 			setTimeout(() => watch(Brain), Brain.WATCHING_INTERVAL);

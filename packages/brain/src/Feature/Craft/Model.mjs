@@ -1,9 +1,9 @@
 import { T, U } from '@produck/mold';
-import { EventEmitter } from 'node:events';
 import { Definer, Model, _ } from '@produck/shop';
 
 import * as Data from './Data.mjs';
 import { Evaluator } from './Evaluator.mjs';
+import * as Private from './private.mjs';
 
 const EMITTER_PROXY_KEYS = ['on', 'off', 'once'];
 const PLAIN_KEYS = ['name'];
@@ -39,10 +39,8 @@ function isTarget(any) {
 }
 
 const defineBase = Definer.Base(({ Declare }) => {
-	const emitter = new EventEmitter();
-
 	const EmitterMethodProxy = key => [key, function proxy(...args) {
-		emitter[key](...args);
+		Private._(this).emitter[key](...args);
 
 		return this;
 	}];
@@ -56,19 +54,20 @@ const defineBase = Definer.Base(({ Declare }) => {
 	}
 
 	function evaluate(jobList, tentacleList) {
+		const _class = Private._(this.constructor);
 		const matched = {};
 		const evaluator = new Evaluator(jobList, tentacleList, matched);
 
 		try {
 			_(this).policy(evaluator);
 		} catch (cause) {
-			emitter.emit('policy-error', cause);
+			_class.emitter.emit('policy-error', cause);
 
 			throw new Error('Bad craft policy.', { cause });
 		}
 
 		Object.freeze(matched);
-		emitter.emit('assign', matched);
+		_class.emitter.emit('assign', matched);
 
 		return matched;
 	}
@@ -78,30 +77,28 @@ const defineBase = Definer.Base(({ Declare }) => {
 		.Method('isSource', isSource)
 		.Method('isTarget', isTarget);
 
-	const registry = {};
-
-	const isValid = name => {
-		assertCraftName(name);
-
-		return Object.hasOwn(registry, name);
-	};
-
 	Declare.Constructor
-		.Accessor('names', () => Object.keys(registry))
+		.Accessor('names', function () {
+			return Object.keys(Private._(this).registry);
+		})
 		.Method('register', async function (...args) {
 			const craft = await this.create(...args);
 
-			registry[craft.name] = craft;
+			Private._(this).registry[craft.name] = craft;
 
 			return craft;
 		})
-		.Method('isValid', isValid)
-		.Method('use', (name) => {
-			if (!isValid(name)) {
+		.Method('isValid', function (name) {
+			assertCraftName(name);
+
+			return Object.hasOwn(Private._(this).registry, name);
+		})
+		.Method('use', function (name) {
+			if (!this.isValid(name)) {
 				throw new Error(`There is no craft(${name}).`);
 			}
 
-			return registry[name];
+			return Private._(this).registry[name];
 		});
 });
 

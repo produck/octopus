@@ -50,9 +50,6 @@ export function defineJobModel(Craft) {
 		data: Normalizer(DataSchema),
 		base: Definer.Base(({ Declare }) => {
 			Declare.Prototype.notDestroyedRequired()
-				.Accessor('isFinished', function () {
-					return _(this).finishedAt !== null;
-				})
 				.Method('start', function () {
 					if (this.startedAt !== null) {
 						throw new Error('This job has been started.');

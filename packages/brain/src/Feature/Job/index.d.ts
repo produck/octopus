@@ -85,7 +85,6 @@ export interface Job extends Entity.Proxy.Model {
 	readonly message: Data.Message;
 	readonly source: any;
 	readonly target: any;
-	readonly isFinished: boolean;
 	start(): this;
 	finish(status: Status, message: Data.Message): this;
 	complete(target: any): this;
