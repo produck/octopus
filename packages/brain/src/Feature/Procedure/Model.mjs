@@ -3,6 +3,7 @@ import { Definer, Model, _ } from '@produck/shop';
 
 import * as Evaluator from '../Evaluator/index.mjs';
 import * as Data from './Data.mjs';
+import * as Private from './private.mjs';
 
 const vm = new Evaluator.Engine();
 
@@ -71,29 +72,25 @@ const defineBase = Definer.Base(({ Declare }) => {
 		.Method('isArtifact', isArtifact)
 		.Method('evaluate', evaluate);
 
-	const registry = {};
-
-	const isValid = name => {
-		assertProcedureName(name);
-
-		return Object.hasOwn(registry, name);
-	};
-
 	Declare.Constructor
 		.Method('register', async function register(...args) {
 			const procedure = await this.create(...args);
 
-			registry[procedure.name] = procedure;
+			Private._(this).registry[procedure.name] = procedure;
 
 			return procedure;
 		})
-		.Method('isValid', isValid)
+		.Method('isValid', function (name) {
+			assertProcedureName(name);
+
+			return Object.hasOwn(Private._(this).registry, name);
+		})
 		.Method('use', function use(name) {
-			if (!isValid(name)) {
+			if (!this.isValid(name)) {
 				throw new Error(`There is no procedure(${name}).`);
 			}
 
-			return registry[name];
+			return Private._(this).registry[name];
 		});
 });
 

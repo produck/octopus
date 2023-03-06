@@ -3,11 +3,12 @@ import { Definer, Entity } from '@produck/shop';
 import { BaseProcedure, assertProcedureName } from './Model.mjs';
 import * as Options from './Options.mjs';
 import * as Data from './Data.mjs';
+import * as Private from './private.mjs';
 
 export function defineProcedure(...args) {
 	const options = Options.normalize(...args);
 
-	return Entity.define({
+	const ProcedureProxy = Entity.define({
 		name: options.name,
 		Model: BaseProcedure,
 		define: Definer.Custom({}, {
@@ -42,4 +43,10 @@ export function defineProcedure(...args) {
 			},
 		}),
 	});
+
+	Private.set(ProcedureProxy, {
+		registry: {},
+	});
+
+	return ProcedureProxy;
 }
