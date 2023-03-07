@@ -17,7 +17,12 @@ export module Data {
 }
 
 declare namespace Filter {
-	interface All {
+	interface State {
+		busy?: boolean | null;
+		ready?: boolean | null;
+	}
+
+	interface All extends State {
 		name: 'All';
 	}
 

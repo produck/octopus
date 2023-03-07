@@ -94,11 +94,11 @@ function Brain(id) {
 						let flag = true;
 
 						if (finished !== null) {
-							flag &&= (data.finishedAt === null) === finished;
+							flag &&= (data.finishedAt !== null) === finished;
 						}
 
 						if (ordered !== null) {
-							flag &&= (data.orderedAt === null) === ordered;
+							flag &&= (data.orderedAt !== null) === ordered;
 						}
 
 						return flag;
@@ -283,6 +283,33 @@ describe('Play::Principal', function () {
 			await foo.boot(['start']);
 			await sleep(5000);
 			foo.halt();
+		});
+
+		it('should finish expired products.', async function () {
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [],
+				Environment: {},
+				Job: [],
+				Product: [{
+					id: crypto.webcrypto.randomUUID(),
+					owner: crypto.webcrypto.randomUUID(),
+					model: 'bar', dump: null,
+					createdAt: Date.now() - 40000, orderedAt: null,
+					finishedAt: null, status: 0, message: null,
+					order: {}, artifact: {},
+				}],
+				evaluating: null,
+			};
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+
+			await foo.boot(['start']);
+			await sleep(3000);
+			foo.halt();
+			assert.notEqual(Backend.Product[0].finishedAt, null);
 		});
 	});
 

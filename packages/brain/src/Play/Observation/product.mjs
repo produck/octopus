@@ -5,7 +5,7 @@ export const clearExpiredProduct = Duck.inject(async ({
 }) => {
 	const now = Brain.current.visitedAt;
 	const timeout = Environment.get('PRODUCT.ORDER.TIMEOUT');
-	const list = await Product.query({ name: 'All', ordered: false });
+	const list = await Product.query({ name: 'All', ordered: false, finished: false });
 	const expiredList = list.filter(product => now - product.createdAt >= timeout);
 
 	for (const product of expiredList) {
