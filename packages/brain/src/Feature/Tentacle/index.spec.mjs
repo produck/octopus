@@ -187,20 +187,6 @@ describe('::Feature::Tentacle', function () {
 			});
 		});
 
-		describe('.visit()', function () {
-			it('should update visitedAt.', async function () {
-				const TestTentacle = defineTentacle({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...EXAMPLE }),
-				});
-
-				const tentacle = await TestTentacle.get(EXAMPLE.id);
-
-				tentacle.visit();
-				assert.notEqual(tentacle.visitedAt, EXAMPLE.visitedAt);
-			});
-		});
-
 		describe('.pick()', function () {
 			it('should set a job id.', async function () {
 				const TestTentacle = defineTentacle({

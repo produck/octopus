@@ -82,6 +82,11 @@ export function defineJobModel(Craft) {
 					this.finish(STATUS.OK);
 
 					return this;
+				})
+				.Method('toValue', function () {
+					const data = _(this);
+
+					return { id: data.id, createdAt: data.createdAt };
 				});
 
 			for (const key of PLAIN_KEYS) {

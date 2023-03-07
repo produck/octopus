@@ -1,12 +1,18 @@
 import * as Duck from '@produck/duck';
 
 export const assignJobToTentacle = Duck.inject(async ({
-	Craft, Tentacle, Job,
+	Brain, Craft, Tentacle, Job, Environment,
 }) => {
+	const now = Brain.current.visitedAt;
+	const aliveTimeout = Environment.get('TENTACLE.ALIVE.TIMEOUT');
+
 	const notStartedJobList = await Job.query({ name: 'All', started: false });
 	const idleTentacleList = await Tentacle.query({ name: 'All', busy: false });
 
-	if (notStartedJobList.length === 0 || idleTentacleList === 0) {
+	const aliveTentacleList = idleTentacleList
+		.filter(tentacle => now - tentacle.visitedAt < aliveTimeout);
+
+	if (notStartedJobList.length === 0 || aliveTentacleList.length === 0) {
 		return;
 	}
 
@@ -23,7 +29,7 @@ export const assignJobToTentacle = Duck.inject(async ({
 	const promiseList = [];
 
 	for (const name in jobListByCraft) {
-		const tentacleList = idleTentacleList
+		const tentacleList = aliveTentacleList
 			.filter(tentacle => tentacle.craft === name);
 
 		if (tentacleList.length === 0) {

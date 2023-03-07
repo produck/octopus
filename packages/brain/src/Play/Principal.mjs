@@ -15,8 +15,8 @@ export const play = definePlay(function Principal({
 			}
 
 			Bus.emit('lock-ok');
-		} catch {
-			Bus.emit('lock-error');
+		} catch (error) {
+			Bus.emit('lock-error', error.message);
 		}
 
 		const ObserverKit = PlayKit('Octopus::Play::Principal::Observer');

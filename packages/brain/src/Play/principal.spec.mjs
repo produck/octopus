@@ -147,11 +147,11 @@ function Brain(id) {
 						let flag = true;
 
 						if (finished !== null) {
-							flag &&= (data.finishedAt === null) === finished;
+							flag &&= (data.finishedAt !== null) === finished;
 						}
 
 						if (started !== null) {
-							flag &&= (data.startedAt === null) === started;
+							flag &&= (data.startedAt !== null) === started;
 						}
 
 						return flag;
@@ -164,11 +164,11 @@ function Brain(id) {
 						flag &&= data.product !== product;
 
 						if (finished !== null) {
-							flag &&= (data.finishedAt === null) === finished;
+							flag &&= (data.finishedAt !== null) === finished;
 						}
 
 						if (started !== null) {
-							flag &&= (data.startedAt === null) === started;
+							flag &&= (data.startedAt !== null) === started;
 						}
 
 						return flag;
@@ -265,7 +265,7 @@ function Brain(id) {
 				}
 			},
 		},
-	}).Craft('baz').Model('bar', { script });
+	}).Craft('baz').Craft('els').Model('bar', { script });
 
 	brain.configuration.id = id;
 	brain.configuration.application.http.port = 8081;
@@ -395,6 +395,50 @@ describe('Play::Principal', function () {
 			foo.halt();
 			assert.equal(Backend.Tentacle[0].job, null);
 			assert.equal(Backend.Job[0].status, 200);
+		});
+
+		it('should match 2 job with 1 tentacle.', async function () {
+			const jobId_0 = crypto.webcrypto.randomUUID();
+			const jobId_1 = crypto.webcrypto.randomUUID();
+
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [{
+					id: crypto.webcrypto.randomUUID(),
+					craft: 'baz', version: '0.0.0',
+					ready: true,
+					job: null,
+					createdAt: Date.now() - 100000, visitedAt: Date.now(),
+				}],
+				Environment: {},
+				Job: [{
+					id: jobId_0,
+					product: crypto.webcrypto.randomUUID(),
+					craft: 'baz',
+					createdAt: Date.now() - 30000, startedAt: null,
+					finishedAt: null, status: 0, message: null,
+					source: {}, target: {},
+				}, {
+					id: jobId_1,
+					product: crypto.webcrypto.randomUUID(),
+					craft: 'baz',
+					createdAt: Date.now() - 40000, startedAt: null,
+					finishedAt: null, status: 0, message: null,
+					source: {}, target: {},
+				}],
+				Product: [],
+				evaluating: null,
+			};
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+
+			await foo.boot(['start']);
+			await sleep(1000);
+			foo.halt();
+			assert.equal(Backend.Tentacle[0].job, jobId_1);
+			assert.notEqual(Backend.Job[1].startedAt, null);
 		});
 	});
 

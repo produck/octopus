@@ -22,14 +22,6 @@ export const BaseTentacle = Model.define({
 	data: Data.normalize,
 	base: Definer.Base(({ Declare }) => {
 		Declare.Prototype.notDestroyedRequired()
-			.Method('visit', async function (ready = true) {
-				const _data = _(this);
-
-				_data.visitedAt = Date.now();
-				_data.ready = ready;
-
-				return this;
-			})
 			.Method('pick', function (_jobId) {
 				_(this).job = normalizeUUID(_jobId);
 
@@ -39,6 +31,11 @@ export const BaseTentacle = Model.define({
 				_(this).job = null;
 
 				return this;
+			})
+			.Method('toValue', function () {
+				const data = _(this);
+
+				return { id: data.id };
 			});
 
 		for (const key of PLAIN_KEYS) {
