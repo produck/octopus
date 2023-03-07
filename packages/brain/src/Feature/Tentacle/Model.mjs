@@ -30,12 +30,12 @@ export const BaseTentacle = Model.define({
 
 				return this;
 			})
-			.Method('pick', async function (_jobId) {
+			.Method('pick', function (_jobId) {
 				_(this).job = normalizeUUID(_jobId);
 
 				return this;
 			})
-			.Method('free', async function () {
+			.Method('free', function () {
 				_(this).job = null;
 
 				return this;

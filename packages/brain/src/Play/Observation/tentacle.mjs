@@ -16,7 +16,7 @@ export const freeTentacle = Duck.inject(async ({
 			await tentacle.free().save();
 		}
 
-		if (!alive && job.finishedAt !== null) {
+		if (!alive && job.finishedAt === null) {
 			await job.finish(200, 'Agent disconnection.').save();
 		}
 	}

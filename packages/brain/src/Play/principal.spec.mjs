@@ -33,7 +33,7 @@ let Backend = {
 	Environment: {},
 	Job: [{
 		id: '', product: '', craft: '',
-		createdAt: 0, startedAt: 0, finishedAt: 0, message: '',
+		createdAt: 0, startedAt: 0, finishedAt: 0, status: 0, message: '',
 		source: {}, target: {},
 	}],
 	Product: [{
@@ -209,11 +209,25 @@ function Brain(id) {
 			name: 'Test',
 			has: id => Backend.Tentacle.some(data => data.id === id),
 			query: {
-				All: () => [...Backend.Tentacle],
+				All: ({ busy, ready }) => {
+					return Backend.Tentacle.filter(data => {
+						let flag = true;
+
+						if (busy !== null) {
+							flag &&= (data.job !== null) === busy;
+						}
+
+						if (ready !== null) {
+							flag &&= data.ready === ready;
+						}
+
+						return flag;
+					});
+				},
 			},
 			get: id => Backend.Tentacle.find(data => data.id === id) || null,
 			save: _data => {
-				const target = Backend.Job.find(data => data.id === _data.id);
+				const target = Backend.Tentacle.find(data => data.id === _data.id);
 
 				return Object.assign(target, _data, { visitedAt: Date.now() });
 			},
@@ -307,9 +321,80 @@ describe('Play::Principal', function () {
 			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
 
 			await foo.boot(['start']);
-			await sleep(3000);
+			await sleep(1000);
 			foo.halt();
 			assert.notEqual(Backend.Product[0].finishedAt, null);
+		});
+
+		it('should free a tentacle if its job finished.', async function () {
+			const jobId = crypto.webcrypto.randomUUID();
+
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [{
+					id: crypto.webcrypto.randomUUID(),
+					craft: 'baz', version: '0.0.0',
+					ready: true,
+					job: jobId,
+					createdAt: Date.now() - 10000, visitedAt: Date.now(),
+				}],
+				Environment: {},
+				Job: [{
+					id: jobId,
+					product: crypto.webcrypto.randomUUID(),
+					craft: 'baz',
+					createdAt: Date.now() - 30000, startedAt: Date.now() - 10000,
+					finishedAt: Date.now(), status: 100, message: null,
+					source: {}, target: {},
+				}],
+				Product: [],
+				evaluating: null,
+			};
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+
+			await foo.boot(['start']);
+			await sleep(1000);
+			foo.halt();
+			assert.equal(Backend.Tentacle[0].job, null);
+		});
+
+		it('should free a bad tentacle and set job error.', async function () {
+			const jobId = crypto.webcrypto.randomUUID();
+
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [{
+					id: crypto.webcrypto.randomUUID(),
+					craft: 'baz', version: '0.0.0',
+					ready: true,
+					job: jobId,
+					createdAt: Date.now() - 100000, visitedAt: Date.now() - 31000,
+				}],
+				Environment: {},
+				Job: [{
+					id: jobId,
+					product: crypto.webcrypto.randomUUID(),
+					craft: 'baz',
+					createdAt: Date.now() - 30000, startedAt: Date.now() - 30000,
+					finishedAt: null, status: 0, message: null,
+					source: {}, target: {},
+				}],
+				Product: [],
+				evaluating: null,
+			};
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+
+			await foo.boot(['start']);
+			await sleep(1000);
+			foo.halt();
+			assert.equal(Backend.Tentacle[0].job, null);
+			assert.equal(Backend.Job[0].status, 200);
 		});
 	});
 
