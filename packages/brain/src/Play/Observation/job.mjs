@@ -4,53 +4,47 @@ export const assignJobToTentacle = Duck.inject(async ({
 	Brain, Craft, Tentacle, Job, Environment,
 }) => {
 	const now = Brain.current.visitedAt;
-	const aliveTimeout = Environment.get('TENTACLE.ALIVE.TIMEOUT');
+	const timeout = Environment.get('TENTACLE.ALIVE.TIMEOUT');
+	const Group = {};
 
-	const notStartedJobList = await Job.query({ name: 'All', started: false });
-	const idleTentacleList = await Tentacle.query({ name: 'All', busy: false });
+	Craft.names.forEach(name => Group[name] = {
+		craft: Craft.use(name),
+		tentacles: [],
+		jobs: [],
+	});
 
-	const aliveTentacleList = idleTentacleList
-		.filter(tentacle => now - tentacle.visitedAt < aliveTimeout);
-
-	if (notStartedJobList.length === 0 || aliveTentacleList.length === 0) {
-		return;
-	}
-
-	const jobListByCraft = {};
-
-	for (const job of notStartedJobList) {
-		if (!Object.hasOwn(jobListByCraft, job.craft)) {
-			jobListByCraft[job.craft] = [];
+	await Job.query({ name: 'All', started: false }).then(list => {
+		for (const job of list) {
+			Group[job.craft].jobs.push(job);
 		}
+	});
 
-		jobListByCraft[job.craft].push(job);
-	}
+	await Tentacle.query({ name: 'All', busy: false }).then(list => {
+		const alives = list.filter(tentacle => now - tentacle.visitedAt < timeout);
+
+		for (const tentacle of alives) {
+			Group[tentacle.craft].tentacles.push(tentacle);
+		}
+	});
 
 	const promiseList = [];
 
-	for (const name in jobListByCraft) {
-		const tentacleList = aliveTentacleList
-			.filter(tentacle => tentacle.craft === name);
+	for (const name in Group) {
+		const { tentacles, jobs, craft } = Group[name];
 
-		if (tentacleList.length === 0) {
+		if (tentacles.length === 0 || jobs === 0) {
 			continue;
 		}
 
-		const craft = Craft.use(name);
-		const jobList = jobListByCraft[name];
-
 		const matched = craft.evaluate(
-			jobList.map(job => job.toValue()),
-			tentacleList.map(tentacle => tentacle.toValue()),
+			jobs.map(job => job.toValue()),
+			tentacles.map(tentacle => tentacle.toValue()),
 		);
 
 		for (const jobId in matched) {
 			const tentacleId = matched[jobId];
-
-			const tentacle = tentacleList
-				.find(tentacle => tentacle.id === tentacleId);
-
-			const job = jobList.find(job => job.id === jobId);
+			const tentacle = tentacles.find(tentacle => tentacle.id === tentacleId);
+			const job = jobs.find(job => job.id === jobId);
 
 			promiseList.push(tentacle.pick(jobId).save());
 			promiseList.push(job.start().save());
