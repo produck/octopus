@@ -135,6 +135,21 @@ describe('::Feature::Procedure', function () {
 			});
 		});
 
+		describe('::use()', function () {
+			it('should throw if bad name.', async function () {
+				const NativeProcedure = defineProcedure({
+					has: () => false,
+					get: () => EXAMPLE,
+					create: () => EXAMPLE,
+				});
+
+				assert.throws(() => NativeProcedure.use('notExisted'), {
+					name: 'Error',
+					message: 'There is no procedure(notExisted).',
+				});
+			});
+		});
+
 		describe('.isOrder()', function () {
 			it('should be true', async function () {
 				const NativeProcedure = defineProcedure({

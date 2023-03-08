@@ -142,6 +142,21 @@ describe('::Feature::Craft', function () {
 			});
 		});
 
+		describe('::use()', function () {
+			it('should throw if bad name.', async function () {
+				const NativeCraft = defineCraft({
+					has: () => false,
+					get: () => EXAMPLE,
+					create: () => EXAMPLE,
+				});
+
+				assert.throws(() => NativeCraft.use('notExisted'), {
+					name: 'Error',
+					message: 'There is no craft(notExisted).',
+				});
+			});
+		});
+
 		describe('.evaluate()', function () {
 			it('should evalute 1 time.', async function () {
 				const NativeCraft = defineCraft({

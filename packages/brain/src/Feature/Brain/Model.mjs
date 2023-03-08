@@ -67,16 +67,16 @@ const defineBase = Definer.Base(({ Declare, Throw }) => {
 		_class.current = self;
 
 		(async function watch(Brain) {
-			if (self.isDestroyed) {
-				Throw.ImplementError('The brain should NOT destroyed.');
-			}
-
 			if (_class.current !== self) {
 				return;
 			}
 
 			try {
 				await self.load();
+
+				if (self.isDestroyed) {
+					Throw.ImplementError('The brain should NOT destroyed.');
+				}
 
 				const list = await Brain.query({ name: 'All' });
 

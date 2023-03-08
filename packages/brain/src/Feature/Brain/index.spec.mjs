@@ -153,6 +153,32 @@ describe('Feature::Brain', function () {
 
 				TestBrain.halt();
 			});
+
+			it('should emit "watch-error" event if brain destroyed.', async function () {
+				const TestBrain = defineBrain({
+					...SAMPLE_OPTIONS,
+					has: () => false,
+					query: {
+						All: () => [{
+							...EXAMPLE,
+							createdAt: Date.now(),
+							visitedAt: Date.now(),
+						}],
+					},
+					get: () => null,
+				});
+
+				const catching = new Promise(resolve => {
+					TestBrain.on('watch-error', function (error) {
+						assert.equal(error.message, 'The brain should NOT destroyed.');
+						TestBrain.halt();
+						resolve();
+					});
+				});
+
+				await TestBrain.boot({ ...EXAMPLE });
+				await catching;
+			});
 		});
 
 		describe('::halt()', function () {
