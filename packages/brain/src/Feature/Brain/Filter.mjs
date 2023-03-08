@@ -9,10 +9,10 @@ const descriptors = {
 const Schema = Cust(S.Object({
 	name: P.Enum(Object.keys(descriptors)),
 	[PROPERTY]: P.Any(),
-}, (_value, _e, next) => {
+}), (_value, _e, next) => {
 	const value = next();
 
 	return descriptors[value.name](value);
-}));
+});
 
 export const normalize = Normalizer(Schema);

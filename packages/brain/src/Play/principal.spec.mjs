@@ -68,6 +68,8 @@ const script = {
 	},
 };
 
+let forceFlag = null, forceError = false, failUnlock = false;
+
 function Brain(id) {
 	const brain = Octopus.Brain({
 		name: 'Test', version: '1.0.0',
@@ -242,6 +244,14 @@ function Brain(id) {
 		},
 		observer: {
 			lock: id => {
+				if (forceError) {
+					throw new Error('Test');
+				}
+
+				if (forceFlag !== null) {
+					return forceFlag;
+				}
+
 				let flag = false;
 
 				if (Backend.evaluating === null || Backend.evaluating === id) {
@@ -260,6 +270,10 @@ function Brain(id) {
 				return flag;
 			},
 			unlock: id => {
+				if (failUnlock) {
+					throw new Error('Test');
+				}
+
 				if (Backend.evaluating === id) {
 					Backend.evaluating = null;
 				}
@@ -529,6 +543,90 @@ describe('Play::Principal', function () {
 
 			assert.equal(Backend.Product[0].status, 200);
 			assert.equal(Backend.Product[0].message, 'SAT failed 3 time.');
+		});
+
+		it('should lock failed.', async function () {
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [],
+				Environment: {},
+				Job: [],
+				Product: [],
+				evaluating: crypto.webcrypto.randomUUID(),
+			};
+
+			forceFlag = false;
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+
+			await foo.boot(['start']);
+			await sleep();
+			foo.halt();
+
+			forceFlag = true;
+		});
+
+		it('should lock failed by exception.', async function () {
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [],
+				Environment: {},
+				Job: [],
+				Product: [],
+				evaluating: crypto.webcrypto.randomUUID(),
+			};
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+
+			forceError = true;
+			await foo.boot(['start']);
+			await sleep();
+			foo.halt();
+			forceError = false;
+		});
+
+		it('should batch() failed by exception.', async function () {
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [null],
+				Environment: {},
+				Job: [],
+				Product: [],
+				evaluating: crypto.webcrypto.randomUUID(),
+			};
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+
+			await foo.boot(['start']);
+			await sleep();
+			foo.halt();
+		});
+
+		it('should unlock() failed by exception.', async function () {
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [],
+				Environment: {},
+				Job: [],
+				Product: [],
+				evaluating: crypto.webcrypto.randomUUID(),
+			};
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+
+			failUnlock = true;
+			await foo.boot(['start']);
+			await sleep();
+			foo.halt();
+			failUnlock = false;
 		});
 	});
 

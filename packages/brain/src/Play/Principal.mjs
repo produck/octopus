@@ -8,17 +8,22 @@ export const play = definePlay(function Principal({
 
 	Log('principal');
 
-	Brain.on('grant', async function observe() {
+	async function lock() {
 		try {
 			if (!await Options.observer.lock(Brain.current.id)) {
-				return;
+				return false;
 			}
 
 			Bus.emit('lock-ok');
+
+			return true;
 		} catch (error) {
 			Bus.emit('lock-error', error.message);
+			throw error;
 		}
+	}
 
+	async function batch() {
 		const ObserverKit = PlayKit('Octopus::Play::Principal::Observer');
 
 		try {
@@ -27,21 +32,35 @@ export const play = definePlay(function Principal({
 			await Observation.Product.evaluate(ObserverKit);
 			await Observation.Job.assign(ObserverKit);
 			Bus.emit('observe-ok');
-		} catch (error) {
-			Bus.emit('observe-error');
-		}
 
+			return true;
+		} catch (error) {
+			Bus.emit('observe-error', error.message);
+			throw error;
+		}
+	}
+
+	async function unlock() {
 		try {
 			await Options.observer.unlock();
 			Bus.emit('unlock-ok');
-		} catch {
-			Bus.emit('unlock-error');
+		} catch (error) {
+			Bus.emit('unlock-error', error.message);
+			throw error;
+		}
+	}
+
+	Brain.on('grant', async function observe() {
+		try {
+			await lock() && await batch() && await unlock();
+		} catch (error) {
+			Bus.emit('observe-error', error.message);
 		}
 	});
 
 	let running = false;
 
-	Bus.once('halt-request', () => {
+	Bus.on('halt-request', () => {
 		if (!running) {
 			return;
 		}
