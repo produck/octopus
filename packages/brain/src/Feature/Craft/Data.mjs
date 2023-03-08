@@ -15,11 +15,7 @@ export const FIFO = ({ Job, Tentacle, assign }) => {
 const OptionsSchemaOptions = {
 	policy: P.Function(FIFO),
 	source: P.Function(() => true),
-	target: P.Function(() => {
-		console.log('default target.');
-
-		return true;
-	}),
+	target: P.Function(() => true),
 };
 
 export const OptionsSchema = S.Object(OptionsSchemaOptions);

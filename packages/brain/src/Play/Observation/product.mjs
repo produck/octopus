@@ -44,7 +44,8 @@ export const evaluateProductProgress = Duck.inject(async ({
 			finished[id] = { id, ok: status === 100, target, error: message };
 		}
 
-		const { model, order, dump } = product;
+		const { model, order, dump: _dump } = product;
+		const dump = _dump === null ? {} : _dump;
 		const procedure = Procedure.use(model);
 		const result = procedure.evaluate(order, { dump, finished, crafts });
 
@@ -67,7 +68,7 @@ export const evaluateProductProgress = Duck.inject(async ({
 		await product.save();
 	});
 
-	await Promise.allSettled(promiseList);
+	await Promise.all(promiseList);
 });
 
 export {

@@ -108,7 +108,7 @@ function Brain(id) {
 					return Backend.Product.filter(data => {
 						let flag = true;
 
-						flag &&= data.owner !== owner;
+						flag &&= data.owner === owner;
 
 						if (finished !== null) {
 							flag &&= (data.finishedAt === null) === finished;
@@ -161,7 +161,7 @@ function Brain(id) {
 					return Backend.Job.filter(data => {
 						let flag = true;
 
-						flag &&= data.product !== product;
+						flag &&= data.product === product;
 
 						if (finished !== null) {
 							flag &&= (data.finishedAt !== null) === finished;
@@ -439,6 +439,96 @@ describe('Play::Principal', function () {
 			foo.halt();
 			assert.equal(Backend.Tentacle[0].job, jobId_1);
 			assert.notEqual(Backend.Job[1].startedAt, null);
+		});
+
+		it('should start a product.', async function () {
+			const productId = crypto.webcrypto.randomUUID();
+
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [],
+				Environment: {},
+				Job: [],
+				Product: [{
+					id: productId,
+					owner: crypto.webcrypto.randomUUID(),
+					model: 'bar', dump: null,
+					createdAt: Date.now() - 1000, orderedAt: Date.now(),
+					finishedAt: null, status: 0, message: null,
+					order: {}, artifact: {},
+				}],
+				evaluating: null,
+			};
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+
+			await foo.boot(['start']);
+			await sleep(1000);
+
+			Backend.Job[0].finishedAt = Date.now();
+			Backend.Job[0].status = 100;
+			Backend.Job[0].target = 'hello';
+
+			Backend.Job[1].finishedAt = Date.now();
+			Backend.Job[1].status = 100;
+			Backend.Job[1].target = 'world';
+
+			await sleep(1000);
+			foo.halt();
+
+			assert.deepEqual(Backend.Product[0].artifact, ['hello', 'world']);
+		});
+
+		it('should finish product in error.', async function () {
+			const productId = crypto.webcrypto.randomUUID();
+
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [],
+				Environment: {},
+				Job: [],
+				Product: [{
+					id: productId,
+					owner: crypto.webcrypto.randomUUID(),
+					model: 'bar', dump: null,
+					createdAt: Date.now() - 1000, orderedAt: Date.now(),
+					finishedAt: null, status: 0, message: null,
+					order: {}, artifact: {},
+				}],
+				evaluating: null,
+			};
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+
+			await foo.boot(['start']);
+
+			await sleep(1000);
+			Backend.Job[0].finishedAt = Date.now();
+			Backend.Job[0].status = 200;
+			Backend.Job[1].finishedAt = Date.now();
+			Backend.Job[1].status = 200;
+
+			await sleep(1000);
+			Backend.Job[2].finishedAt = Date.now();
+			Backend.Job[2].status = 200;
+			Backend.Job[3].finishedAt = Date.now();
+			Backend.Job[3].status = 200;
+
+			await sleep(1000);
+			Backend.Job[4].finishedAt = Date.now();
+			Backend.Job[4].status = 200;
+			Backend.Job[5].finishedAt = Date.now();
+			Backend.Job[5].status = 200;
+
+			await sleep(1000);
+			foo.halt();
+
+			assert.equal(Backend.Product[0].status, 200);
+			assert.equal(Backend.Product[0].message, 'SAT failed 3 time.');
 		});
 	});
 

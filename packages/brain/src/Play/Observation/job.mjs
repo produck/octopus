@@ -51,7 +51,7 @@ export const assignJobToTentacle = Duck.inject(async ({
 		}
 	}
 
-	await Promise.allSettled(promiseList);
+	await Promise.all(promiseList);
 });
 
 export { assignJobToTentacle as assign };
