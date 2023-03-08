@@ -1,26 +1,10 @@
 import * as crypto from 'node:crypto';
 import * as assert from 'node:assert/strict';
-import supertest from 'supertest';
 import { describe, it } from 'mocha';
 
 import * as Octopus from '../index.mjs';
 
 const sleep = (ms = 1000) => new Promise(resolve => setTimeout(resolve, ms));
-
-function KeyPairPem() {
-	const {
-		publicKey,
-		privateKey,
-	} = crypto.generateKeyPairSync('ec', {
-		// modulusLength: 512,
-		namedCurve: 'sect239k1',
-	});
-
-	return {
-		public: publicKey.export({ format: 'pem', type: 'spki' }),
-		private: privateKey.export({ format: 'pem', type: 'pkcs8' }),
-	};
-}
 
 let Backend = {
 	Application: [{ id: '', createdAt: 0 }],
@@ -194,7 +178,17 @@ function Brain(id) {
 		Brain: {
 			name: 'Test',
 			has: id => Backend.Brain.some(data => data.id === id),
-			get: id => Backend.Brain.find(data => data.id === id) || null,
+			get: id => {
+				const data = Backend.Brain.find(data => data.id === id);
+
+				if (!data) {
+					return null;
+				}
+
+				data.visitedAt = Date.now();
+
+				return { ...data };
+			},
 			query: {
 				All: () => [...Backend.Brain],
 			},
@@ -254,7 +248,14 @@ function Brain(id) {
 
 				let flag = false;
 
-				if (Backend.evaluating === null || Backend.evaluating === id) {
+				const now = Date.now();
+
+				const sorted = Backend.Brain.slice(0)
+					.filter((data) => now - data.visitedAt < 30000)
+					.sort((a, b) => a.id - b.id);
+
+				if (id === sorted[0].id) {
+					console.log('lock', id);
 					Backend.evaluating = id;
 					flag = true;
 				} else {
@@ -275,6 +276,7 @@ function Brain(id) {
 				}
 
 				if (Backend.evaluating === id) {
+					console.log('unlock', id);
 					Backend.evaluating = null;
 				}
 			},
@@ -289,11 +291,6 @@ function Brain(id) {
 
 describe('Play::Principal', function () {
 	describe('solo', function () {
-		/**
-		 * @type {ReturnType<import('supertest')>}
-		 */
-		const client = supertest('http://127.0.0.1:8080/api');
-
 		it('should work well in empty.', async function () {
 			Backend = {
 				Application: [],
@@ -565,7 +562,7 @@ describe('Play::Principal', function () {
 			await sleep();
 			foo.halt();
 
-			forceFlag = true;
+			forceFlag = null;
 		});
 
 		it('should lock failed by exception.', async function () {
@@ -631,6 +628,52 @@ describe('Play::Principal', function () {
 	});
 
 	describe('cluster', function () {
+		it('should switch to a new brain.', async function () {
+			let evaluating = null, last;
 
+			Backend = {
+				Application: [],
+				PublicKey: [],
+				Brain: [],
+				Tentacle: [],
+				Environment: {},
+				Job: [],
+				Product: [],
+				get evaluating() {
+					return evaluating;
+				},
+				set evaluating(value) {
+					console.log('set', value);
+					evaluating = value;
+
+					if (value !== null) {
+						last = value;
+					}
+				},
+			};
+
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+			const bar = Brain('7232d129-f4ce-4d96-a76a-a0cbb2db72db');
+
+			bar.configuration.agent.port = 9174;
+			bar.configuration.application.http.port = 8082;
+
+			await foo.boot(['start']);
+			await bar.boot(['start']);
+			await sleep(3000);
+			assert.equal(last, '6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+			foo.halt();
+
+			await sleep(11000);
+			assert.equal(last, '6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+			await sleep(20000);
+			assert.equal(last, '7232d129-f4ce-4d96-a76a-a0cbb2db72db');
+
+			await foo.boot(['start']);
+			await sleep(3000);
+			foo.halt();
+			bar.halt();
+			assert.equal(last, '6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+		});
 	});
 });

@@ -16,14 +16,15 @@ export const play = definePlay(function AgentServer({
 
 	const app = Web.Application('Agent');
 	const _app = Quack.Format.Apache.HttpAdapter(app, Log.AgentAccess);
-	const { host, port } = Configuration.agent;
 	const server = http.createServer(_app);
 
 	Bus
 		.on('environment-updated', () => Environment.fetch())
-		.once('halt-request', () => server.close());
+		.on('halt-request', () => server.close());
 
 	return function startAgentServer() {
+		const { host, port } = Configuration.agent;
+
 		server.listen(port, host);
 		Log.Agent(`Agent RJSP server is listening: host=${host} port=${port}.`);
 	};

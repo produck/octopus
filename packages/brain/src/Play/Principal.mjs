@@ -42,7 +42,7 @@ export const play = definePlay(function Principal({
 
 	async function unlock() {
 		try {
-			await Options.observer.unlock();
+			await Options.observer.unlock(Brain.current.id);
 			Bus.emit('unlock-ok');
 		} catch (error) {
 			Bus.emit('unlock-error', error.message);
