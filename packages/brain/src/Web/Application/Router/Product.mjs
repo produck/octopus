@@ -18,7 +18,7 @@ const isState = (data) => {
 };
 
 export const Router = defineRouter(function ProductRouter(router, {
-	Environment, Procedure, Product,
+	Environment, Procedure, Product, Job,
 }) {
 	router
 		.use(KoaBody.default())
@@ -85,6 +85,15 @@ export const Router = defineRouter(function ProductRouter(router, {
 			}
 
 			await product.finish(202, 'By application.').save();
+
+			const jobList = await Job.query({
+				name: 'OfProduct',
+				product: product.id,
+				finished: false,
+			});
+
+			await Promise.all(jobList.map(job => job.finish(202).save()));
+
 			ctx.body = { finished: true };
 		});
 });
