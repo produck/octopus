@@ -37,16 +37,13 @@ export const Router = defineRouter(function JobRouter(router, {
 
 			await job.complete(target).save();
 
+			ctx.status = 201;
 			ctx.body = job.target;
 		})
 		.post('/{jobId}/error', async function setError(ctx) {
 			const { body: error } = ctx.request;
 
-			const message = typeof error === 'object'
-				? JSON.stringify(error)
-				: String(error);
-
-			await ctx.state.job.finish(200, message).save();
+			await ctx.state.job.finish(200, error.message).save();
 
 			ctx.body = error;
 		});
