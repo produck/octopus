@@ -1,17 +1,7 @@
-import { Normalizer, P, S, T, U } from '@produck/mold';
+import { T, U } from '@produck/mold';
 
-import * as RJSP from './RJSP.mjs';
-
-const DEFAULT_TIMEOUT = 60000;
-
-const OptionsSchema = S.Object({
-	host: P.Function(() => '127.0.0.1'),
-	port: P.Function(() => 9173),
-	job: P.Function(() => null),
-	timeout: P.Function(() => DEFAULT_TIMEOUT),
-});
-
-const normalizeOptions = Normalizer(OptionsSchema);
+import * as Data from './Data.mjs';
+import * as Options from './Options.mjs';
 
 const STATIC_HEADER = {
 	'Content-Type': 'application/json',
@@ -30,7 +20,7 @@ const Result = (code, body = null) => ({ code, body });
 
 export class RJSPClient {
 	constructor(_options) {
-		const options = normalizeOptions(_options);
+		const options = Options.normalize(_options);
 
 		this.options = Object.freeze(options);
 	}
@@ -90,7 +80,7 @@ export class RJSPClient {
 	}
 
 	async sync(_requestData) {
-		const requestData = RJSP.normalizeData(_requestData);
+		const requestData = Data.normalizeData(_requestData);
 
 		const response = await fetch(this.SYNC_URL, {
 			...this.FETCH_OPTIIONS,
@@ -107,7 +97,7 @@ export class RJSPClient {
 			try {
 				const _responseData = await response.json();
 
-				return Result(0x01, RJSP.normalizeData(_responseData));
+				return Result(0x01, Data.normalizeData(_responseData));
 			} catch {
 				return Result(0x22);
 			}
@@ -132,7 +122,7 @@ export class RJSPClient {
 
 		if (response.ok) {
 			try {
-				return Result(0x03, await response.json());
+				return Result(0x02, await response.json());
 			} catch {
 				return Result(0x12);
 			}
