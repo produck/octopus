@@ -1,12 +1,16 @@
 import { Normalizer, P, S } from '@produck/mold';
 
-const ConfigurationSchema = S.Object({
-	at: P.Integer(),
-	interval: P.UINT32(),
-	timeout: P.UINT32(),
-	host: P.String(),
-	port: P.Port(),
-	redirect: P.Boolean(),
+export const HostSchema = P.String('127.0.0.1');
+export const PortSchema = P.Port(9173);
+
+const ConfigSchema = S.Object({
+	at: P.Integer(0),
+	interval: P.UINT32(1000),
+	timeout: P.UINT32(5000),
+	retry: P.UINT8(3),
+	host: HostSchema,
+	port: PortSchema,
+	redirect: P.Boolean(false),
 });
 
 const DataSchema = S.Object({
@@ -15,7 +19,8 @@ const DataSchema = S.Object({
 	version: P.String(),
 	ready: P.Boolean(),
 	job: P.OrNull(P.String(), true),
-	config: ConfigurationSchema,
+	config: ConfigSchema,
 });
 
 export const normalizeData = Normalizer(DataSchema);
+export const normalizeConfig = Normalizer(ConfigSchema);

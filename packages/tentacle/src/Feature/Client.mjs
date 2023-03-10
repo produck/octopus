@@ -26,7 +26,7 @@ const throws = message => {
 	throw new Error(message);
 };
 
-const Result = (code, data = null) => ({ code, data });
+const Result = (code, body = null) => ({ code, body });
 
 export class RJSPClient {
 	constructor(_options) {
@@ -64,15 +64,15 @@ export class RJSPClient {
 		return job;
 	}
 
-	get SOURCE_URL() {
+	get #SOURCE_URL() {
 		return `${this.baseURL}/api/${this.JOB}/source`;
 	}
 
-	get TARGET_URL() {
+	get #TARGET_URL() {
 		return `${this.baseURL}/api/${this.JOB}/target`;
 	}
 
-	get ERROR_URL() {
+	get #ERROR_URL() {
 		return `${this.baseURL}/api/${this.JOB}/error`;
 	}
 
@@ -97,37 +97,52 @@ export class RJSPClient {
 			method: 'PUT',
 			body: JSON.stringify(requestData),
 			signal: AbortSignal.timeout(requestData.config.timeout),
-		});
+		}).catch(() => null);
+
+		if (response === null) {
+			return Result(0x21);
+		}
+
+		if (response.ok) {
+			try {
+				const _responseData = await response.json();
+
+				return Result(0x01, RJSP.normalizeData(_responseData));
+			} catch {
+				return Result(0x22);
+			}
+		}
 
 		if (response.status === 403) {
-			throw new Error('Unavailable craft.');
+			return Result(0x41);
 		}
 
-		const _responseData = await response.json();
-
-		try {
-			return Result(0x00, RJSP.normalizeData(_responseData));
-		} catch (error) {
-			// Invalid RJSP Server.
-			return Result(0x20);
-		}
+		return Result(0x20);
 	}
 
 	async getSource() {
-		const response = await fetch(this.SOURCE_URL, {
+		const response = await fetch(this.#SOURCE_URL, {
 			...this.FETCH_OPTIIONS,
 			method: 'GET',
-		});
+		}).catch(() => null);
+
+		if (response === null) {
+			return Result(0x21);
+		}
 
 		if (response.ok) {
-			return Result(0x00, await response.json());
+			try {
+				return Result(0x03, await response.json());
+			} catch {
+				return Result(0x12);
+			}
 		}
 
 		if (response.status === 404) {
-			return Result(0x10);
+			return Result(0x11);
 		}
 
-		if (response.status === )
+		return Result(0x10);
 	}
 
 	async setTarget(data) {
@@ -135,14 +150,58 @@ export class RJSPClient {
 			U.throwError('data', 'object');
 		}
 
-		const response = await fetch(this.TARGET_URL, {
+		const response = await fetch(this.#TARGET_URL, {
 			...this.FETCH_OPTIIONS,
 			method: 'POST',
 			body: JSON.stringify(data),
-		});
+		}).catch(() => null);
+
+		if (response === null) {
+			return Result(0x21);
+		}
+
+		if (response.ok) {
+			try {
+				return Result(0x03, await response.json());
+			} catch {
+				return Result(0x13);
+			}
+		}
+
+		if (response.status === 423) {
+			return Result(0x14);
+		}
+
+		return Result(0x10);
 	}
 
 	async setError(message = null) {
+		if (!T.Native.String(message) && !T.Helper.Null(message)) {
+			U.throwError('message', 'string or null');
+		}
 
+		const response = await fetch(this.#ERROR_URL, {
+			...this.FETCH_OPTIIONS,
+			method: 'POST',
+			body: JSON.stringify({ message }),
+		}).catch(() => null);
+
+		if (response === null) {
+			return Result(0x21);
+		}
+
+		if (response.ok) {
+			try {
+				return Result(0x04, await response.json());
+			} catch {
+				return Result(0x14);
+			}
+		}
+
+		if (response.status === 423) {
+			return Result(0x14);
+		}
+
+		return Result(0x10);
 	}
 }
