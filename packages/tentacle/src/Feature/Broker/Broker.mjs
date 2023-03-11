@@ -10,6 +10,10 @@ export class Broker {
 		this.#work = null;
 	}
 
+	get name() {
+		return this.#options.name;
+	}
+
 	get busy() {
 		return this.#work !== null;
 	}

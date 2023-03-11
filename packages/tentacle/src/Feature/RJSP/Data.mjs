@@ -13,7 +13,7 @@ const ConfigSchema = S.Object({
 	redirect: P.Boolean(false),
 });
 
-const DataSchema = S.Object({
+const Schema = S.Object({
 	id: P.String(),
 	craft: P.String(),
 	version: P.String(),
@@ -22,5 +22,5 @@ const DataSchema = S.Object({
 	config: ConfigSchema,
 });
 
-export const normalizeData = Normalizer(DataSchema);
+export const normalize = Normalizer(Schema);
 export const normalizeConfig = Normalizer(ConfigSchema);

@@ -25,7 +25,7 @@ export class RJSPClient {
 		this.options = Object.freeze(options);
 	}
 
-	get baseURL() {
+	get #baseURL() {
 		const host = this.options.host();
 		const port = this.options.port();
 
@@ -40,11 +40,7 @@ export class RJSPClient {
 		return `http://${host}:${port}`;
 	}
 
-	get SYNC_URL() {
-		return `${this.baseURL}/api/sync`;
-	}
-
-	get JOB() {
+	get #JOB() {
 		const job = this.options.job();
 
 		if (!T.Native.String(job)) {
@@ -54,19 +50,23 @@ export class RJSPClient {
 		return job;
 	}
 
+	get #SYNC_URL() {
+		return `${this.#baseURL}/api/sync`;
+	}
+
 	get #SOURCE_URL() {
-		return `${this.baseURL}/api/${this.JOB}/source`;
+		return `${this.#baseURL}/api/${this.#JOB}/source`;
 	}
 
 	get #TARGET_URL() {
-		return `${this.baseURL}/api/${this.JOB}/target`;
+		return `${this.#baseURL}/api/${this.#JOB}/target`;
 	}
 
 	get #ERROR_URL() {
-		return `${this.baseURL}/api/${this.JOB}/error`;
+		return `${this.#baseURL}/api/${this.#JOB}/error`;
 	}
 
-	get FETCH_OPTIIONS() {
+	get #FETCH_OPTIIONS() {
 		const timeout = this.options.timeout();
 
 		if (T.Helper.Integer(timeout)) {
@@ -80,10 +80,10 @@ export class RJSPClient {
 	}
 
 	async sync(_requestData) {
-		const requestData = Data.normalizeData(_requestData);
+		const requestData = Data.normalize(_requestData);
 
-		const response = await fetch(this.SYNC_URL, {
-			...this.FETCH_OPTIIONS,
+		const response = await fetch(this.#SYNC_URL, {
+			...this.#FETCH_OPTIIONS,
 			method: 'PUT',
 			body: JSON.stringify(requestData),
 			signal: AbortSignal.timeout(requestData.config.timeout),
@@ -97,7 +97,7 @@ export class RJSPClient {
 			try {
 				const _responseData = await response.json();
 
-				return Result(0x01, Data.normalizeData(_responseData));
+				return Result(0x01, Data.normalize(_responseData));
 			} catch {
 				return Result(0x22);
 			}
@@ -112,7 +112,7 @@ export class RJSPClient {
 
 	async getSource() {
 		const response = await fetch(this.#SOURCE_URL, {
-			...this.FETCH_OPTIIONS,
+			...this.#FETCH_OPTIIONS,
 			method: 'GET',
 		}).catch(() => null);
 
@@ -141,7 +141,7 @@ export class RJSPClient {
 		}
 
 		const response = await fetch(this.#TARGET_URL, {
-			...this.FETCH_OPTIIONS,
+			...this.#FETCH_OPTIIONS,
 			method: 'POST',
 			body: JSON.stringify(data),
 		}).catch(() => null);
@@ -171,7 +171,7 @@ export class RJSPClient {
 		}
 
 		const response = await fetch(this.#ERROR_URL, {
-			...this.FETCH_OPTIIONS,
+			...this.#FETCH_OPTIIONS,
 			method: 'POST',
 			body: JSON.stringify({ message }),
 		}).catch(() => null);

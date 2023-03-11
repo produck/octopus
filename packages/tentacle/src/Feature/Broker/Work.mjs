@@ -12,7 +12,7 @@ export class Work {
 		Object.freeze(this);
 	}
 
-	get isDestroy() {
+	get isDestroyed() {
 		return !store.has(this);
 	}
 
