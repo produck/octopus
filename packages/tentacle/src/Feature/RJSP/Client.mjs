@@ -19,15 +19,17 @@ const throws = message => {
 const Result = (code, body = null) => ({ code, body });
 
 export class RJSPClient {
+	#options = Options.normalize();
+
 	constructor(_options) {
 		const options = Options.normalize(_options);
 
-		this.options = Object.freeze(options);
+		this.#options = Object.freeze(options);
 	}
 
 	get #baseURL() {
-		const host = this.options.host();
-		const port = this.options.port();
+		const host = this.#options.host();
+		const port = this.#options.port();
 
 		if (!T.Native.String(host)) {
 			throws('Bad host from `options.host()`, one string expected.');
@@ -41,7 +43,7 @@ export class RJSPClient {
 	}
 
 	get #JOB() {
-		const job = this.options.job();
+		const job = this.#options.job();
 
 		if (!T.Native.String(job)) {
 			throws('Bad host from `options.job()`, one string expected.');
@@ -67,7 +69,7 @@ export class RJSPClient {
 	}
 
 	get #FETCH_OPTIIONS() {
-		const timeout = this.options.timeout();
+		const timeout = this.#options.timeout();
 
 		if (T.Helper.Integer(timeout)) {
 			throw new Error('Bad timeout from `options.timeout()`, one integer expected.');
@@ -76,6 +78,7 @@ export class RJSPClient {
 		return {
 			...BASE_FETCH_OPTIONS,
 			headers: { ...STATIC_HEADER },
+			signal: AbortSignal.timeout(timeout),
 		};
 	}
 
@@ -86,7 +89,6 @@ export class RJSPClient {
 			...this.#FETCH_OPTIIONS,
 			method: 'PUT',
 			body: JSON.stringify(requestData),
-			signal: AbortSignal.timeout(requestData.config.timeout),
 		}).catch(() => null);
 
 		if (response === null) {

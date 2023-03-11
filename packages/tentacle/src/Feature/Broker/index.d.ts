@@ -35,7 +35,8 @@ export interface BrokerConstructor {
 export const Broker: BrokerConstructor;
 
 export namespace Options {
-	export const MemberSchemaas: Omit<BrokerOptions, 'name'>;
+	export type Member = Omit<BrokerOptions, 'name'>;
+	export const MemberSchemaas: Member;
 	export const Schema: Schema<BrokerOptions>;
 	export function normalize(options: BrokerOptions): BrokerOptions;
 }

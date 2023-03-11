@@ -5,13 +5,6 @@ const store = new WeakSet();
 export class Work {
 	#done = () => {};
 
-	constructor(done, shared) {
-		store.add(this);
-		this.shared = shared;
-		this.#done = done;
-		Object.freeze(this);
-	}
-
 	get isDestroyed() {
 		return !store.has(this);
 	}
@@ -32,5 +25,12 @@ export class Work {
 
 	static destroy(work) {
 		store.delete(work);
+	}
+
+	constructor(done, shared) {
+		store.add(this);
+		this.shared = shared;
+		this.#done = done;
+		Object.freeze(this);
 	}
 }

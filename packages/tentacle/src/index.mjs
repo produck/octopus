@@ -7,7 +7,7 @@ import * as DuckCLICommander from '@produck/duck-cli-commander';
 
 import * as meta from './meta.gen.mjs';
 import * as CLI from './cli.mjs';
-import * as Feature from './Feature/index.mjs';
+import * as Options from './Options.mjs';
 
 export const Tentacle = Duck.define({
 	id: 'org.produck.octopus.tentacle',
@@ -33,7 +33,7 @@ export const Tentacle = Duck.define({
 }, function Tentacle({
 	Kit, Runner, CLI,
 }, _options) {
-	const tentacle = new Feature.Tentacle();
+	Kit.Options = Options.normalize(_options);
 
 	Runner.ready();
 
