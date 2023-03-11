@@ -1,11 +1,13 @@
+import { T, U } from '@produck/mold';
+
 const store = new WeakSet();
 
 export class Work {
 	#done = () => {};
 
-	constructor(done) {
+	constructor(done, shared) {
 		store.add(this);
-		this.shared = {};
+		this.shared = shared;
 		this.#done = done;
 		Object.freeze(this);
 	}
@@ -14,15 +16,21 @@ export class Work {
 		return !store.has(this);
 	}
 
-	finish(message = null) {
-		this.destroy();
+	throw(message = null) {
+		if (!T.Native.String(message) && !T.Helper.Null(message)) {
+			U.throwError('message', 'string or null');
+		}
+
+		this.#done({ ok: false, message });
+		Work.destroy(this);
 	}
 
-	complete() {
-		this.destroy();
+	complete(target) {
+		this.#done({ ok: true, target });
+		Work.destroy(this);
 	}
 
-	destroy() {
-		store.delete(this);
+	static destroy(work) {
+		store.delete(work);
 	}
 }

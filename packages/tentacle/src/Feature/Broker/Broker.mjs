@@ -1,13 +1,9 @@
-import { Normalizer, P, S } from '@produck/mold';
-
 import { Work } from './Work.mjs';
-
-const OptionsSchema = S.Object({
-
-});
+import * as Options from './Options.mjs';
 
 export class Broker {
 	#work = new Work();
+	#options = Options.normalize();
 
 	constructor() {
 		this.#work.destroy();
@@ -18,8 +14,9 @@ export class Broker {
 		return this.#work !== null;
 	}
 
-	async _procedure() {
-		return null;
+	#clear() {
+		Work.destroy(this.#work);
+		this.#work = null;
 	}
 
 	async run() {
@@ -27,19 +24,28 @@ export class Broker {
 			throw new Error('Broker is busy!');
 		}
 
-		const work = new Work();
-		const target = await this._procedure(work);
+		const result = await new Promise((resolve, reject) => {
+			const shared = this.#options.shared();
+			const done = result => resolve(result);
+			const work = new Work(done, shared);
 
-		this.#work = null;
+			Promise.resolve(this.#options.run(work)).catch(reject);
+		});
 
-		return target;
+		this.#clear();
+
+		return result;
 	}
 
 	async abort() {
-		if (this.#work !== null) {
-			this.#work.destroy();
+		if (this.#work === null) {
+			return;
 		}
 
-		this.#work = null;
+		await new Promise((resolve, reject) => {
+			Promise.resolve(this.#options.abort(this.#work)).then(resolve, reject);
+		});
+
+		this.#clear();
 	}
 }
