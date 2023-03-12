@@ -8,10 +8,6 @@ const STATIC_HEADER = {
 	'User-Agent': 'octopus-tentacle/*',
 };
 
-const BASE_FETCH_OPTIONS = {
-	redirect: 'error',
-};
-
 const throws = message => {
 	throw new Error(message);
 };
@@ -19,6 +15,20 @@ const throws = message => {
 const Result = (code, body = null) => ({ code, body });
 
 export class RJSPClient {
+	get #FETCH_OPTIIONS() {
+		const timeout = this.#options.timeout();
+
+		if (T.Helper.Integer(timeout)) {
+			throw new Error('Bad timeout from `options.timeout()`, one integer expected.');
+		}
+
+		return {
+			redirect: 'error',
+			headers: { ...STATIC_HEADER },
+			signal: AbortSignal.timeout(timeout),
+		};
+	}
+
 	#options = Options.normalize();
 
 	constructor(_options) {
@@ -66,20 +76,6 @@ export class RJSPClient {
 
 	get #ERROR_URL() {
 		return `${this.#baseURL}/api/${this.#JOB}/error`;
-	}
-
-	get #FETCH_OPTIIONS() {
-		const timeout = this.#options.timeout();
-
-		if (T.Helper.Integer(timeout)) {
-			throw new Error('Bad timeout from `options.timeout()`, one integer expected.');
-		}
-
-		return {
-			...BASE_FETCH_OPTIONS,
-			headers: { ...STATIC_HEADER },
-			signal: AbortSignal.timeout(timeout),
-		};
 	}
 
 	async sync(_requestData) {

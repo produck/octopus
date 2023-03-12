@@ -3,7 +3,7 @@ import { Normalizer, P, S } from '@produck/mold';
 export const HostSchema = P.String('127.0.0.1');
 export const PortSchema = P.Port(9173);
 
-const ConfigSchema = S.Object({
+export const ConfigSchema = S.Object({
 	at: P.Integer(0),
 	interval: P.UINT32(1000),
 	timeout: P.UINT32(5000),
@@ -13,7 +13,7 @@ const ConfigSchema = S.Object({
 	redirect: P.Boolean(false),
 });
 
-const Schema = S.Object({
+export const Schema = S.Object({
 	id: P.String(),
 	craft: P.String(),
 	version: P.String(),

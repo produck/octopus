@@ -8,6 +8,7 @@ import * as DuckCLICommander from '@produck/duck-cli-commander';
 import * as meta from './meta.gen.mjs';
 import * as CLI from './cli.mjs';
 import * as Options from './Options.mjs';
+import * as Environment from './Environment.mjs';
 import { play as PrincipalPlay } from './Principal.mjs';
 
 export const Tentacle = Duck.define({
@@ -36,6 +37,7 @@ export const Tentacle = Duck.define({
 	Kit, Runner, CLI,
 }, _options) {
 	Kit.Options = Options.normalize(_options);
+	Kit.Environment = Environment.normalize();
 
 	Runner.ready();
 

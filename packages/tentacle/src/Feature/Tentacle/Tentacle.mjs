@@ -13,8 +13,8 @@ export class Tentacle {
 		return this.#job;
 	}
 
-	async setJob(job) {
-		if (this.#job === job) {
+	async setJob(id) {
+		if (this.#job === id) {
 			return;
 		}
 
@@ -22,8 +22,8 @@ export class Tentacle {
 			await this.#options.free(this.#job);
 		}
 
-		if (job !== null) {
-			await this.#options.pick(job);
+		if (id !== null) {
+			await this.#options.pick(id);
 		}
 	}
 

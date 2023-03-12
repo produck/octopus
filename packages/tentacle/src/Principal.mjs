@@ -1,32 +1,14 @@
-import { Normalizer, S } from '@produck/mold';
 import { definePlay } from '@produck/duck-runner';
 import { RJSP, Broker, Tentacle } from './Feature/index.mjs';
 
-export const ServerSchema = S.Object({
-	host: RJSP.Data.HostSchema,
-	port: RJSP.Data.PortSchema,
-});
-
-const normalizeServer = Normalizer(ServerSchema);
-
 export const play = definePlay(function Principal({
-	Bus, Options, Configuration,
+	Bus, Options, Environment,
 }) {
-	const config = RJSP.Data.normalizeConfig();
-
-	const meta = {
-		id: Configuration.id,
-		craft: Options.craft,
-		version: Options.version,
-	};
-
-	const server = normalizeServer();
-
 	const client = new RJSP.Client({
-		host: () => server.host,
-		port: () => server.port,
+		host: () => Environment.server.host,
+		port: () => Environment.server.port,
 		job: () => tentacle.job,
-		timeout: () => config.timeout,
+		timeout: () => Environment.config.timeout,
 	});
 
 	const broker = new Broker({
@@ -36,8 +18,10 @@ export const play = definePlay(function Principal({
 	});
 
 	const tentacle = new Tentacle({
-		interval: () => config.interval,
-		pick: async () => {
+		interval: () => Environment.config.interval,
+		pick: async (job) => {
+			Bus.emit('pick', job);
+
 			const { code, body } = await client.getSource();
 			const result = await broker.run(body);
 
@@ -47,34 +31,45 @@ export const play = definePlay(function Principal({
 				const { code } = await client.setError(result.message);
 			}
 		},
-		free: async () => {
+		free: async (job) => {
+			Bus.emit('free', job);
+
 			if (broker.busy) {
 				await broker.abort();
 			}
 		},
 		update: async () => {
-			const { ready, job } = tentacle;
-			const data = { ...meta, ready, job, config };
+			const data = {
+				id: Environment.id,
+				craft: Options.craft,
+				version: Options.version,
+				ready: Environment.ready && broker.ready,
+				job: tentacle.job,
+				config: { ...Environment.config },
+			};
+
 			let done;
 
 			(async function retry() {
 				const { code, body } = await client.sync(data);
 
 				if (RJSP.Code.isOK(code)) {
-					Bus.emit('sync-ok');
+					Bus.emit('sync');
 					updateConfig(body.config);
 
 					tentacle.setJob(body.job).catch(error => {
-						Bus.emit('work-error', error);
+						Bus.emit('work-error', error.message);
 						Bus.emit('request-halt');
+
+						throw error;
 					});
 
 					done();
 				} else {
-					Bus.emit('sync-errot', code);
+					Bus.emit('sync-error', code);
 
 					if (RJSP.Code.isRetrieable(code)) {
-						setTimeout(() => retry(), config.interval);
+						setTimeout(() => retry(), Environment.config.interval);
 					}
 
 					if (RJSP.Code.isCritical(code)) {
@@ -89,15 +84,16 @@ export const play = definePlay(function Principal({
 	});
 
 	function updateConfig(_config) {
-		if (_config.at > config.at) {
-			Bus.emit('config', { ...Object.assign(config, _config) });
+		if (_config.at > Environment.config.at) {
+			Object.assign(Environment.config, _config);
+			Bus.emit('config', { ..._config });
 		}
 
-		if (config.redirect) {
-			server.host = config.host;
-			server.port = config.port;
-			config.at = 0;
-			config.redirect = false;
+		if (Environment.config.redirect) {
+			Environment.server.host = Environment.config.host;
+			Environment.server.port = Environment.config.port;
+			Environment.config.at = 0;
+			Environment.config.redirect = false;
 
 			Bus.emit('redirect');
 		}
