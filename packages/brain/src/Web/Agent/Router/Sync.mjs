@@ -35,8 +35,9 @@ export const Router = defineRouter(function SyncRouter(router, {
 	function Configuration() {
 		return {
 			at: Environment.get('ENVIRONMENT.AT'),
-			interval: Environment.get('AGENT.SYNC.INTERVAL'),
-			timeout: Environment.get('AGENT.SYNC.TIMEOUT'),
+			interval: Environment.get('AGENT.INTERVAL'),
+			timeout: Environment.get('AGENT.TIMEOUT'),
+			retry: Environment.get('AGENT.RETRY'),
 			host: Environment.get('RJSP.SERVER.HOST'),
 			port: Environment.get('RJSP.SERVER.PORT'),
 			redirect: Environment.get('RJSP.REDIRECT.ENABLED'),

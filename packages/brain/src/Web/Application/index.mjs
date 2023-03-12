@@ -1,4 +1,4 @@
-import { T, U } from '@produck/mold'
+import { T, U } from '@produck/mold';
 import { defineKoaApp } from '@produck/duck-web-koa';
 
 import * as Router from './Router/index.mjs';

@@ -26,7 +26,9 @@ export const assignJobToTentacle = Duck.inject(async ({
 	});
 
 	await Tentacle.query({ name: 'All', busy: false }).then(list => {
-		const alives = list.filter(tentacle => now - tentacle.visitedAt < timeout);
+		const alives = list
+			.filter(tentacle => !tentacle.ready)
+			.filter(tentacle => now - tentacle.visitedAt < timeout);
 
 		for (const tentacle of alives) {
 			Group[tentacle.craft].tentacles.push(tentacle);

@@ -14,8 +14,9 @@ export module Property {
 		'PRODUCT.QUEUE.MAX': number;
 		'PRODUCT.ORDER.TIMEOUT': number;
 
-		'AGENT.SYNC.INTERVAL': number;
-		'AGENT.SYNC.TIMEOUT': number;
+		'AGENT.INTERVAL': number;
+		'AGENT.TIMEOUT': number;
+		'AGENT.RETRY': number;
 
 		'TENTACLE.ALIVE.TIMEOUT': number;
 
