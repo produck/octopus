@@ -4,6 +4,7 @@ import * as Options from './Options.mjs';
 export class Broker {
 	#work = new Work();
 	#options = Options.normalize();
+	#ready = true;
 
 	constructor() {
 		this.#work.destroy();
@@ -18,9 +19,14 @@ export class Broker {
 		return this.#work !== null;
 	}
 
+	get ready() {
+		return this.#ready;
+	}
+
 	#clear() {
 		Work.destroy(this.#work);
 		this.#work = null;
+		this.#ready = true;
 	}
 
 	async run() {
@@ -46,10 +52,11 @@ export class Broker {
 			return;
 		}
 
-		await new Promise((resolve, reject) => {
-			Promise.resolve(this.#options.abort(this.#work)).then(resolve, reject);
-		});
-
-		this.#clear();
+		if (this.#options.abort === null) {
+			this.#ready = false;
+		} else {
+			await this.#options.abort(this.#work);
+			this.#clear();
+		}
 	}
 }

@@ -296,7 +296,7 @@ describe('Web::Agent', function () {
 			await client
 				.post(`/api/job/${crypto.randomUUID()}/target`)
 				.send({ foo: 'bar' })
-				.expect(200, { foo: 'bar' });
+				.expect(201, { foo: 'bar' });
 
 			assert.equal(backend.job[0].status, 100);
 		});
@@ -337,34 +337,6 @@ describe('Web::Agent', function () {
 				.expect(423);
 		});
 
-		it('should set object error.', async function () {
-			backend = {
-				crafts: {}, tentacles: [],
-				job: [
-					{
-						id: crypto.randomUUID(),
-						product: crypto.randomUUID(),
-						craft: 'example2',
-						createdAt: Date.now() - 5000,
-						startedAt: Date.now(),
-						finishedAt: null,
-						status: 0,
-						message: null,
-						source: { foo: 'bar' },
-						target: null,
-					},
-				],
-			};
-
-			await client
-				.post(`/api/job/${crypto.randomUUID()}/error`)
-				.send({ foo: 'bar' })
-				.expect(200, { foo: 'bar' });
-
-			assert.equal(backend.job[0].status, 200);
-			assert.equal(backend.job[0].message, '{"foo":"bar"}');
-		});
-
 		it('should set string error.', async function () {
 			backend = {
 				crafts: {}, tentacles: [],
@@ -386,9 +358,8 @@ describe('Web::Agent', function () {
 
 			await client
 				.post(`/api/job/${crypto.randomUUID()}/error`)
-				.type('text')
-				.send('foo')
-				.expect(200, 'foo');
+				.send({ message: 'foo' })
+				.expect(200, { message: 'foo' });
 
 			assert.equal(backend.job[0].status, 200);
 			assert.equal(backend.job[0].message, 'foo');

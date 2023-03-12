@@ -23,7 +23,7 @@ export interface Tentacle {
 }
 
 export interface TentacleConstructor {
-	new(meta: Member.Meta, server: Member.Server, options): Tentacle;
+	new(options: Options.Object): Tentacle;
 }
 
 export const Tentacle: TentacleConstructor;

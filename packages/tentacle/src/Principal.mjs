@@ -10,7 +10,7 @@ export const ServerSchema = S.Object({
 const normalizeServer = Normalizer(ServerSchema);
 
 export const play = definePlay(function Principal({
-	Kit, Bus, Options, Configuration,
+	Bus, Options, Configuration,
 }) {
 	const config = RJSP.Data.normalizeConfig();
 
@@ -37,7 +37,7 @@ export const play = definePlay(function Principal({
 
 	const tentacle = new Tentacle({
 		interval: () => config.interval,
-		pick: async (job) => {
+		pick: async () => {
 			const { code, body } = await client.getSource();
 			const result = await broker.run(body);
 
@@ -47,24 +47,30 @@ export const play = definePlay(function Principal({
 				const { code } = await client.setError(result.message);
 			}
 		},
-		free: async (job) => {
-
+		free: async () => {
+			if (broker.busy) {
+				await broker.abort();
+			}
 		},
 		update: async () => {
 			const { ready, job } = tentacle;
 			const data = { ...meta, ready, job, config };
+			let done;
 
-			return await new Promise(resolve => {
-				(async function retry() {
-					const { code, body } = await client.sync(data);
+			(async function retry() {
+				const { code, body } = await client.sync(data);
 
-					if (RJSP.Code.isOK(code)) {
-						Bus.emit('sync-ok');
-						updateConfig(body.config);
-						tentacle.setJob(body.job);
-						return resolve();
-					}
+				if (RJSP.Code.isOK(code)) {
+					Bus.emit('sync-ok');
+					updateConfig(body.config);
 
+					tentacle.setJob(body.job).catch(error => {
+						Bus.emit('work-error', error);
+						Bus.emit('request-halt');
+					});
+
+					done();
+				} else {
 					Bus.emit('sync-errot', code);
 
 					if (RJSP.Code.isRetrieable(code)) {
@@ -75,8 +81,10 @@ export const play = definePlay(function Principal({
 						tentacle.stop();
 						Bus.emit('request-halt');
 					}
-				})();
-			});
+				}
+			})();
+
+			return await new Promise(resolve => done = resolve);
 		},
 	});
 

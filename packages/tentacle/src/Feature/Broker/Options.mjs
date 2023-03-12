@@ -5,7 +5,7 @@ const EMPTY_OBJECT = () => ({});
 export const MemberSchemaas = {
 	shared: P.Function(EMPTY_OBJECT),
 	run: P.Function(() => {}),
-	abort: P.Function(() => {}),
+	abort: P.OrNull(P.Function(() => {})),
 };
 
 export const Schema = S.Object({

@@ -7,12 +7,13 @@ export interface Work {
 }
 
 type SharedFactory<T> = () => T;
+type BrokerHandler = (work: Work) => Promise<any> | any;
 
 export interface BrokerOptions<T = any> {
 	name: string;
 	shared: SharedFactory<T>;
-	run: (work: Work) => Promise<any> | any;
-	abort: (work: Work) => Promise<any> | any;
+	run: BrokerHandler;
+	abort: BrokerHandler | null;
 }
 
 export interface Result<T = any> {

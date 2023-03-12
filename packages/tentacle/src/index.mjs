@@ -8,6 +8,7 @@ import * as DuckCLICommander from '@produck/duck-cli-commander';
 import * as meta from './meta.gen.mjs';
 import * as CLI from './cli.mjs';
 import * as Options from './Options.mjs';
+import { play as PrincipalPlay } from './Principal.mjs';
 
 export const Tentacle = Duck.define({
 	id: 'org.produck.octopus.tentacle',
@@ -27,6 +28,7 @@ export const Tentacle = Duck.define({
 				solo: DuckRunner.Template.Solo(),
 				processes: DuckRunner.Template.Processes(),
 			},
+			roles: { Principal: PrincipalPlay },
 		}),
 		DuckCLI.Component(CLI.factory, DuckCLICommander.Provider),
 	],

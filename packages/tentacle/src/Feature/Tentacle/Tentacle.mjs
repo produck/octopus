@@ -2,20 +2,11 @@ import * as Options from './Options.mjs';
 
 export class Tentacle {
 	#active = false;
-	#ready = true;
 	#job = null;
 	#options = Options.normalize();
 
 	get active() {
 		return this.#active;
-	}
-
-	set ready(flag = true) {
-		this.#ready = Boolean(flag);
-	}
-
-	get ready() {
-		return this.#ready;
 	}
 
 	get job() {
