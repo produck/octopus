@@ -4,7 +4,7 @@ import '@produck/duck-runner';
 import * as Broker from './Feature/Broker';
 import * as RJSP from './Feature/RJSP';
 
-interface Options extends Broker.Options.Member {
+interface Options<T = any> extends Broker.Options.Member<T> {
 	craft: string;
 	version: string;
 }
@@ -17,24 +17,33 @@ interface ServerAddress {
 interface Environment {
 	id: string;
 	ready: boolean;
+	active: boolean;
+	job: string | null;
 	config: RJSP.Data.Config;
 	server: ServerAddress;
 }
 
 type EventListenerMap = {
-	'request-halt': [];
+	'boot': [];
+	'halt': [];
+
 	'sync': [];
-	'sync-error': [code: number];
-	'work-error': [message: string];
 	'redirect': [];
 	'pick': [job: string];
 	'free': [job: string];
+
+	'sync-fail': [];
+	'source-fail': [],
+	'target-fail': [],
+	'error-fail': [],
 }
 
 declare module '@produck/duck' {
 	interface ProductKit {
 		Options: Options;
 		Environment: Environment;
+		Broker: Broker.Broker;
+		Client: RJSP.RJSPClient;
 	}
 }
 

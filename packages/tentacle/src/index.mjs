@@ -10,6 +10,7 @@ import * as CLI from './cli.mjs';
 import * as Options from './Options.mjs';
 import * as Environment from './Environment.mjs';
 import { play as PrincipalPlay } from './Principal.mjs';
+import * as Feature from './Feature/index.mjs';
 
 export const Tentacle = Duck.define({
 	id: 'org.produck.octopus.tentacle',
@@ -36,8 +37,28 @@ export const Tentacle = Duck.define({
 }, function Tentacle({
 	Kit, Runner, CLI,
 }, _options) {
-	Kit.Options = Options.normalize(_options);
-	Kit.Environment = Environment.normalize();
+	const options =  Options.normalize(_options);
+	const environment = Environment.normalize();
+
+	const broker = new Feature.Broker({
+		shared: options.shared,
+		run: options.run,
+		abort: options.abort,
+	});
+
+	const client = new Feature.RJSP.Client({
+		host: () => environment.server.host,
+		port: () => environment.server.port,
+		job: () => environment.job,
+		timeout: () => environment.config.timeout,
+	});
+
+	Object.assign(Kit, {
+		Options: options,
+		Environment: environment,
+		Broker: broker,
+		Client: client,
+	});
 
 	Runner.ready();
 

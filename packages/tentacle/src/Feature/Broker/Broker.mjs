@@ -29,7 +29,7 @@ export class Broker {
 		this.#ready = true;
 	}
 
-	async run() {
+	async run(source) {
 		if (this.busy) {
 			throw new Error('Broker is busy!');
 		}
@@ -39,7 +39,7 @@ export class Broker {
 			const done = result => resolve(result);
 			const work = new Work(done, shared);
 
-			Promise.resolve(this.#options.run(work)).catch(reject);
+			Promise.resolve(this.#options.run(work, source)).catch(reject);
 		});
 
 		this.#clear();

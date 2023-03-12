@@ -7,13 +7,14 @@ export interface Work {
 }
 
 type SharedFactory<T> = () => T;
-type BrokerHandler = (work: Work) => Promise<any> | any;
+type BrokerRun = (work: Work, source: any) => Promise<any> | any;
+type BrokerAbort = (work: Work) => Promise<any> | any;
 
 export interface BrokerOptions<T = any> {
 	name: string;
 	shared: SharedFactory<T>;
-	run: BrokerHandler;
-	abort: BrokerHandler | null;
+	run: BrokerRun;
+	abort: BrokerAbort | null;
 }
 
 export interface Result<T = any> {
@@ -25,6 +26,7 @@ export interface Result<T = any> {
 export interface Broker {
 	readonly name: string;
 	readonly busy: boolean;
+	readonly ready: boolean;
 	run(): Promise<Result>;
 	abort(): Promise<void>;
 }
@@ -36,7 +38,7 @@ export interface BrokerConstructor {
 export const Broker: BrokerConstructor;
 
 export namespace Options {
-	export type Member = Omit<BrokerOptions, 'name'>;
+	export type Member<T = any> = Omit<BrokerOptions<T>, 'name'>;
 	export const MemberSchemaas: Member;
 	export const Schema: Schema<BrokerOptions>;
 	export function normalize(options: BrokerOptions): BrokerOptions;

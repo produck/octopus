@@ -1,87 +1,72 @@
 import { definePlay } from '@produck/duck-runner';
-import { RJSP, Broker, Tentacle } from './Feature/index.mjs';
+import { RJSP } from './Feature/index.mjs';
+
+const sleep = (ms = 1000) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const play = definePlay(function Principal({
-	Bus, Options, Environment,
+	Bus, Options, Environment, Broker, Client,
 }) {
-	const client = new RJSP.Client({
-		host: () => Environment.server.host,
-		port: () => Environment.server.port,
-		job: () => tentacle.job,
-		timeout: () => Environment.config.timeout,
-	});
+	Bus.on('halt', Environment.active = false);
 
-	const broker = new Broker({
-		shared: Options.shared,
-		run: Options.run,
-		abort: Options.abort,
-	});
+	async function fulfill(request, role) {
+		const { retry, interval } = Environment.config;
+		let count = 0;
 
-	const tentacle = new Tentacle({
-		interval: () => Environment.config.interval,
-		pick: async (job) => {
-			Bus.emit('pick', job);
+		return await (async function attempt() {
+			count++;
 
-			const { code, body } = await client.getSource();
-			const result = await broker.run(body);
+			const result = await request();
+			const { code } = result;
 
-			if (result.ok) {
-				const { code } = await client.setTarget(result.target);
-			} else {
-				const { code } = await client.setError(result.message);
+			if (RJSP.Code.isOK(code)) {
+				return { ok: true, ret: result.body };
 			}
-		},
-		free: async (job) => {
-			Bus.emit('free', job);
 
-			if (broker.busy) {
-				await broker.abort();
+			if (RJSP.Code.isRetrieable(code) && count <= retry) {
+				await sleep(interval);
+
+				return await attempt();
 			}
-		},
-		update: async () => {
-			const data = {
-				id: Environment.id,
-				craft: Options.craft,
-				version: Options.version,
-				ready: Environment.ready && broker.ready,
-				job: tentacle.job,
-				config: { ...Environment.config },
-			};
 
-			let done;
+			Bus.emit(`${role}-fail`);
 
-			(async function retry() {
-				const { code, body } = await client.sync(data);
+			return { ok: false };
+		})();
+	}
 
-				if (RJSP.Code.isOK(code)) {
-					Bus.emit('sync');
-					updateConfig(body.config);
+	async function handleJob(newJob) {
+		const { job: oldJob } = Environment;
 
-					tentacle.setJob(body.job).catch(error => {
-						Bus.emit('work-error', error.message);
-						Bus.emit('request-halt');
+		Environment.job = newJob;
 
-						throw error;
-					});
+		if (oldJob === newJob) {
+			return;
+		}
 
-					done();
+		if (oldJob !== null) {
+			Bus.emit('free', newJob);
+
+			if (Broker.busy) {
+				await Broker.abort();
+			}
+		}
+
+		if (newJob !== null) {
+			Bus.emit('pick', newJob);
+
+			const replay = await fulfill(() => Client.getSource(), 'source');
+
+			if (replay.ok) {
+				const result = await Broker.run(replay.source);
+
+				if (result.ok === true) {
+					await fulfill(() => Client.setTarget(result.target), 'target');
 				} else {
-					Bus.emit('sync-error', code);
-
-					if (RJSP.Code.isRetrieable(code)) {
-						setTimeout(() => retry(), Environment.config.interval);
-					}
-
-					if (RJSP.Code.isCritical(code)) {
-						tentacle.stop();
-						Bus.emit('request-halt');
-					}
+					await fulfill(() => Client.setError(result.message), 'error');
 				}
-			})();
-
-			return await new Promise(resolve => done = resolve);
-		},
-	});
+			}
+		}
+	}
 
 	function updateConfig(_config) {
 		if (_config.at > Environment.config.at) {
@@ -99,9 +84,46 @@ export const play = definePlay(function Principal({
 		}
 	}
 
-	Bus.on('request-halt', tentacle.stop());
+	async function ensureSync(data, done) {
+		const { code, body } = await Client.sync(data);
 
-	return async function start() {
-		tentacle.start();
+		if (RJSP.Code.isOK(code)) {
+			Bus.emit('sync');
+			updateConfig(body.config);
+			handleJob(body.job);
+			done();
+		} else {
+			Bus.emit('sync-fail');
+
+			if (RJSP.Code.isRetrieable(code)) {
+				setTimeout(() => ensureSync(data, done), Environment.config.interval);
+			}
+
+			if (RJSP.Code.isCritical(code)) {
+				Bus.emit('halt');
+			}
+		}
+	}
+
+	async function observe() {
+		if (!Environment.active) {
+			return;
+		}
+
+		await new Promise(resolve => ensureSync({
+			id: Environment.id,
+			craft: Options.craft,
+			version: Options.version,
+			ready: Environment.ready && Broker.ready,
+			job: Environment.job,
+			config: { ...Environment.config },
+		}, resolve));
+
+		setTimeout(() => observe(), Environment.config.interval);
+	}
+
+	return function start() {
+		Bus.emit('boot');
+		observe();
 	};
 });

@@ -10,6 +10,9 @@ export const ServerSchema = S.Object({
 
 export const Schema = S.Object({
 	id: P.String(crypto.randomUUID()),
+	ready: P.Boolean(false),
+	active: P.Boolean(false),
+	job: P.OrNull(P.String()),
 	config: RJSP.Data.ConfigSchema,
 	server: ServerSchema,
 });
