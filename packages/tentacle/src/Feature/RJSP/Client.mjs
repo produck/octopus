@@ -3,11 +3,6 @@ import { T, U } from '@produck/mold';
 import * as Data from './Data.mjs';
 import * as Options from './Options.mjs';
 
-const STATIC_HEADER = {
-	'Content-Type': 'application/json',
-	'User-Agent': 'octopus-tentacle/*',
-};
-
 const throws = message => {
 	throw new Error(message);
 };
@@ -18,26 +13,29 @@ export class RJSPClient {
 	get #FETCH_OPTIIONS() {
 		const timeout = this.#options.timeout();
 
-		if (T.Helper.Integer(timeout)) {
+		if (!T.Helper.Integer(timeout)) {
 			throw new Error('Bad timeout from `options.timeout()`, one integer expected.');
 		}
 
 		return {
+			headers: {
+				'Content-Type': 'application/json',
+				'User-Agent': 'octopus-tentacle/*',
+			},
 			redirect: 'error',
-			headers: { ...STATIC_HEADER },
 			signal: AbortSignal.timeout(timeout),
 		};
 	}
 
 	#options = Options.normalize();
 
-	constructor(_options) {
-		const options = Options.normalize(_options);
+	constructor(...args) {
+		const options = Options.normalize(...args);
 
 		this.#options = Object.freeze(options);
 	}
 
-	get #baseURL() {
+	get #BASE_URL() {
 		const host = this.#options.host();
 		const port = this.#options.port();
 
@@ -63,19 +61,19 @@ export class RJSPClient {
 	}
 
 	get #SYNC_URL() {
-		return `${this.#baseURL}/api/sync`;
+		return `${this.#BASE_URL}/api/sync`;
 	}
 
 	get #SOURCE_URL() {
-		return `${this.#baseURL}/api/${this.#JOB}/source`;
+		return `${this.#BASE_URL}/api/${this.#JOB}/source`;
 	}
 
 	get #TARGET_URL() {
-		return `${this.#baseURL}/api/${this.#JOB}/target`;
+		return `${this.#BASE_URL}/api/${this.#JOB}/target`;
 	}
 
 	get #ERROR_URL() {
-		return `${this.#baseURL}/api/${this.#JOB}/error`;
+		return `${this.#BASE_URL}/api/${this.#JOB}/error`;
 	}
 
 	async sync(_requestData) {
@@ -156,6 +154,10 @@ export class RJSPClient {
 			}
 		}
 
+		if (response.status === 404) {
+			return Result(0x11);
+		}
+
 		if (response.status === 423) {
 			return Result(0x14);
 		}
@@ -184,6 +186,10 @@ export class RJSPClient {
 			} catch {
 				return Result(0x14);
 			}
+		}
+
+		if (response.status === 404) {
+			return Result(0x11);
 		}
 
 		if (response.status === 423) {

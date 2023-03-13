@@ -18,10 +18,9 @@
 		"import": "./src/index.mjs",
 		"require": "./src/index.cjs"
 	},
-	"types": "index.d.ts",
+	"types": "src/index.d.ts",
 	"files": [
 		"src",
-		"index.d.ts",
 		"tsconfig.json"
 	],
 	"publishConfig": {

@@ -12,16 +12,15 @@
 	"author": "chaoslee <chaos2lee@qq.com>",
 	"homepage": "https://github.com/produck/octopus#readme",
 	"license": "MIT",
-	"main": "index.cjs",
+	"main": "src/index.cjs",
 	"type": "module",
 	"exports": {
 		"import": "./src/index.mjs",
 		"require": "./src/index.cjs"
 	},
-	"types": "index.d.ts",
+	"types": "src/index.d.ts",
 	"files": [
 		"src",
-		"index.d.ts",
 		"tsconfig.json"
 	],
 	"publishConfig": {
@@ -41,6 +40,7 @@
 		"url": "https://github.com/produck/octopus/issues"
 	},
 	"devDependencies": {
+		"@produck/octopus-brain": "^0.6.0",
 		"@types/mocha": "^10.0.1",
 		"@types/supertest": "^2.0.12",
 		"mocha": "^10.2.0",
