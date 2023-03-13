@@ -35,7 +35,7 @@ export const Tentacle = Duck.define({
 		DuckCLI.Component(CLI.factory, DuckCLICommander.Provider),
 	],
 }, function Tentacle({
-	Kit, Runner, CLI,
+	Kit, Runner, Bus, CLI,
 }, _options) {
 	const options =  Options.normalize(_options);
 	const environment = Environment.normalize();
@@ -64,5 +64,6 @@ export const Tentacle = Duck.define({
 
 	return Object.freeze({
 		boot: async(...args) => await CLI.parse(...args),
+		halt: () => Bus.emit('halt'),
 	});
 });
