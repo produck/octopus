@@ -6,13 +6,10 @@ export class Broker {
 	#options = Options.normalize();
 	#ready = true;
 
-	constructor() {
-		this.#work.destroy();
+	constructor(...args) {
+		this.#options = Options.normalize(...args);
+		Work.destroy(this.#work);
 		this.#work = null;
-	}
-
-	get name() {
-		return this.#options.name;
 	}
 
 	get busy() {
@@ -39,6 +36,7 @@ export class Broker {
 			const done = result => resolve(result);
 			const work = new Work(done, shared);
 
+			this.#work = work;
 			Promise.resolve(this.#options.run(work, source)).catch(reject);
 		});
 

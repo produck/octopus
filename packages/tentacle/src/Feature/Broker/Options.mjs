@@ -5,12 +5,8 @@ const EMPTY_OBJECT = () => ({});
 export const MemberSchemaas = {
 	shared: P.Function(EMPTY_OBJECT),
 	run: P.Function(() => {}),
-	abort: P.OrNull(P.Function(() => {})),
+	abort: P.OrNull(P.Function()),
 };
 
-export const Schema = S.Object({
-	name: P.String('Custom'),
-	...MemberSchemaas,
-});
-
+export const Schema = S.Object(MemberSchemaas);
 export const normalize = Normalizer(Schema);
