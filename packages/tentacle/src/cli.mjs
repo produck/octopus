@@ -64,9 +64,7 @@ const DevHandler = Duck.inject(({ Options }) => {
 export const factory = defineFactory(({
 	Kit, Runner, Commander, setProgram, Environment,
 }) => {
-	const program = new Commander({
-		name: 'tentacle',
-	});
+	const program = new Commander({ name: 'tentacle' });
 
 	const start = new Commander({
 		name: 'start',
@@ -76,11 +74,13 @@ export const factory = defineFactory(({
 			value: { name: 'mode', required: true, default: 'processes' },
 			description: 'In which mode(case-insensitive)',
 		}, {
-
+			name: 'host', alias: 'h', required: false,
+			value: { name: 'host', required: true, default: '127.0.0.1' },
+			description: 'The server host.',
 		}, {
 			name: 'port', alias: 'p', required: false,
 			value: { name: 'port', required: true, default: '9173' },
-			description: 'A server port',
+			description: 'The server port',
 		}, {
 			name: 'renew', alias: 'r', required: false, value: null,
 			description: 'Force to create a new agent id or not',

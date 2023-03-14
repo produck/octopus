@@ -36,8 +36,8 @@ export const Tentacle = Duck.define({
 	],
 }, function Tentacle({
 	Kit, Runner, Bus, CLI,
-}, _options) {
-	const options =  Options.normalize(_options);
+}, ...args) {
+	const options =  Options.normalize(...args);
 	const environment = Environment.normalize();
 
 	const broker = new Feature.Broker({
@@ -63,6 +63,7 @@ export const Tentacle = Duck.define({
 	Runner.ready();
 
 	return Object.freeze({
+		environment,
 		boot: async(...args) => await CLI.parse(...args),
 		halt: () => Bus.emit('halt'),
 	});

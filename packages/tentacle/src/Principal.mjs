@@ -6,7 +6,7 @@ const sleep = (ms = 1000) => new Promise(resolve => setTimeout(resolve, ms));
 export const play = definePlay(function Principal({
 	Bus, Options, Environment, Broker, Client,
 }) {
-	Bus.on('halt', Environment.active = false);
+	Bus.on('halt', () => Environment.active = false);
 
 	async function fulfill(request, role) {
 		const { retry, interval } = Environment.config;
@@ -85,6 +85,10 @@ export const play = definePlay(function Principal({
 	}
 
 	async function ensureSync(data, done) {
+		if (!Environment.active) {
+			return;
+		}
+
 		const { code, body } = await Client.sync(data);
 
 		if (RJSP.Code.isOK(code)) {
@@ -123,7 +127,8 @@ export const play = definePlay(function Principal({
 	}
 
 	return function start() {
-		Bus.emit('boot');
+		Environment.active = true;
 		observe();
+		Bus.emit('boot');
 	};
 });

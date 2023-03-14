@@ -41,7 +41,7 @@ describe('Tentacle::Feature::RJSP::RJSPClient', function () {
 		.beforeAll(() => server.listen(9173, '127.0.0.1'))
 		.afterAll(async () => {
 			server.close();
-			await sleep();
+			await sleep(3000);
 		});
 
 	describe('constructor()', function () {

@@ -5,6 +5,7 @@ const ConfigurationSchema = S.Object({
 	at: P.Integer(),
 	interval: P.UINT32(),
 	timeout: P.UINT32(),
+	retry: P.Number(),
 	host: P.String(),
 	port: P.Port(),
 	redirect: P.Boolean(),
