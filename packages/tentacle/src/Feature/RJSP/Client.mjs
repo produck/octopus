@@ -154,6 +154,10 @@ export class RJSPClient {
 			}
 		}
 
+		if (response.status === 400) {
+			return Result(0x14);
+		}
+
 		if (response.status === 404) {
 			return Result(0x11);
 		}
