@@ -132,25 +132,62 @@ describe('Feature::Broker', function () {
 	});
 });
 
-
 describe('Feature::Work', function () {
 	describe('constructor()', function () {
-
+		it('should create a Work.', function () {
+			new Broker.Work(() => {}, {});
+		});
 	});
 
 	describe('.isDestroyed', function () {
+		it('should get true.', function () {
+			const work = new Broker.Work();
 
+			Broker.Work.destroy(work);
+			assert.equal(work.isDestroyed, true);
+		});
+
+		it('should get false.', function () {
+			assert.equal(new Broker.Work().isDestroyed, false);
+		});
 	});
 
 	describe('.throw()', function () {
+		it('should set a error.', function () {
+			const work = new Broker.Work((result) => {
+				assert.deepEqual(result, { ok: false, message: null });
+			});
 
+			work.throw();
+		});
+
+		it('should throw if bad message.', function () {
+			const work = new Broker.Work();
+
+			assert.throws(() => work.throw(1), {
+				name: 'TypeError',
+				message: 'Invalid "message", one "string or null" expected.',
+			});
+		});
 	});
 
 	describe('.complete()', function () {
+		it('should set a target.', function () {
+			const work = new Broker.Work((result) => {
+				assert.deepEqual(result, { ok: true, target: 'foo' });
+			});
 
+			work.complete('foo');
+		});
 	});
 
 	describe('::destroy()', function () {
+		it('should destroy work.', function () {
+			const work = new Broker.Work();
 
+			assert.equal(work.isDestroyed, false);
+			Broker.Work.destroy(work);
+			assert.equal(work.isDestroyed, true);
+		});
 	});
 });
