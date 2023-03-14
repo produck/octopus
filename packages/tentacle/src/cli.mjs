@@ -8,8 +8,8 @@ const profile = [
 	{ key: 'r', description: 'Run.' },
 	{ key: 's', description: 'Abort.' },
 	{ key: 'c', description: 'Exit.' },
-	{ key: 'q', description: 'Querying broker status.' },
-].map(item => `ctrl+${item.k} ${item.description}`).join(' / ');
+	{ key: 'v', description: 'View status.' },
+].map(item => `shift+${item.key} ${item.description}`).join(' / ');
 
 const DevHandler = Duck.inject(({ Options }) => {
 	let source = {};
@@ -26,7 +26,7 @@ const DevHandler = Duck.inject(({ Options }) => {
 				return console.log('Running, Stop first(ctrl+s)!');
 			}
 
-			console.log('Work begin ==================>');
+			console.log('WORK BEGIN ==================>');
 			await broker.run(source);
 		},
 		s: async () => {
@@ -34,10 +34,18 @@ const DevHandler = Duck.inject(({ Options }) => {
 				return console.log('Idle, run first(ctrl+r)');
 			}
 
+			if (!broker.ready) {
+				console.log('Work can NOT be aborted. Keeping running until the end.');
+
+				return;
+			}
+
 			console.log('Aborting...');
 			await broker.abort();
+			console.log('WORK END ====================>');
 		},
 		c: () => process.exit(),
+		v: () => console.log({ busy: broker.busy, ready: broker.ready }),
 	};
 
 	return async function develop(_source) {
@@ -47,7 +55,7 @@ const DevHandler = Duck.inject(({ Options }) => {
 		console.log(profile);
 
 		process.stdin.on('keypress', (c, k) => {
-			if (k.ctrl) {
+			if (k.shift) {
 				const fn = keyMap[k.name];
 
 				if (!fn) {
@@ -94,7 +102,7 @@ export const factory = defineFactory(({
 
 	const clean = new Commander({
 		name: 'clean',
-		description: 'Cleaning local ',
+		description: 'Cleaning local.',
 		options: [{
 			name: 'include-id', alias: 'i', required: false, value: null,
 			description: 'If delete id when cleaning.',
