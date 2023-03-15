@@ -11,7 +11,6 @@ type BrokerRun = (work: Work, source: any) => Promise<any> | any;
 type BrokerAbort = (work: Work) => Promise<any> | any;
 
 export interface BrokerOptions<T = any> {
-	name: string;
 	shared: SharedFactory<T>;
 	run: BrokerRun;
 	abort: BrokerAbort | null;

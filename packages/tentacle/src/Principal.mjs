@@ -11,7 +11,7 @@ export const play = definePlay(function Principal({
 		Environment.server.port = Environment.config.port;
 	}
 
-	async function fulfill(request, role) {
+	async function fulfill(request, role, id) {
 		const { retry, interval } = Environment.config;
 		let count = 0;
 
@@ -25,7 +25,10 @@ export const play = definePlay(function Principal({
 				return { ok: true, ret: result.body };
 			}
 
-			if (RJSP.Code.isRetrieable(code) && count <= retry) {
+			const retrieable = RJSP.Code.isRetrieable(code) && count <= retry;
+			const premise = Environment.active && Environment.job === id;
+
+			if (retrieable && premise) {
 				Bus.emit('request-retry', role, code);
 				await new Promise(resolve => setTimeout(resolve, interval));
 
@@ -38,35 +41,35 @@ export const play = definePlay(function Principal({
 		})();
 	}
 
-	async function handleJob(newJob) {
+	async function handleJob(id) {
 		const { job: oldJob } = Environment;
 
-		Environment.job = newJob;
+		Environment.job = id;
 
-		if (oldJob === newJob) {
+		if (oldJob === id) {
 			return;
 		}
 
 		if (oldJob !== null) {
-			Bus.emit('free', newJob);
+			Bus.emit('free', oldJob);
 
 			if (Broker.busy) {
 				await Broker.abort();
 			}
 		}
 
-		if (newJob !== null) {
-			Bus.emit('pick', newJob);
+		if (id !== null) {
+			Bus.emit('pick', id);
 
-			const replay = await fulfill(() => Client.getSource(), 'source');
+			const replay = await fulfill(() => Client.getSource(), 'source', id);
 
 			if (replay.ok) {
 				const result = await Broker.run(replay.source);
 
 				if (result.ok === true) {
-					await fulfill(() => Client.setTarget(result.target), 'target');
+					await fulfill(() => Client.setTarget(result.target), 'target', id);
 				} else {
-					await fulfill(() => Client.setError(result.message), 'error');
+					await fulfill(() => Client.setError(result.message), 'error', id);
 				}
 			}
 		}

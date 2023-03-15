@@ -32,10 +32,8 @@ type EventListenerMap = {
 	'pick': [job: string];
 	'free': [job: string];
 
-	'sync-fail': [];
-	'source-fail': [],
-	'target-fail': [],
-	'error-fail': [],
+	'request-retry': [role: string, code: number];
+	'request-fail': [role: string, code: number];
 }
 
 declare module '@produck/duck' {
