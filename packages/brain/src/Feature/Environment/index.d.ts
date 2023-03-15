@@ -27,6 +27,9 @@ export module Property {
 
 	export type Key = keyof Property.Map;
 	export type Value = Map[keyof Property.Map];
+
+	export const Schema: Schema<Map>;
+	export function normalize(data: Map): Map;
 }
 
 export module Options {

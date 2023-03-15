@@ -61,9 +61,9 @@ const DevHandler = Duck.inject(({ Options }) => {
 				if (!fn) {
 					console.log('Undefined behavior.');
 					console.log(profile);
+				} else {
+					keyMap[k.name]();
 				}
-
-				keyMap[k.name]();
 			}
 		});
 	};

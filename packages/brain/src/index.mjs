@@ -109,3 +109,5 @@ export const Brain = Duck.define({
 
 	return brain;
 });
+
+export { Environment } from './Feature/index.mjs';

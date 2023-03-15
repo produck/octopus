@@ -97,3 +97,4 @@ interface Brain {
 }
 
 export function Brain(options: Options): Brain;
+export const Environment: typeof Feature.Environment;

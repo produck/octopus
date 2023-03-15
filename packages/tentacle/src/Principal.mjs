@@ -1,12 +1,15 @@
 import { definePlay } from '@produck/duck-runner';
 import { RJSP } from './Feature/index.mjs';
 
-const sleep = (ms = 1000) => new Promise(resolve => setTimeout(resolve, ms));
-
 export const play = definePlay(function Principal({
 	Bus, Options, Environment, Broker, Client,
 }) {
 	Bus.on('halt', () => Environment.active = false);
+
+	function setServer() {
+		Environment.server.host = Environment.config.host;
+		Environment.server.port = Environment.config.port;
+	}
 
 	async function fulfill(request, role) {
 		const { retry, interval } = Environment.config;
@@ -23,12 +26,13 @@ export const play = definePlay(function Principal({
 			}
 
 			if (RJSP.Code.isRetrieable(code) && count <= retry) {
-				await sleep(interval);
+				Bus.emit('request-retry', role, code);
+				await new Promise(resolve => setTimeout(resolve, interval));
 
 				return await attempt();
 			}
 
-			Bus.emit(`${role}-fail`);
+			Bus.emit('request-fail', role, code);
 
 			return { ok: false };
 		})();
@@ -75,11 +79,9 @@ export const play = definePlay(function Principal({
 		}
 
 		if (Environment.config.redirect) {
-			Environment.server.host = Environment.config.host;
-			Environment.server.port = Environment.config.port;
+			setServer();
 			Environment.config.at = 0;
 			Environment.config.redirect = false;
-
 			Bus.emit('redirect');
 		}
 	}
@@ -128,6 +130,7 @@ export const play = definePlay(function Principal({
 
 	return function start() {
 		Environment.active = true;
+		setServer();
 		observe();
 		Bus.emit('boot');
 	};
