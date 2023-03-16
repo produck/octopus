@@ -5,7 +5,7 @@
 		"deps:install": "npm -v && npm i && lerna bootstrap",
 		"deps:clean": "lerna clean -y",
 		"lint": "eslint --fix packages/**/*.mjs",
-		"test": "lerna run test",
+		"test": "lerna run test --stream --no-prefix",
 		"coverage": "c8 --exclude=**/*.spec.mjs --reporter=lcov npm run test",
 		"ci:install": "npm install",
 		"publish": "npm run lint && npm test && lerna publish --no-private"

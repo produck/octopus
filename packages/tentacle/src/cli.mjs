@@ -20,6 +20,8 @@ const DevHandler = Duck.inject(({ Options }) => {
 		abort: Options.abort,
 	});
 
+	const rl = readline.createInterface({ input: process.stdin });
+
 	const keyMap = {
 		r: async () => {
 			if (broker.busy) {
@@ -44,28 +46,39 @@ const DevHandler = Duck.inject(({ Options }) => {
 			await broker.abort();
 			console.log('WORK END ====================>');
 		},
-		c: () => process.exit(),
+		c: () => {
+			rl.close();
+			process.stdin.off('keypress', listenKey);
+			console.log('Force kill.');
+			process.exit();
+		},
 		v: () => console.log({ busy: broker.busy, ready: broker.ready }),
+	};
+
+	const listenKey = (c, k) => {
+		if (k.shift) {
+			const fn = keyMap[k.name];
+
+			if (!fn) {
+				console.log('Undefined behavior.');
+				console.log(profile);
+			} else {
+				keyMap[k.name]();
+			}
+		}
 	};
 
 	return async function develop(_source) {
 		source = _source;
-		readline.emitKeypressEvents(process.stdin);
-		process.stdin.setRawMode(true);
+		readline.emitKeypressEvents(process.stdin, rl);
+
+		if (process.stdin.isTTY) {
+			process.stdin.setRawMode(true);
+		}
+
 		console.log(profile);
 
-		process.stdin.on('keypress', (c, k) => {
-			if (k.shift) {
-				const fn = keyMap[k.name];
-
-				if (!fn) {
-					console.log('Undefined behavior.');
-					console.log(profile);
-				} else {
-					keyMap[k.name]();
-				}
-			}
-		});
+		process.stdin.on('keypress', listenKey);
 	};
 });
 
