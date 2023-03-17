@@ -110,7 +110,6 @@ dist
 .vscode
 
 # Development debug
-.debug.mjs
 *.ign.*
 *.gen.*
 

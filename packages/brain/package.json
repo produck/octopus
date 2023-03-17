@@ -19,10 +19,6 @@
 		"require": "./src/index.cjs"
 	},
 	"types": "src/index.d.ts",
-	"files": [
-		"src",
-		"tsconfig.json"
-	],
 	"publishConfig": {
 		"access": "public"
 	},

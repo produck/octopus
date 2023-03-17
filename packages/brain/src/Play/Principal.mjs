@@ -29,7 +29,6 @@ export const play = definePlay(function Principal({
 		try {
 			await Observation.Tentacle.free(ObserverKit);
 			await Observation.Product.clear(ObserverKit);
-			await Observation.Job.clear(ObserverKit);
 			await Observation.Product.evaluate(ObserverKit);
 			await Observation.Job.assign(ObserverKit);
 			Bus.emit('observe-ok');

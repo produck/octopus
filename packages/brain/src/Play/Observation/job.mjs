@@ -1,11 +1,5 @@
 import * as Duck from '@produck/duck';
 
-export const clearDeadJob = Duck.inject(async ({
-	Tentacle, Job,
-}) => {
-
-});
-
 export const assignJobToTentacle = Duck.inject(async ({
 	Brain, Craft, Tentacle, Job, Environment,
 }) => {
@@ -64,5 +58,4 @@ export const assignJobToTentacle = Duck.inject(async ({
 
 export {
 	assignJobToTentacle as assign,
-	clearDeadJob as clear,
 };
