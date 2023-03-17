@@ -83,12 +83,13 @@ const DevHandler = Duck.inject(({ Options }) => {
 });
 
 export const factory = defineFactory(({
-	Kit, Runner, Commander, setProgram, Environment,
+	Kit, Id, Runner, Commander, setProgram, Options, Environment,
 }) => {
 	const program = new Commander({ name: 'tentacle' });
 
 	const start = new Commander({
 		name: 'start',
+		aliases: ['s'],
 		description: 'Start and connect to server.',
 		options: [{
 			name: 'mode', alias: 'm', required: false,
@@ -105,25 +106,45 @@ export const factory = defineFactory(({
 		}, {
 			name: 'renew', alias: 'r', required: false, value: null,
 			description: 'Force to create a new agent id or not',
-		}],
-		handler: async function install(_args, opts) {
+		}, ...Options.command.options.start],
+		handler: async function start(_args, opts) {
+			if (!await Id.has() || opts.renew) {
+				await Id.write();
+			} else {
+				await Id.read();
+			}
+
+			Environment.id = Id.value;
 			Environment.server.host = opts.host;
 			Environment.server.port = Number(opts.port);
-			Runner.start(opts.mode);
+
+			await Options.command.start(
+				opts, Environment,
+				() => Runner.start(opts.mode),
+			);
 		},
 	});
 
 	const clean = new Commander({
 		name: 'clean',
+		aliases: 'c',
 		description: 'Cleaning local.',
 		options: [{
 			name: 'include-id', alias: 'i', required: false, value: null,
 			description: 'If delete id when cleaning.',
-		}],
+		}, ...Options.command.options.clean],
+		handler: async function clean(_args, opts) {
+			if (opts.includeId) {
+				await Id.clean();
+			}
+
+			await Options.command.start(opts);
+		},
 	});
 
 	const dev = new Commander({
-		name: 'dev',
+		name: 'develop',
+		aliases: ['dev', 'd'],
 		description: 'Just for dev no connecting.',
 		handler: DevHandler(Kit),
 	});

@@ -1,4 +1,3 @@
-import * as assert from 'node:assert/strict';
 import * as Octopus from './index.mjs';
 
 const sleep = (ms = 1000) => new Promise(resolve => setTimeout(resolve, ms));

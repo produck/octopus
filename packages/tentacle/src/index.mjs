@@ -18,13 +18,8 @@ export const Tentacle = Duck.define({
 	version: meta.version,
 	description: meta.description,
 	components: [
-		DuckWorkspace.Component({
-			root: '.data',
-			id: 'id', log: 'log', temp: 'tmp',
-		}),
-		DuckLog.Component({
-
-		}),
+		DuckWorkspace.Component({ root: '.data', log: 'log', temp: 'tmp' }),
+		DuckLog.Component({}),
 		DuckRunner.Component({
 			modes: {
 				solo: DuckRunner.Template.Solo(),
@@ -35,7 +30,7 @@ export const Tentacle = Duck.define({
 		DuckCLI.Component(CLI.factory, DuckCLICommander.Provider),
 	],
 }, function Tentacle({
-	Kit, Runner, Bus, CLI,
+	Kit, Workspace, Runner, Bus, CLI,
 }, ...args) {
 	const options =  Options.normalize(...args);
 	const environment = Environment.normalize();
@@ -53,7 +48,14 @@ export const Tentacle = Duck.define({
 		timeout: () => environment.config.timeout,
 	});
 
+	const identifier = new Feature.Identifier.Accessor(options.id, {
+		get workspace() {
+			return Workspace.root;
+		},
+	});
+
 	Object.assign(Kit, {
+		Id: identifier,
 		Options: options,
 		Environment: environment,
 		Broker: broker,

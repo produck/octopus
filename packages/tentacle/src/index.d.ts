@@ -1,12 +1,42 @@
 import '@produck/duck';
 import '@produck/duck-runner';
+import * as DuckCLI from '@produck/duck-cli';
 
 import * as Broker from './Feature/Broker';
 import * as RJSP from './Feature/RJSP';
+import * as Identifier from './Feature/Identifier';
+
+export interface CommandStartOpts {
+	mode: 'solo' | 'processes';
+	host: string;
+	port: string;
+	renew: boolean;
+}
+
+export interface CommandCleanOpts {
+	includeId: boolean;
+}
 
 interface Options<T = any> extends Broker.Options.Member<T> {
-	craft: string;
-	version: string;
+	craft?: string;
+	version?: string;
+
+	id?: Identifier.Options.Object<{
+		readonly workspace: string;
+	}>;
+
+	command?: {
+		options: {
+			start?: DuckCLI.Bridge.Feature.Options;
+			clean?: DuckCLI.Bridge.Feature.Options;
+		},
+		start?: (
+			opts: CommandStartOpts,
+			environment: Environment,
+			next: () => any
+		) => Promise<void> | void;
+		clean?: (opts: CommandCleanOpts) => Promise<void> | void;
+	};
 }
 
 interface ServerAddress {
@@ -42,6 +72,7 @@ declare module '@produck/duck' {
 		Environment: Environment;
 		Broker: Broker.Broker;
 		Client: RJSP.RJSPClient;
+		Id: Identifier.IdentifierAccessor;
 	}
 }
 
