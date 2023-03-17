@@ -1,3 +1,4 @@
+import * as fs from 'node:fs/promises';
 import * as Duck from '@produck/duck';
 import { defineFactory } from '@produck/duck-cli';
 import * as readline from 'readline';
@@ -83,7 +84,7 @@ const DevHandler = Duck.inject(({ Options }) => {
 });
 
 export const factory = defineFactory(({
-	Kit, Id, Runner, Commander, setProgram, Options, Environment,
+	Kit, Workspace, Runner, Commander, setProgram, Id, Options, Environment,
 }) => {
 	const program = new Commander({ name: 'tentacle' });
 
@@ -108,7 +109,9 @@ export const factory = defineFactory(({
 			description: 'Force to create a new agent id or not',
 		}, ...Options.command.options.start],
 		handler: async function start(_args, opts) {
-			if (!await Id.has() || opts.renew) {
+			await Workspace.buildAll();
+
+			if (opts.renew ||!await Id.has()) {
 				await Id.write();
 			} else {
 				await Id.read();
@@ -138,7 +141,9 @@ export const factory = defineFactory(({
 				await Id.clean();
 			}
 
-			await Options.command.start(opts);
+			await Options.command.clean(opts);
+			await fs.rm(Workspace.getPath('tmp'), { recursive: true });
+			await fs.rm(Workspace.getPath('log'), { recursive: true });
 		},
 	});
 

@@ -52,6 +52,9 @@ export const Tentacle = Duck.define({
 		get workspace() {
 			return Workspace.root;
 		},
+		get temp() {
+			return Workspace.getPath('tmp');
+		},
 	});
 
 	Object.assign(Kit, {
