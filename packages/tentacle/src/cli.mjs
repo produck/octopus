@@ -127,7 +127,7 @@ export const factory = defineFactory(({
 
 	const clean = new Commander({
 		name: 'clean',
-		aliases: 'c',
+		aliases: ['c'],
 		description: 'Cleaning local.',
 		options: [{
 			name: 'include-id', alias: 'i', required: false, value: null,

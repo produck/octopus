@@ -8,9 +8,9 @@ export class IdentifierAccessor {
 	#variables = {};
 	#value = crypto.randomUUID();
 
-	constructor(_options, _variables = {}) {
-		this.#options = Options.normalize(_options);
-		this.#variables = _variables;
+	constructor(...args) {
+		this.#options = Options.normalize(...args.splice(0, 1));
+		this.#variables = args.splice(0, 1)[0];
 	}
 
 	get #copy() {
