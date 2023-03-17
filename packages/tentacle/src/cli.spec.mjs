@@ -78,7 +78,7 @@ describe('CLI', function () {
 	});
 
 	describe('> start', function () {
-		it.only('should use a existed id.', async function () {
+		it('should use a existed id.', async function () {
 			let flag = false;
 			const id = crypto.randomUUID();
 
@@ -146,7 +146,7 @@ describe('CLI', function () {
 		});
 	});
 
-	it.only('should start and clean use default id.', async function () {
+	it('should start and clean use default id.', async function () {
 		const tentacle = Octopus.Tentacle({
 			craft: 'example',
 			version: '0.0.0',
@@ -154,9 +154,14 @@ describe('CLI', function () {
 			run: () => {},
 		});
 
-		await tentacle.boot([]);
+		await tentacle.boot(['-m', 'solo']);
 		await sleep();
 		tentacle.halt();
 		await tentacle.boot(['clean']);
+
+		await tentacle.boot(['-m', 'solo']);
+		await sleep();
+		tentacle.halt();
+		await tentacle.boot(['clean', '-i']);
 	});
 });

@@ -53,7 +53,7 @@ export const Tentacle = Duck.define({
 			return Workspace.root;
 		},
 		get temp() {
-			return Workspace.getPath('tmp');
+			return Workspace.getPath('temp');
 		},
 	});
 

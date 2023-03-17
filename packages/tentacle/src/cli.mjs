@@ -142,7 +142,7 @@ export const factory = defineFactory(({
 			}
 
 			await Options.command.clean(opts);
-			await fs.rm(Workspace.getPath('tmp'), { recursive: true });
+			await fs.rm(Workspace.getPath('temp'), { recursive: true });
 			await fs.rm(Workspace.getPath('log'), { recursive: true });
 		},
 	});
