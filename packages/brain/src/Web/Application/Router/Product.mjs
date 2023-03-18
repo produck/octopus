@@ -17,6 +17,18 @@ const isState = (data) => {
 	}
 };
 
+function toProductValueObject(product) {
+	return {
+		id: product.id,
+		model: product.model,
+		createdAt: product.createdAt,
+		orderedAt: product.orderedAt,
+		finishedAt: product.finishedAt,
+		status: product.status,
+		message: product.message,
+	};
+}
+
 export const Router = defineRouter(function ProductRouter(router, {
 	Environment, Procedure, Product, Job,
 }) {
@@ -37,7 +49,7 @@ export const Router = defineRouter(function ProductRouter(router, {
 			ctx.body = await Product.query({
 				name: 'OfOwner',
 				owner: application.id,
-			});
+			}).then(list => list.map(toProductValueObject));
 		})
 		.post(async function createProduct(ctx) {
 			const list = await Product.query({ name: 'All', finished: false });
@@ -48,13 +60,14 @@ export const Router = defineRouter(function ProductRouter(router, {
 
 			const { application, procedure } = ctx.state;
 
-			ctx.status = 201;
-
-			ctx.body = await Product.create({
+			const product = await Product.create({
 				id: crypto.randomUUID(),
 				owner: application.id,
 				model: procedure.name,
 			});
+
+			ctx.status = 201;
+			ctx.body = toProductValueObject(product);
 		})
 		.param('productId', async function fetchProduct(productId, ctx, next) {
 			const { application } = ctx.state;
@@ -69,7 +82,7 @@ export const Router = defineRouter(function ProductRouter(router, {
 			return next();
 		})
 		.get('/{productId}', async function getProduct(ctx) {
-			ctx.body = ctx.state.product;
+			ctx.body = toProductValueObject(ctx.state.product);
 		})
 		.put('/{productId}/state', async function abort(ctx) {
 			const { body: state } = ctx.request;

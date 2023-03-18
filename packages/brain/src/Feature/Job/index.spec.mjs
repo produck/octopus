@@ -206,26 +206,6 @@ describe('::Feature::Job', function () {
 			});
 		}
 
-		describe('.toJSON()', function () {
-			it('should get a json string.', async function () {
-				const now = Date.now();
-				const example = { ...EXAMPLE, createdAt: now };
-
-				const TestJob = defineJob({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...example }),
-				});
-
-				const job = await TestJob.get(example.id);
-				const jsonObject = JSON.parse(JSON.stringify(job));
-
-				assert.deepEqual(jsonObject, {
-					...EXAMPLE,
-					createdAt: new Date(now).toISOString(),
-				});
-			});
-		});
-
 		describe('.start()', function () {
 			it('should update job', async function () {
 				const example = { ...EXAMPLE };

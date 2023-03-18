@@ -22,23 +22,6 @@ const At = key => [key, function atGetter() {
 	return NullOrDate(_(this)[key]);
 }];
 
-function toJSON() {
-	const data = _(this);
-	const object = {};
-
-	for (const key of PLAIN_KEYS) {
-		object[key] = data[key];
-	}
-
-	for (const key of AT_KEYS) {
-		object[key] = NullOrDate(data[key]);
-	}
-
-	object.dump = _(this).dump;
-
-	return object;
-}
-
 export function defineProductBase(Procedure) {
 	const DataSchema = Cust(Data.Schema, (_v, _e, next) => {
 		const data = next();
@@ -112,6 +95,5 @@ export function defineProductBase(Procedure) {
 				Declare.Prototype.Accessor(...At(atKey));
 			}
 		}),
-		toJSON,
 	});
 }

@@ -196,26 +196,6 @@ describe('::Feature::Product', function () {
 			});
 		}
 
-		describe('.toJSON()', function () {
-			it('should get a json string.', async function () {
-				const now = Date.now();
-				const example = { ...EXAMPLE, createdAt: now };
-
-				const TestProduct = defineProduct({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...example }),
-				});
-
-				const job = await TestProduct.get(EXAMPLE.id);
-				const jsonObject = JSON.parse(JSON.stringify(job));
-
-				assert.deepEqual(jsonObject, {
-					...EXAMPLE,
-					createdAt: new Date(now).toISOString(),
-				});
-			});
-		});
-
 		describe('.setOrder()', function () {
 			it('should update product.', async function () {
 				const example = { ...EXAMPLE };

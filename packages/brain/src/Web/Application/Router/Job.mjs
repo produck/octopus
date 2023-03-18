@@ -1,5 +1,18 @@
 import { defineRouter } from '@produck/duck-web-koa-forker';
 
+function toJobValueObject(job) {
+	return {
+		id: job.id,
+		product: job.product,
+		craft: job.craft,
+		createdAt: job.createdAt,
+		startedAt: job.startedAt,
+		finishedAt: job.finishedAt,
+		status: job.status,
+		message: job.message,
+	};
+}
+
 export const Router = defineRouter(function JobRouter(router, {
 	Job,
 }) {
@@ -10,7 +23,7 @@ export const Router = defineRouter(function JobRouter(router, {
 			ctx.body = await Job.query({
 				name: 'OfProduct',
 				product: product.id,
-			});
+			}).then(list => list.map(toJobValueObject));
 		})
 		.get('/{jobId}', async function getJobOfProduct(ctx) {
 			const { product } = ctx.state;
@@ -22,6 +35,6 @@ export const Router = defineRouter(function JobRouter(router, {
 				return ctx.throw(404);
 			}
 
-			ctx.body = job;
+			ctx.body = toJobValueObject(job);
 		});
 });
