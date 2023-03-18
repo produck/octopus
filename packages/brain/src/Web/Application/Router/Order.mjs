@@ -19,7 +19,9 @@ export const Router = defineRouter(function OrderRouter(router) {
 				return ctx.throw(400, 'Bad order.');
 			}
 
-			ctx.body = await product.setOrder(order).save();
+			await product.setOrder(order).save();
+			ctx.status = 201;
+			ctx.body = order;
 		})
 		.get(async function getProductOrder(ctx) {
 			const { product } = ctx.state;

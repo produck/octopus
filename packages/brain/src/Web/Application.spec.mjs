@@ -483,7 +483,7 @@ describe('Web::Application', function () {
 			await client
 				.post(`/product/foo/${productId}/order?${credential}`)
 				.send({ a: true })
-				.expect(200);
+				.expect(201);
 		});
 	});
 
