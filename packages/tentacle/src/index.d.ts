@@ -23,6 +23,7 @@ interface Options<T = any> extends Broker.Options.Member<T> {
 
 	id?: Identifier.Options.Object<{
 		readonly workspace: string;
+		readonly temp: string;
 	}>;
 
 	command?: {
@@ -84,3 +85,11 @@ declare module '@produck/duck-runner' {
 		): this;
 	}
 }
+
+interface Tentacle {
+	environment: Environment,
+	boot(argv?: string[]): Promise<void>;
+	halt(): void;
+}
+
+export function Tentacle(options: Options): Tentacle;
