@@ -11,6 +11,9 @@ export const factory = defineFactory(({
 
 	const CustomKit = Kit('Custom::CLI::Installer');
 
+	CustomKit.setProgram = null;
+	CustomKit.Commander = null;
+
 	const start = new Commander({
 		name: 'start',
 		options: Options.cli.options.start,
@@ -25,8 +28,6 @@ export const factory = defineFactory(({
 		name: 'install',
 		options: Options.cli.options.install,
 		handler: async function install(_args, opts) {
-			CustomKit.setProgram = null;
-			CustomKit.Commander = null;
 			await Options.cli.install(opts, CustomKit);
 			await Workspace.buildAll();
 		},

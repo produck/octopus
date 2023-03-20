@@ -32,6 +32,11 @@ interface Configuration extends ConfigurationData {
 	update(value: Configuration): this;
 }
 
+interface CustomKit extends Omit<DuckCLI.CLIKit, 'setProgram' | 'Commander'> {
+	setProgram: null;
+	Commander: null;
+}
+
 interface Options {
 	name?: string;
 	version?: string;
@@ -58,8 +63,8 @@ interface Options {
 			install?: DuckCLI.Bridge.Feature.Options;
 		};
 
-		start: (opts: object) => any;
-		install: (opts: object) => any;
+		start: (opts: object, Kit: CustomKit) => any;
+		install: (opts: object, Kit: CustomKit) => any;
 		extend?: (
 			program: DuckCLI.Bridge.Commander,
 			Commander: typeof DuckCLI.Bridge.Commander
