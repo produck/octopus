@@ -92,8 +92,8 @@ interface Brain {
 	readonly configuration: Configuration;
 	boot(command?: string): Promise<void>;
 	halt(): Promise<void>;
-	Model(name: string, options: any): this;
-	Craft(name: string, options: any): this;
+	Model(name: string, options: Feature.Procedure.Data.ValueOptions): this;
+	Craft(name: string, options: Feature.Craft.Data.ValueOptions): this;
 }
 
 export function Brain(options: Options): Brain;
