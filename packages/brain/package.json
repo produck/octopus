@@ -1,6 +1,6 @@
 {
 	"name": "@produck/octopus-brain",
-	"version": "0.6.3",
+	"version": "0.6.4",
 	"description": "Workflow definition framework hub endpoint.",
 	"keywords": [
 		"workflow",
