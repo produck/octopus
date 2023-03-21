@@ -28,6 +28,7 @@ export module Options {
 		get?: (data: Data.Value) => Promise<Data.Value>;
 		has?: (id: string) => Promise<boolean>;
 		query?: () => Promise<Array<Data.Value>>;
+		create?: (data: Data.Value) => Promise<Data.Value>;
 	}
 
 	export const Schema: Schema<Value>;

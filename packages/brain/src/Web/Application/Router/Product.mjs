@@ -1,7 +1,7 @@
 import { P, S } from '@produck/mold';
 import { webcrypto as crypto } from 'node:crypto';
 import { defineRouter } from '@produck/duck-web-koa-forker';
-import KoaBody from 'koa-body';
+import { koaBody } from 'koa-body';
 
 const StateSchema = S.Object({
 	finished: P.Constant(true, true),
@@ -33,7 +33,7 @@ export const Router = defineRouter(function ProductRouter(router, {
 	Environment, Procedure, Product, Job,
 }) {
 	router
-		.use(KoaBody.default())
+		.use(koaBody())
 		.param('productModel', function assertModel(productModel, ctx, next) {
 			if (!Procedure.isValid(productModel)) {
 				return ctx.throw(404, `Bad product model(${productModel}).`);

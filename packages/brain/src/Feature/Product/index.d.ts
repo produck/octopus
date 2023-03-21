@@ -46,7 +46,7 @@ declare namespace Filter {
 
 	interface OfOwner extends State{
 		name: 'OfProduct';
-		product: string;
+		owner: string;
 	}
 
 	interface All extends State{

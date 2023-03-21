@@ -30,7 +30,11 @@ declare class Program {}
 
 export module Data {
 	interface ValueOptions {
-		script: Script;
+		script: Script & ThisType<{
+			value(value: any): any;
+			run(craftName: string, source: any): any;
+			all(list: any[]): any[];
+		}>;
 		order: (any: any) => boolean;
 		artifact: (any: any) => boolean;
 	}
