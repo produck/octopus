@@ -232,6 +232,35 @@ describe('::Feature::Product', function () {
 					message: 'This product has been ordered.',
 				});
 			});
+
+			it('should throw if bad order', async function () {
+				const example = { ...EXAMPLE };
+
+				const TestProcedure = Procedure.define({
+					create: data => data,
+				});
+
+				await TestProcedure.register('example', {
+					script: { *main() {} },
+					order: () => false,
+				});
+
+				const TestProduct = defineProduct({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...example }),
+					save: data => Object.assign(example, data),
+					Procedure: TestProcedure,
+				});
+
+				const product = await TestProduct.get(EXAMPLE.id);
+
+				assert.equal(product.orderedAt, null);
+
+				await assert.rejects(async () => await product.setOrder(null), {
+					name: 'TypeError',
+					message: 'Invalid "order", one "example order" expected.',
+				});
+			});
 		});
 
 		describe('.finish()', function () {

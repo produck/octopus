@@ -48,11 +48,18 @@ export function defineProductBase(Procedure) {
 		data: Normalizer(DataSchema),
 		base: Definer.Base(({ Declare }) => {
 			Declare.Prototype.notDestroyedRequired()
-				.Method('setOrder', function () {
+				.Method('setOrder', function (_order) {
 					if (this.orderedAt !== null) {
 						throw new Error('This product has been ordered.');
 					}
 
+					const data = _(this);
+
+					if (!Procedure.use(data.model).isOrder(_order)) {
+						U.throwError('order', `${data.model} order`);
+					}
+
+					data.order = _order;
 					_(this).orderedAt = Date.now();
 
 					return this;
