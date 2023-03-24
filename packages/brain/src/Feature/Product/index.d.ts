@@ -20,6 +20,7 @@ export module Data {
 		id: string;
 		owner: string;
 		model: string;
+		dump: Procedure.ContextDump;
 		createdAt: number;
 		orderedAt: number | null;
 		finishedAt: number | null;
@@ -44,12 +45,12 @@ declare namespace Filter {
 		finished?: boolean | null;
 	}
 
-	interface OfOwner extends State{
+	interface OfOwner extends State {
 		name: 'OfProduct';
 		owner: string;
 	}
 
-	interface All extends State{
+	interface All extends State {
 		name: 'All';
 	}
 
