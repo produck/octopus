@@ -37,6 +37,10 @@ interface CustomKit extends Omit<DuckCLI.CLIKit, 'setProgram' | 'Commander'> {
 	Commander: null;
 }
 
+interface CLIExtenderKit extends Omit<DuckCLI.CLIKit, 'setProgram'> {
+	setProgram: null;
+}
+
 interface Options {
 	name?: string;
 	version?: string;
@@ -67,7 +71,7 @@ interface Options {
 		install: (opts: object, Kit: CustomKit) => any;
 		extend?: (
 			program: DuckCLI.Bridge.Commander,
-			Commander: typeof DuckCLI.Bridge.Commander
+			Commander: CLIExtenderKit
 		) => void;
 	};
 
