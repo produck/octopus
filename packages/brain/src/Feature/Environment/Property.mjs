@@ -2,7 +2,7 @@ import { Normalizer, P, S } from '@produck/mold';
 
 const sec = n => n * 1000;
 
-export const PropertySchemas = {
+const PropertySchemas = {
 	'ENVIRONMENT.REFRESH.INTERVAL': P.UINT32(sec(1)),
 	'ENVIRONMENT.AT': P.Integer(0),
 
@@ -36,3 +36,4 @@ for (const name in PropertySchemas) {
 }
 
 export const normalizeValue = (name, value) => PropertyValue[name](value);
+export { PropertySchemas as Schemas };

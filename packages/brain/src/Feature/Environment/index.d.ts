@@ -30,6 +30,11 @@ export module Property {
 
 	export const Schema: Schema<Map>;
 	export function normalize(data: Map): Map;
+	export function normalizeValue(name: Key, value: Map[Key]): Map[Key];
+
+	export const PropertySchemas: {
+		[Property in keyof Map]: Schema<Map[Property]>;
+	}
 }
 
 export module Options {
@@ -76,7 +81,7 @@ declare class BaseEnvironment extends EventEmitter {
 	install(map: Property.Map): Promise<void>;
 }
 
-export class CustomEnvironment extends BaseEnvironment {}
+export class CustomEnvironment extends BaseEnvironment { }
 
 export function defineEnvironment(
 	options: Options.Object
