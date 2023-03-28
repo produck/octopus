@@ -14,7 +14,7 @@
 	"devDependencies": {
 		"c8": "^7.13.0",
 		"eslint": "^8.36.0",
-		"lerna": "^6.5.1"
+		"lerna": "^6.6.1"
 	},
 	"workspaces": [
 		"packages/*"
