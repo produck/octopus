@@ -18,9 +18,10 @@ export const factory = defineFactory(({
 		name: 'start',
 		options: Options.cli.options.start,
 		handler: async function start(_args, opts) {
-			await Options.cli.start(opts, CustomKit);
-			ConfigurationData.normalize(Configuration);
-			await Runner.start(Configuration.runtime.toLowerCase());
+			await Options.cli.start(opts, CustomKit, async () => {
+				ConfigurationData.normalize(Configuration);
+				await Runner.start(Configuration.runtime.toLowerCase());
+			});
 		},
 	});
 
@@ -28,8 +29,9 @@ export const factory = defineFactory(({
 		name: 'install',
 		options: Options.cli.options.install,
 		handler: async function install(_args, opts) {
-			await Options.cli.install(opts, CustomKit);
-			await Workspace.buildAll();
+			await Options.cli.install(opts, CustomKit, async () => {
+				await Workspace.buildAll();
+			});
 		},
 	});
 

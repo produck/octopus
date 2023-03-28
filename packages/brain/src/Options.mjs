@@ -28,8 +28,8 @@ export const Schema = S.Object({
 			start: DuckCLI.Bridge.Feature.OptionsSchema,
 			install: DuckCLI.Bridge.Feature.OptionsSchema,
 		}),
-		start: P.Function(() => {}),
-		install: P.Function(() => {}),
+		start: P.Function((_opts, _kit, next) => next()),
+		install: P.Function((_opts, _kit, next) => next()),
 		extend: P.Function(() => {}),
 	}),
 
