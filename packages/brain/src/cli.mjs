@@ -16,6 +16,7 @@ export const factory = defineFactory(({
 
 	const start = new Commander({
 		name: 'start',
+		description: 'Start server.',
 		options: Options.cli.options.start,
 		handler: async function start(_args, opts) {
 			await Options.cli.start(opts, CustomKit, async () => {
@@ -27,6 +28,7 @@ export const factory = defineFactory(({
 
 	const install = new Commander({
 		name: 'install',
+		description: 'Prepare file system and other components.',
 		options: Options.cli.options.install,
 		handler: async function install(_args, opts) {
 			await Options.cli.install(opts, CustomKit, async () => {
