@@ -10,6 +10,10 @@ export class Work {
 	}
 
 	throw(message = null) {
+		if(this.isDestroyed) {
+			return;
+		}
+
 		if (!T.Native.String(message) && !T.Helper.Null(message)) {
 			U.throwError('message', 'string or null');
 		}
@@ -19,6 +23,10 @@ export class Work {
 	}
 
 	complete(target) {
+		if(this.isDestroyed) {
+			return;
+		}
+
 		this.#done({ ok: true, target });
 		Work.destroy(this);
 	}

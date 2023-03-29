@@ -32,12 +32,23 @@ export class Broker {
 		}
 
 		const result = await new Promise((resolve, reject) => {
+			let finished = false;
+
+			const done = result => {
+				finished = true;
+				resolve(result);
+			};
+
 			const shared = this.#options.shared();
-			const done = result => resolve(result);
 			const work = new Work(done, shared);
 
 			this.#work = work;
-			Promise.resolve(this.#options.run(work, source)).catch(reject);
+
+			Promise.resolve(this.#options.run(work, source)).catch(reject).then(() => {
+				if (!finished) {
+					throw new Error('The work is finished without any response.');
+				}
+			});
 		});
 
 		this.#clear();

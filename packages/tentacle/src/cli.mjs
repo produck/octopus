@@ -89,8 +89,7 @@ export const factory = defineFactory(({
 	const program = new Commander({ name: 'tentacle' });
 
 	const start = new Commander({
-		name: 'start',
-		aliases: ['s'],
+		name: 'start', aliases: ['s'],
 		description: 'Start and connect to server.',
 		options: [{
 			name: 'mode', alias: 'm', required: false,
@@ -129,8 +128,7 @@ export const factory = defineFactory(({
 	});
 
 	const clean = new Commander({
-		name: 'clean',
-		aliases: ['c'],
+		name: 'clean', aliases: ['c'],
 		description: 'Cleaning local.',
 		options: [{
 			name: 'include-id', alias: 'i', required: false, value: null,
@@ -148,8 +146,7 @@ export const factory = defineFactory(({
 	});
 
 	const dev = new Commander({
-		name: 'develop',
-		aliases: ['dev', 'd'],
+		name: 'develop', aliases: ['dev', 'd'],
 		description: 'Just for dev no connecting.',
 		handler: DevHandler(Kit),
 	});

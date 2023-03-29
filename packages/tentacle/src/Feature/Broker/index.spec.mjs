@@ -159,6 +159,7 @@ describe('Feature::Work', function () {
 			});
 
 			work.throw();
+			work.throw();
 		});
 
 		it('should throw if bad message.', function () {

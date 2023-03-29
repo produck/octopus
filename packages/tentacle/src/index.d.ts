@@ -17,7 +17,9 @@ export interface CommandCleanOpts {
 	includeId: boolean;
 }
 
-interface Options<T = any> extends Broker.Options.Member<T> {
+interface Options<
+	T extends Broker.SharedFactory = () => any
+> extends Broker.BrokerOptions<T> {
 	craft?: string;
 	version?: string;
 

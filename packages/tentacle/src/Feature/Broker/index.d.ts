@@ -1,19 +1,20 @@
 import { Schema } from "@produck/mold";
 
-export interface Work {
+export interface Work<S> {
 	readonly isDestroyed: boolean;
+	readonly shared: S;
 	throw(message: string | null): void;
 	complete(target: any): void;
 }
 
-type SharedFactory<T> = () => T;
-type BrokerRun = (work: Work, source: any) => Promise<any> | any;
-type BrokerAbort = (work: Work) => Promise<any> | any;
+type SharedFactory<T = any> = () => T;
+type BrokerRun<S> = (work: Work<S>, source: any) => Promise<any> | any;
+type BrokerAbort<S> = (work: Work<S>) => Promise<any> | any;
 
-export interface BrokerOptions<T = any> {
-	shared: SharedFactory<T>;
-	run: BrokerRun;
-	abort: BrokerAbort | null;
+export interface BrokerOptions<T extends SharedFactory = () => any> {
+	shared: T;
+	run: BrokerRun<ReturnType<T>>;
+	abort: BrokerAbort<ReturnType<T>> | null;
 }
 
 export interface Result<T = any> {
@@ -37,8 +38,8 @@ export interface BrokerConstructor {
 export const Broker: BrokerConstructor;
 
 export namespace Options {
-	export type Member<T = any> = Omit<BrokerOptions<T>, 'name'>;
-	export const MemberSchemaas: Member;
+	export type Member = BrokerOptions;
+	export const MemberSchemas: BrokerOptions;
 	export const Schema: Schema<BrokerOptions>;
 	export function normalize(options: BrokerOptions): BrokerOptions;
 }
