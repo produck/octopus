@@ -11,6 +11,7 @@ export const play = definePlay(function AgentServer({
 		label: 'agent',
 		Transcriber: DuckLogQuack.Transcriber({
 			format: Quack.Format.Apache.Preset.CLF,
+			assert: () => true,
 		}),
 	});
 

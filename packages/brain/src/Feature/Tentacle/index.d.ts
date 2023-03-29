@@ -49,16 +49,16 @@ export module Options {
 }
 
 export interface Tentacle extends Entity.Proxy.Model {
-	id: string;
-	craft: string;
-	version: string;
-	job: string | null;
-	ready: boolean;
-	createdAt: Date;
-	visitedAt: Date;
-	visit(ready?: boolean): this;
+	readonly id: string;
+	readonly craft: string;
+	readonly version: string;
+	readonly job: string | null;
+	readonly ready: boolean;
+	readonly createdAt: Date;
+	readonly visitedAt: Date;
 	pick(jobId: string): this;
 	free(): this;
+	setReady(flag?: boolean): this;
 	toValue(): { id: string };
 }
 

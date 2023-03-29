@@ -1,3 +1,4 @@
+import { T, U } from '@produck/mold';
 import { Definer, Model, _ } from '@produck/shop';
 
 import { normalizeUUID } from '../Utils.mjs';
@@ -29,6 +30,15 @@ export const BaseTentacle = Model.define({
 			})
 			.Method('free', function () {
 				_(this).job = null;
+
+				return this;
+			})
+			.Method('setReady', function (flag = true) {
+				if (!T.Native.Boolean(flag)) {
+					U.throwError('flag', 'boolean');
+				}
+
+				_(this).ready = flag;
 
 				return this;
 			})

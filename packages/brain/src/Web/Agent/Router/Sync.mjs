@@ -63,7 +63,7 @@ export const Router = defineRouter(function SyncRouter(router, {
 				version: data.version,
 			});
 
-			await tentacle.save();
+			await tentacle.setReady(data.ready).save();
 
 			const { job: jobId } = tentacle;
 
