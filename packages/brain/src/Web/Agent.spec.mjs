@@ -41,8 +41,9 @@ describe('Web::Agent', function () {
 		Tentacle: {
 			has: () => true,
 			get: () => backend.tentacles[0],
-			save: () => {
+			save: (data) => {
 				backend.tentacles[0].visitedAt = Date.now();
+				backend.tentacles[0].ready = data.ready;
 
 				return backend.tentacles[0];
 			},
@@ -102,7 +103,7 @@ describe('Web::Agent', function () {
 						id: crypto.randomUUID(),
 						craft: 'example2',
 						version: '1.0.0',
-						ready: true,
+						ready: false,
 						job: null,
 						createdAt: Date.now() - 5000,
 						visitedAt: Date.now(),
@@ -132,6 +133,7 @@ describe('Web::Agent', function () {
 			}).expect(200);
 
 			assert.ok(backend.tentacles[0].visitedAt > oldVisitedAt);
+			assert.equal(backend.tentacles[0].ready, true);
 		});
 
 		it('should visit the job of tentacle.', async function () {
