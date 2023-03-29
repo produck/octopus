@@ -94,4 +94,4 @@ interface Tentacle {
 	halt(): void;
 }
 
-export function Tentacle(options: Options): Tentacle;
+export function Tentacle<T extends Broker.SharedFactory>(options: Options<T>): Tentacle;
