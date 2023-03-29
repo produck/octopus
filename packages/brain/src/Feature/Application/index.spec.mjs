@@ -225,22 +225,5 @@ describe('::Feature::Application', function () {
 				assert.ok(application.createdAt instanceof Date);
 			});
 		});
-
-		describe('.toJSON()', function () {
-			it('should get a json string.', async function () {
-				const example = { id: crypto.randomUUID(), createdAt: Date.now() };
-
-				const MemoneryApplication = define({
-					...SAMPLE_OPTIONS,
-					get: () => example,
-				});
-
-				const application = await MemoneryApplication.get(ID_EXAMPLE);
-				const jsonObject = JSON.parse(JSON.stringify(application));
-
-				assert.equal(jsonObject.id, example.id);
-				assert.equal(new Date(jsonObject.createdAt).getTime(), example.createdAt);
-			});
-		});
 	});
 });

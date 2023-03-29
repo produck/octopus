@@ -64,18 +64,4 @@ export const BaseTentacle = Model.define({
 				: await this.create(data);
 		});
 	}),
-	toJSON() {
-		const data = _(this);
-		const object = {};
-
-		for (const key of PLAIN_KEYS) {
-			object[key] = data[key];
-		}
-
-		for (const key of AT_KEYS) {
-			object[key] = new Date(data[key]);
-		}
-
-		return object;
-	},
 });

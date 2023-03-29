@@ -16,10 +16,4 @@ export const BaseApplication = Model.define({
 				return new Date(_(this).createdAt);
 			});
 	}),
-	toJSON() {
-		return {
-			id: this.id,
-			createdAt: this.createdAt,
-		};
-	},
 });

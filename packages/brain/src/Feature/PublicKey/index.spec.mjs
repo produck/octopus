@@ -218,24 +218,6 @@ describe('::Feature::PublicKey', function () {
 			});
 		});
 
-		describe('.toJSON()', function () {
-			it('should get a json string.', async function () {
-				const TestPublicKey = define({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...EXAMPLE }),
-				});
-
-				const key = await TestPublicKey.get(EXAMPLE.id);
-				const jsonObject = JSON.parse(JSON.stringify(key));
-
-				assert.deepEqual(jsonObject, {
-					id: EXAMPLE.id,
-					owner: EXAMPLE.owner,
-					createdAt: new Date(EXAMPLE.createdAt).toISOString(),
-				});
-			});
-		});
-
 		describe('.id', function () {
 			it('should get id.', async function () {
 				const TestPublicKey = define({

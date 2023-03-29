@@ -168,25 +168,6 @@ describe('::Feature::Tentacle', function () {
 			});
 		}
 
-		describe('.toJSON()', function () {
-			it('should get a json object.', async function () {
-				const TestTentacle = defineTentacle({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...EXAMPLE }),
-				});
-
-				const tentacle = await TestTentacle.get(EXAMPLE.id);
-				const jsonObject = JSON.parse(JSON.stringify(tentacle));
-
-				assert.deepEqual(jsonObject, {
-					...EXAMPLE,
-					ready: false,
-					createdAt: new Date(EXAMPLE.createdAt).toISOString(),
-					visitedAt: new Date(EXAMPLE.visitedAt).toISOString(),
-				});
-			});
-		});
-
 		describe('.pick()', function () {
 			it('should set a job id.', async function () {
 				const TestTentacle = defineTentacle({
@@ -198,7 +179,7 @@ describe('::Feature::Tentacle', function () {
 				const tentacle = await TestTentacle.get(EXAMPLE.id);
 
 				tentacle.pick(jobId);
-				assert.equal(tentacle.toJSON().job, jobId);
+				assert.equal(tentacle.job, jobId);
 			});
 		});
 
@@ -213,9 +194,38 @@ describe('::Feature::Tentacle', function () {
 				const tentacle = await TestTentacle.get(EXAMPLE.id);
 
 				tentacle.pick(jobId);
-				assert.equal(tentacle.toJSON().job, jobId);
+				assert.equal(tentacle.job, jobId);
 				tentacle.free();
-				assert.equal(tentacle.toJSON().job, null);
+				assert.equal(tentacle.job, null);
+			});
+		});
+
+		describe('.setReady()', function () {
+			it('should set tentacle ready.', async function () {
+				const TestTentacle = defineTentacle({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...EXAMPLE }),
+				});
+
+				const tentacle = await TestTentacle.get(EXAMPLE.id);
+
+				assert.equal(tentacle.ready, false);
+				tentacle.setReady();
+				assert.equal(tentacle.ready, true);
+			});
+
+			it('should throw if bad flag.', async function () {
+				const TestTentacle = defineTentacle({
+					...SAMPLE_OPTIONS,
+					get: () => ({ ...EXAMPLE }),
+				});
+
+				const tentacle = await TestTentacle.get(EXAMPLE.id);
+
+				await assert.rejects(async () => await tentacle.setReady(1), {
+					name: 'TypeError',
+					message: 'Invalid "flag", one "boolean" expected.',
+				});
 			});
 		});
 	});

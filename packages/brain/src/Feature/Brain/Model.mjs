@@ -128,18 +128,4 @@ export const BaseBrain = Model.define({
 	data: Data.normalize,
 	abstract: Definer.Abstract({}, { _external: null }),
 	base: defineBase,
-	toJSON() {
-		const data = _(this);
-		const object = {};
-
-		for (const key of PLAIN_KEYS) {
-			object[key] = data[key];
-		}
-
-		for (const key of AT_KEYS) {
-			object[key] = new Date(data[key]);
-		}
-
-		return object;
-	},
 });

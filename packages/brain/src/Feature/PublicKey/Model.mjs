@@ -42,13 +42,4 @@ export const BasePublicKey = Model.define({
 				}
 			});
 	}),
-	toJSON() {
-		const { id, owner, createdAt } = _(this);
-
-		return {
-			id,
-			owner,
-			createdAt: new Date(createdAt),
-		};
-	},
 });

@@ -273,23 +273,5 @@ describe('Feature::Brain', function () {
 				await brain.load();
 			});
 		});
-
-		describe('.toJSON()', function () {
-			it('should get a json object.', async function () {
-				const TestBrain = defineBrain({
-					...SAMPLE_OPTIONS,
-					get: () => ({ ...EXAMPLE }),
-				});
-
-				const brain = await TestBrain.get(EXAMPLE.id);
-				const jsonObject = JSON.parse(JSON.stringify(brain));
-
-				assert.deepEqual(jsonObject, {
-					...EXAMPLE,
-					createdAt: new Date(EXAMPLE.createdAt).toISOString(),
-					visitedAt: new Date(EXAMPLE.visitedAt).toISOString(),
-				});
-			});
-		});
 	});
 });
