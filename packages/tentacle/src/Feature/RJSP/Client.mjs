@@ -47,7 +47,7 @@ export class RJSPClient {
 			throws('Bad host from `options.port()`, one integer expected.');
 		}
 
-		return `http://${host}:${port}`;
+		return `http://${host}:${port}/api`;
 	}
 
 	get #JOB() {
@@ -61,19 +61,19 @@ export class RJSPClient {
 	}
 
 	get #SYNC_URL() {
-		return `${this.#BASE_URL}/api/sync`;
+		return `${this.#BASE_URL}/sync`;
 	}
 
 	get #SOURCE_URL() {
-		return `${this.#BASE_URL}/api/${this.#JOB}/source`;
+		return `${this.#BASE_URL}/job/${this.#JOB}/source`;
 	}
 
 	get #TARGET_URL() {
-		return `${this.#BASE_URL}/api/${this.#JOB}/target`;
+		return `${this.#BASE_URL}/job/${this.#JOB}/target`;
 	}
 
 	get #ERROR_URL() {
-		return `${this.#BASE_URL}/api/${this.#JOB}/error`;
+		return `${this.#BASE_URL}/job/${this.#JOB}/error`;
 	}
 
 	async sync(_requestData) {
