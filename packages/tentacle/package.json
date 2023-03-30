@@ -1,6 +1,6 @@
 {
 	"name": "@produck/octopus-tentacle",
-	"version": "0.6.6",
+	"version": "0.6.7",
 	"description": "Agent framework for octopus-brain.",
 	"keywords": [
 		"workflow",
