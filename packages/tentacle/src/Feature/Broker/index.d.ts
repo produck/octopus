@@ -8,13 +8,13 @@ export interface Work<S> {
 }
 
 type SharedFactory<T = any> = () => T;
-type BrokerRun<S> = (work: Work<S>, source: any) => Promise<any> | any;
-type BrokerAbort<S> = (work: Work<S>) => Promise<any> | any;
+type BrokerRun<Shared, Source> = (work: Work<Shared>, source: Source) => Promise<any> | any;
+type BrokerAbort<Shared> = (work: Work<Shared>) => Promise<any> | any;
 
-export interface BrokerOptions<T extends SharedFactory = () => any> {
-	shared: T;
-	run: BrokerRun<ReturnType<T>>;
-	abort: BrokerAbort<ReturnType<T>> | null;
+export interface BrokerOptions<Shared extends SharedFactory = () => any, Source extends object = {}> {
+	shared: Shared;
+	run: BrokerRun<ReturnType<Shared>, Source>;
+	abort: BrokerAbort<ReturnType<Shared>> | null;
 }
 
 export interface Result<T = any> {

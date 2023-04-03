@@ -18,8 +18,9 @@ export interface CommandCleanOpts {
 }
 
 interface Options<
-	T extends Broker.SharedFactory = () => any
-> extends Broker.BrokerOptions<T> {
+	Shared extends Broker.SharedFactory = () => any,
+	Source extends object = {}
+> extends Broker.BrokerOptions<Shared, Source> {
 	craft?: string;
 	version?: string;
 
@@ -94,4 +95,4 @@ interface Tentacle {
 	halt(): void;
 }
 
-export function Tentacle<T extends Broker.SharedFactory>(options: Options<T>): Tentacle;
+export function Tentacle<Shared extends Broker.SharedFactory, Source extends {}>(options: Options<Shared, Source>): Tentacle;
