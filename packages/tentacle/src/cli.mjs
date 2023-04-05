@@ -1,87 +1,7 @@
 import * as fs from 'node:fs/promises';
-import * as Duck from '@produck/duck';
 import { defineFactory } from '@produck/duck-cli';
-import * as readline from 'readline';
 
-import * as Feature from './Feature/Broker/index.mjs';
-
-const profile = [
-	{ key: 'r', description: 'Run.' },
-	{ key: 's', description: 'Abort.' },
-	{ key: 'c', description: 'Exit.' },
-	{ key: 'v', description: 'View status.' },
-].map(item => `shift+${item.key} ${item.description}`).join(' / ');
-
-const DevHandler = Duck.inject(({ Options }) => {
-	let source = {};
-
-	const broker = new Feature.Broker({
-		shared: Options.shared,
-		run: Options.run,
-		abort: Options.abort,
-	});
-
-	const rl = readline.createInterface({ input: process.stdin });
-
-	const keyMap = {
-		r: async () => {
-			if (broker.busy) {
-				return console.log('Running, Stop first(ctrl+s)!');
-			}
-
-			console.log('WORK BEGIN ==================>');
-			await broker.run(source);
-		},
-		s: async () => {
-			if (!broker.busy) {
-				return console.log('Idle, run first(ctrl+r)');
-			}
-
-			if (!broker.ready) {
-				console.log('Work can NOT be aborted. Keeping running until the end.');
-
-				return;
-			}
-
-			console.log('Aborting...');
-			await broker.abort();
-			console.log('WORK END ====================>');
-		},
-		c: () => {
-			rl.close();
-			process.stdin.off('keypress', listenKey);
-			console.log('Force kill.');
-			process.exit();
-		},
-		v: () => console.log({ busy: broker.busy, ready: broker.ready }),
-	};
-
-	const listenKey = (c, k) => {
-		if (k.shift) {
-			const fn = keyMap[k.name];
-
-			if (!fn) {
-				console.log('Undefined behavior.');
-				console.log(profile);
-			} else {
-				keyMap[k.name]();
-			}
-		}
-	};
-
-	return async function develop(_source) {
-		source = _source;
-		readline.emitKeypressEvents(process.stdin, rl);
-
-		if (process.stdin.isTTY) {
-			process.stdin.setRawMode(true);
-		}
-
-		console.log(profile);
-
-		process.stdin.on('keypress', listenKey);
-	};
-});
+import * as Develop from './develop.mjs';
 
 export const factory = defineFactory(({
 	Kit, Workspace, Runner, Commander, setProgram, Id, Options, Environment,
@@ -148,7 +68,7 @@ export const factory = defineFactory(({
 	const dev = new Commander({
 		name: 'develop', aliases: ['dev', 'd'],
 		description: 'Just for dev no connecting.',
-		handler: DevHandler(Kit),
+		handler: async () => Develop.DevHandler(Kit).start(),
 	});
 
 	program.appendChild(start, true);

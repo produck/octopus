@@ -11,6 +11,7 @@ import * as Options from './Options.mjs';
 import * as Environment from './Environment.mjs';
 import { play as PrincipalPlay } from './Principal.mjs';
 import * as Feature from './Feature/index.mjs';
+import * as Develop from './develop.mjs';
 
 export const Tentacle = Duck.define({
 	id: 'org.produck.octopus.tentacle',
@@ -71,5 +72,6 @@ export const Tentacle = Duck.define({
 		environment,
 		boot: async(...args) => await CLI.parse(...args),
 		halt: () => Bus.emit('halt'),
+		test: (...args) => Develop.DevHandler(Kit).start(...args),
 	});
 });

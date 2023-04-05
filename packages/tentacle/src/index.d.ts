@@ -93,6 +93,9 @@ interface Tentacle {
 	environment: Environment,
 	boot(argv?: string[]): Promise<void>;
 	halt(): void;
+	test(options?: {
+		fetch?: () => (any | Promise<any>)
+	}): void;
 }
 
 export function Tentacle<Shared extends Broker.SharedFactory, Source extends {}>(options: Options<Shared, Source>): Tentacle;
