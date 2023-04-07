@@ -64,7 +64,7 @@ export const play = definePlay(function Principal({
 			const replay = await fulfill(() => Client.getSource(), 'source', id);
 
 			if (replay.ok) {
-				const result = await Broker.run(replay.source);
+				const result = await Broker.run(replay.ret);
 
 				if (result.ok === true) {
 					await fulfill(() => Client.setTarget(result.target), 'target', id);
