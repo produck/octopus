@@ -1,3 +1,4 @@
+import * as net from 'node:net';
 import { T, U } from '@produck/mold';
 
 import * as Data from './Data.mjs';
@@ -47,7 +48,9 @@ export class RJSPClient {
 			throws('Bad host from `options.port()`, one integer expected.');
 		}
 
-		return `http://${host}:${port}/api`;
+		const finalHost = net.isIPv6(host) ? `[${host}]` : host;
+
+		return `http://${finalHost}:${port}/api`;
 	}
 
 	get #JOB() {
