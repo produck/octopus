@@ -37,8 +37,8 @@ export const factory = defineFactory(({
 			}
 
 			Environment.id = Id.value;
-			Environment.server.host = opts.host;
-			Environment.server.port = Number(opts.port);
+			Environment.config.host = opts.host;
+			Environment.config.port = Number(opts.port);
 
 			await Options.command.start(
 				opts, Environment,
