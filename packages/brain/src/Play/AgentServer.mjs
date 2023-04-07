@@ -23,9 +23,11 @@ export const play = definePlay(function AgentServer({
 		.on('environment-updated', () => Environment.fetch())
 		.on('halt-request', () => server.close());
 
+
 	return function startAgentServer() {
 		const { host, port } = Configuration.agent;
 
+		Environment.fetch();
 		server.listen(port, host);
 		Log.Agent(`Agent RJSP server is listening: host=${host} port=${port}.`);
 	};

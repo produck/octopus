@@ -74,6 +74,7 @@ export const play = definePlay(function ApplicationServer({
 		const mode = Configuration.application.mode;
 
 		Log.Application(`Running in "${mode}" mode.`);
+		Environment.fetch();
 		Mode[mode](Quack.Format.Apache.HttpAdapter(app, Log.ApplicationAccess), Kit);
 	};
 });

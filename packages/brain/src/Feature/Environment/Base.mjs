@@ -76,7 +76,14 @@ export class BaseEnvironment extends AbstractEnvironment {
 				return;
 			}
 
+			const at = self.#cache['ENVIRONMENT.AT'];
+
 			await self.fetch();
+
+			if (self.#cache['ENVIRONMENT.AT'] > at) {
+				self.emit('update');
+			}
+
 			setTimeout(() => loop(self), self.#cache['ENVIRONMENT.REFRESH.INTERVAL']);
 		})(this);
 	}
