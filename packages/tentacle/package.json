@@ -40,7 +40,7 @@
 		"@types/mocha": "^10.0.1",
 		"@types/supertest": "^2.0.12",
 		"mocha": "^10.2.0",
-		"rollup": "^3.20.2"
+		"rollup": "^3.21.0"
 	},
 	"dependencies": {
 		"@produck/duck": "^1.0.4",
@@ -52,8 +52,8 @@
 		"@produck/duck-workspace": "^1.0.4",
 		"@produck/mold": "^0.3.1",
 		"@produck/quack": "^0.1.1",
-		"@types/node": "^18.15.10",
+		"@types/node": "^18.16.1",
 		"@types/semver": "^7.3.13",
-		"semver": "^7.3.8"
+		"semver": "^7.5.0"
 	}
 }
