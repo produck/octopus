@@ -13,7 +13,7 @@ export const freeTentacle = Duck.inject(async ({
 		const alive = worldNow - tentacle.visitedAt < aliveTimeout;
 
 		if (job === null || job.finishedAt !== null || !alive) {
-			await tentacle.free().save();
+			await tentacle.free().setReady(false).save();
 		}
 
 		if (!alive && job.finishedAt === null) {

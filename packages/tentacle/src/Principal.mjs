@@ -42,9 +42,7 @@ export const play = definePlay(function Principal({
 	}
 
 	async function handleJob(id) {
-		console.log(id);
 		if (!Broker.ready) {
-			console.log('not ready');
 			return;
 		}
 
