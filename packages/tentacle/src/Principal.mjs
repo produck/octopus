@@ -42,9 +42,13 @@ export const play = definePlay(function Principal({
 	}
 
 	async function handleJob(id) {
-		const { job: oldJob } = Environment;
+		console.log(id);
+		if (!Broker.ready) {
+			console.log('not ready');
+			return;
+		}
 
-		Environment.job = id;
+		const { job: oldJob } = Environment;
 
 		if (oldJob === id) {
 			return;
@@ -59,6 +63,7 @@ export const play = definePlay(function Principal({
 		}
 
 		if (id !== null) {
+			Environment.job = id;
 			Bus.emit('pick', id);
 
 			const replay = await fulfill(() => Client.getSource(), 'source', id);

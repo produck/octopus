@@ -81,6 +81,24 @@ describe('Feature::Broker', function () {
 			assert.deepEqual(result, { ok: true, target: 'foo' });
 		});
 
+		it('should throw if not ready.', function () {
+			const broker = new Broker.Broker({
+				run: async (work) => {
+					await sleep();
+					work.complete('foo');
+				},
+				abort: () => {},
+			});
+
+			broker.run({});
+			broker.abort();
+
+			assert.rejects(() => broker.abort(), {
+				name: 'Error',
+				message: 'Broker is NOT ready.',
+			});
+		});
+
 		it('should throw if work throw.', async function () {
 			const broker = new Broker.Broker({
 				run: async () => {
@@ -116,7 +134,7 @@ describe('Feature::Broker', function () {
 			new Broker.Broker().abort();
 		});
 
-		it('should abort.', function () {
+		it('should abort.', async function () {
 			const broker = new Broker.Broker({
 				run: async (work) => {
 					await sleep();
@@ -127,6 +145,8 @@ describe('Feature::Broker', function () {
 
 			broker.run({});
 			broker.abort({});
+			assert.equal(broker.ready, false);
+			await sleep(2000);
 			assert.equal(broker.ready, true);
 		});
 	});

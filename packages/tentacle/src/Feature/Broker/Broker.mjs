@@ -26,7 +26,15 @@ export class Broker {
 		this.#ready = true;
 	}
 
+	#assertReady() {
+		if (!this.#ready) {
+			throw new Error('Broker is NOT ready.');
+		}
+	}
+
 	async run(source) {
+		this.#assertReady();
+
 		if (this.busy) {
 			throw new Error('Broker is busy!');
 		}
@@ -57,13 +65,15 @@ export class Broker {
 	}
 
 	async abort() {
+		this.#assertReady();
+
 		if (this.#work === null) {
 			return;
 		}
 
-		if (this.#options.abort === null) {
-			this.#ready = false;
-		} else {
+		this.#ready = false;
+
+		if (this.#options.abort !== null) {
 			await this.#options.abort(this.#work);
 			this.#clear();
 		}

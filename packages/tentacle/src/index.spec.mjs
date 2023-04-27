@@ -92,16 +92,17 @@ describe('OctopusTentacle', function () {
 			ready: true, job: null,
 			config: {
 				at: Date.now(), interval: 1000, timeout: 5000, retry: 3,
-				host: '127.0.0.1', port: 9173, redirect: false,
+				host: '127.0.0.1', port: 9174, redirect: false,
 			},
 		};
 
 		let job;
 
-		const SOURCE_REG = /\/api\/[\w\d-]+\/source/;
+		const SOURCE_REG = /\/api\/job\/[\w\d-]+\/source/;
 
 		const server = http.createServer((req, res) => {
 			res.statusCode = 200;
+			console.log(req.url);
 
 			if (req.url === '/api/sync') {
 				res.setHeader('Content-Type', 'application/json');
@@ -129,8 +130,7 @@ describe('OctopusTentacle', function () {
 				abort: () => {},
 			});
 
-			tentacle.environment.config.port = 9174;
-			await tentacle.boot(['-m', 'solo']);
+			await tentacle.boot(['-m', 'solo', '-p', '9174']);
 			job = crypto.randomUUID();
 			await sleep(3000);
 			job = crypto.randomUUID();
@@ -147,8 +147,7 @@ describe('OctopusTentacle', function () {
 				abort: () => {},
 			});
 
-			tentacle.environment.config.port = 9174;
-			await tentacle.boot(['-m', 'solo']);
+			await tentacle.boot(['-m', 'solo', '-p', '9174']);
 			job = crypto.randomUUID();
 			await sleep(3000);
 			job = crypto.randomUUID();
@@ -161,16 +160,39 @@ describe('OctopusTentacle', function () {
 				craft: 'example',
 				version: '0.0.0',
 				shared: () => ({}),
-				run: () => {},
+				run: async () => {
+					await sleep(10000);
+				},
 				abort: () => {},
 			});
 
-			tentacle.environment.config.port = 9174;
-			await tentacle.boot(['-m', 'solo']);
+			await tentacle.boot(['-m', 'solo', '-p', '9174']);
+			job = crypto.randomUUID();
+			await sleep(5000);
 			job = crypto.randomUUID();
 			await sleep(2000);
+			tentacle.halt();
+		});
+
+		it('should not accept new job if aborting.', async function () {
+			const tentacle = Octopus.Tentacle({
+				craft: 'example',
+				version: '0.0.0',
+				shared: () => ({}),
+				run: async () => await sleep(10000),
+				abort: async () => await sleep(10000),
+			});
+
+			await tentacle.boot(['-m', 'solo', '-p', '9174']);
 			job = crypto.randomUUID();
-			await sleep(2000);
+			await sleep(3000);
+
+			const last = job = crypto.randomUUID();
+
+			await sleep(3000);
+			assert.notEqual(tentacle.environment.job, last);
+			await sleep(10000);
+			assert.equal(tentacle.environment.job, last);
 			tentacle.halt();
 		});
 	});
