@@ -32,11 +32,8 @@ export const factory = defineFactory(({
 
 			if (opts.renew ||!await Id.has()) {
 				await Id.write();
-			} else {
-				await Id.read();
 			}
 
-			Environment.id = Id.value;
 			Environment.config.host = opts.host;
 			Environment.config.port = Number(opts.port);
 

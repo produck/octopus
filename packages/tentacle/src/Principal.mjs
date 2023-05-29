@@ -2,7 +2,7 @@ import { definePlay } from '@produck/duck-runner';
 import { RJSP } from './Feature/index.mjs';
 
 export const play = definePlay(function Principal({
-	Bus, Options, Environment, Broker, Client,
+	Bus, Options, Environment, Broker, Client, Id,
 }) {
 	Bus.on('halt', () => Environment.active = false);
 
@@ -134,7 +134,9 @@ export const play = definePlay(function Principal({
 		setTimeout(() => observe(), Environment.config.interval);
 	}
 
-	return function start() {
+	return async function start() {
+		await Id.read();
+		Environment.id = Id.value;
 		Environment.active = true;
 		setServer();
 		observe();

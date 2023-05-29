@@ -98,17 +98,18 @@ describe('CLI', function () {
 							description: 'for test.',
 						}],
 					},
-					start: (opts) => {
+					start: (opts, env, next) => {
 						assert.equal(opts.foo, true);
 						flag = true;
+						next();
 					},
 				},
 			});
 
 			await tentacle.boot(['start', '-m', 'solo', '--foo']);
-			tentacle.halt();
 			assert.equal(tentacle.environment.id, id);
 			assert.equal(flag, true);
+			tentacle.halt();
 		});
 	});
 
