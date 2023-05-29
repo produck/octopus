@@ -10,12 +10,12 @@ export class Work {
 	}
 
 	throw(message = null) {
-		if(this.isDestroyed) {
-			return;
-		}
-
 		if (!T.Native.String(message) && !T.Helper.Null(message)) {
 			U.throwError('message', 'string or null');
+		}
+
+		if(this.isDestroyed) {
+			return;
 		}
 
 		this.#done({ ok: false, message });

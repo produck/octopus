@@ -52,11 +52,11 @@ export class Broker {
 
 			this.#work = work;
 
-			Promise.resolve(this.#options.run(work, source)).catch(reject).then(() => {
-				if (!finished) {
+			Promise.resolve(this.#options.run(work, source)).then(() => {
+				if (!finished && this.#work === work) {
 					throw new Error('The work is finished without any response.');
 				}
-			});
+			}, reject);
 		});
 
 		this.#clear();
