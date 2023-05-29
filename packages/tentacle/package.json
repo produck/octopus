@@ -27,7 +27,7 @@
 		"url": "git+https://github.com/produck/octopus.git"
 	},
 	"scripts": {
-		"test": "mocha \"**/*.spec.mjs\" --no-diff -t 999999999 --exit",
+		"test": "mocha \"**/*.spec.mjs\" --no-diff -t 999999999 --exit && node ./src/abort.debug.mjs",
 		"build:extract": "node script/extract.mjs",
 		"build": "npm run build:extract && rollup -c script/rollup.config.mjs",
 		"prepublishOnly": " npm run build"

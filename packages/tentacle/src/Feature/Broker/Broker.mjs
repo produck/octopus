@@ -53,7 +53,7 @@ export class Broker {
 			this.#work = work;
 
 			Promise.resolve(this.#options.run(work, source)).then(() => {
-				if (!finished && this.#work === work) {
+				if (!work.isDestroyed && !finished) {
 					throw new Error('The work is finished without any response.');
 				}
 			}, reject);
@@ -74,6 +74,7 @@ export class Broker {
 		this.#ready = false;
 
 		if (this.#options.abort !== null) {
+			Work.destroy(this.#work);
 			await this.#options.abort(this.#work);
 			this.#clear();
 		}
