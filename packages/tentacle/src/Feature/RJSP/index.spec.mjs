@@ -282,4 +282,21 @@ describe('Tentacle::Feature::RJSP::RJSPClient', function () {
 			assert.deepEqual(await client.setError(), { code: 0x14, body: null });
 		});
 	});
+
+	it('should work in ipv6.', async function () {
+		const server = http.createServer((_, res) => {
+			res.statusCode = 200;
+			res.setHeader('Content-Type', 'application/json');
+			res.end(JSON.stringify(EXAMPLE));
+		}).listen(9173, '::1');
+
+		await sleep(2000);
+
+		const client = new RJSP.Client({
+			host: () => '::1',
+		});
+
+		assert.deepEqual(await client.sync(EXAMPLE), { code: 0x01, body: EXAMPLE });
+		server.close();
+	});
 });
