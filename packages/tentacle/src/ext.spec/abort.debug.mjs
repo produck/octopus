@@ -1,6 +1,6 @@
 import * as http from 'node:http';
 import { webcrypto as crypto } from 'node:crypto';
-import * as Octopus from './index.mjs';
+import * as Octopus from '../index.mjs';
 
 const EXAMPLE = {
 	id: crypto.randomUUID(), craft: 'example', version: '0.0.0',

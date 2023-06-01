@@ -1,6 +1,7 @@
-import fs from 'node:fs';
+import * as fs from 'node:fs';
 import * as http from 'node:http';
 import * as https from 'node:https';
+import * as path from 'node:path';
 
 import * as Quack from '@produck/quack';
 import { definePlay } from '@produck/duck-runner';
@@ -69,6 +70,13 @@ export const play = definePlay(function ApplicationServer({
 	Bus.on('environment-updated', () => Environment.fetch());
 
 	const app = Web.Application('Application');
+
+	process.on('uncaughtException', (error) => {
+		if (error.code === 'EADDRINUSE') {
+			Bus.emit('crash');
+			fs.writeFileSync(path.resolve('crash.log'), String(error));
+		}
+	});
 
 	return function () {
 		const mode = Configuration.application.mode;

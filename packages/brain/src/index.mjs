@@ -1,3 +1,5 @@
+import cluster from 'node:cluster';
+
 import * as Duck from '@produck/duck';
 import * as DuckWorkspace from '@produck/duck-workspace';
 import * as DuckWeb from '@produck/duck-web';
@@ -86,6 +88,10 @@ export const Brain = Duck.define({
 	});
 
 	Runner.ready();
+
+	if (cluster.isPrimary) {
+		Bus.on('crash', () => process.exit(1));
+	}
 
 	const brain = Object.freeze({
 		configuration,
