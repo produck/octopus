@@ -1,2 +1,2 @@
-*.spec.mjs
+*.spec**
 script/
