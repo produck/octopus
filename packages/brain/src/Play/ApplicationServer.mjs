@@ -71,15 +71,16 @@ export const play = definePlay(function ApplicationServer({
 
 	const app = Web.Application('Application');
 
-	process.on('uncaughtException', (error) => {
-		if (error.code === 'EADDRINUSE') {
-			Bus.emit('crash');
-			fs.writeFileSync(path.resolve('crash.log'), String(error));
-		}
-	});
-
-	return function () {
+	return function action() {
 		const mode = Configuration.application.mode;
+
+		process.on('uncaughtException', (error) => {
+			if (error.code === 'EADDRINUSE') {
+				fs.writeFileSync(path.resolve('crash.log'), String(error));
+				Bus.emit('crash');
+				process.exit(1);
+			}
+		});
 
 		Log.Application(`Running in "${mode}" mode.`);
 		Environment.fetch();
