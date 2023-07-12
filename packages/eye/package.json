@@ -1,0 +1,40 @@
+{
+  "name": "@produck/octopus-eye",
+  "version": "0.0.0",
+  "description": "Evaluator for octopus-brain",
+  "main": "src/index.gen.cjs",
+  "type": "module",
+  "exports": {
+    "import": "./src/index.mjs",
+    "require": "./src/index.gen.cjs"
+  },
+  "types": "src/index.d.ts",
+	"keywords": [
+    "evaluator",
+    "vm",
+		"executor"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/produck/octopus.git"
+  },
+  "bugs": {
+    "url": "https://github.com/produck/octopus/issues"
+  },
+
+  "scripts": {
+    "test": "mocha \"**/*.spec.mjs\" --no-diff -t 999999999 --exit",
+    "build": "rollup -c script/rollup.config.mjs",
+    "prepublishOnly": " npm run build"
+  },
+	"devDependencies": {
+    "mocha": "^10.2.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@produck/crank": "^0.2.1"
+  }
+}
