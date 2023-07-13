@@ -8,16 +8,14 @@ import { T, U } from '@produck/mold';
 const options = {
 	Extern: Context,
 	abort: (lastInstruction, process) => {
-		process.extern.done = lastInstruction.done;
-
 		return false;
 	},
 	call: async (process, nextFrame, next) =>  {
-		if (process.top.dump) {
-			nextFrame.dump = process.top.fetchChild();
-		} else {
-			process.top.dump = new Dump(process.extern.dump);
+		if (!process.top.dump) {
+			process.top.dump = new Dump({values: [], children: [process.extern.dump]});
 		}
+
+		nextFrame.dump = process.top.dump.fetchChild();
 
 		await next();
 	},
@@ -41,6 +39,8 @@ const executor = {
 
 		if (!extern.hasJob(id)) {
 			extern.planJob(id, craft, source);
+
+			process.extern.done = false;
 		} else {
 			const { ok, error, target } = extern.fetchJob(id);
 
