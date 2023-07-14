@@ -1,11 +1,13 @@
 import { webcrypto as crypto } from 'node:crypto';
 
 import * as Crank from '@produck/crank';
-import { Context } from './Context.mjs';
-import { Dump } from './Dump.mjs';
 import { T, U } from '@produck/mold';
 
+import { Context } from './Context.mjs';
+import { Dump } from './Dump.mjs';
+
 const options = {
+	name: 'EvaluatorEngine',
 	Extern: Context,
 	abort: (lastInstruction, process) => {
 		if (!process.abort) {
@@ -41,7 +43,7 @@ const executor = {
 		}
 
 		const { top, extern } = process;
-		const id = top.dump.fetchValue(crypto.randomUUID());
+		const id = top.dump.fetchValue(() => crypto.randomUUID());
 
 		if (!extern.hasJob(id)) {
 			extern.planJob(id, craft, source);
