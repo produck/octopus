@@ -29,13 +29,31 @@ describe('Evaluator::', function () {
 				const context = new Evaluator.Extern(SampleData());
 				assert.equal(await vm.execute(program, context), 'foo');
 			});
+
+			it('should throw if bad value.', async function () {
+				const vm = new Evaluator();
+				const program = {
+					*main() {
+						return yield this._value('foo');
+					},
+				};
+
+				const context = new Evaluator.Extern(SampleData());
+				await assert.rejects(async () => await vm.execute(program, context), {
+					name: 'TypeError',
+					message: 'Invalid "value", one "function" expected.',
+				});
+			});
 		});
 
 		describe('._run()', function () {
 			it('should set context.done to false.', async function () {
 				const program = {
-					*main() {
+					*SAT() {
 						return yield this._run('example');
+					},
+					*main() {
+						return yield this.SAT();
 					},
 				};
 
@@ -145,7 +163,7 @@ describe('Evaluator::', function () {
 					*main() {
 						return yield this._all([
 							this._value(() => 'foo'),
-							this._value(() => 'bar'),
+							'bar',
 						]);
 					},
 				};
