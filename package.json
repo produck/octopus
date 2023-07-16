@@ -11,8 +11,8 @@
 	"license": "MIT",
 	"devDependencies": {
 		"c8": "^8.0.0",
-		"eslint": "^8.44.0",
-		"lerna": "^7.1.1"
+		"eslint": "^8.45.0",
+		"lerna": "^7.1.4"
 	},
 	"workspaces": [
 		"packages/*"
