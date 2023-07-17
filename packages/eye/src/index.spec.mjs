@@ -234,7 +234,7 @@ describe('Evaluator::', function () {
 	});
 });
 
-function SampleData1() {
+function SampleContextData() {
 	return {
 		dump: { values: [], children: [] },
 		finished: {},
@@ -244,19 +244,19 @@ function SampleData1() {
 
 describe('Context::', function () {
 	it('should create a context.', function () {
-		new Context(SampleData1());
+		new Context(SampleContextData());
 	});
 
 	describe('hasJob()', function () {
 		it('should get false.', function () {
-			const context = new Context(SampleData1());
+			const context = new Context(SampleContextData());
 
 			assert.equal(context.hasJob('abc'), false);
 		});
 
 		it('should get true.', function () {
 			const context = new Context({
-				...SampleData1(),
+				...SampleContextData(),
 				finished: {
 					'foo': {
 						id: 'bar',
@@ -274,7 +274,7 @@ describe('Context::', function () {
 	describe('fetchJob()', function () {
 		it('should get a job record.', function () {
 			const context = new Context({
-				...SampleData1(),
+				...SampleContextData(),
 				finished: {
 					'foo': {
 						id: 'bar',
@@ -296,7 +296,7 @@ describe('Context::', function () {
 
 	describe('assertCraftAndSource()', function () {
 		it('should throw if bad name.', function () {
-			const context = new Context(SampleData1());
+			const context = new Context(SampleContextData());
 
 			assert.throws(() => context.assertCraftAndSource('foo'), {
 				name: 'Error',
@@ -305,7 +305,7 @@ describe('Context::', function () {
 		});
 		it('should throw if bad source.', function () {
 			const context = new Context({
-				...SampleData1(),
+				...SampleContextData(),
 				crafts: { foo: () => false },
 			});
 
@@ -319,7 +319,7 @@ describe('Context::', function () {
 	describe('planJob()', function () {
 		it('should plan a new job.', function () {
 			const context = new Context({
-				...SampleData1(),
+				...SampleContextData(),
 				crafts: { foo: () => true },
 			});
 

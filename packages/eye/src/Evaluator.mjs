@@ -6,7 +6,7 @@ import { T, U } from '@produck/mold';
 import { Context } from './Context.mjs';
 import { Dump } from './Dump.mjs';
 
-const options = {
+export const Evaluator = Crank.Engine({
 	name: 'EvaluatorEngine',
 	Extern: Context,
 	abort: (lastInstruction, process) => {
@@ -27,9 +27,7 @@ const options = {
 
 		process.extern.done = !process.abort;
 	},
-};
-
-const executor = {
+}, {
 	value(process, ...args) {
 		const { top } = process;
 
@@ -74,6 +72,6 @@ const executor = {
 
 		return ret;
 	},
-};
+});
 
-export const Evaluator = new Crank.Engine(options, executor);
+export { Evaluator as Engine };
