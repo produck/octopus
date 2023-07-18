@@ -1,9 +1,12 @@
-import { Normalizer, P, S } from '@produck/mold';
+import { Normalizer, P, S, PROPERTY } from '@produck/mold';
 
-import { ScriptSchema } from '../Evaluator/index.mjs';
+const GeneratorFunction = (function* () {})().constructor.constructor;
 
 const OptionsSchemaOptions = {
-	script: ScriptSchema,
+	script: S.Object({
+		main: P.Instance(GeneratorFunction),
+		[PROPERTY]: P.Instance(GeneratorFunction),
+	}),
 	order: P.Function(() => true),
 	artifact: P.Function(() => true),
 };
