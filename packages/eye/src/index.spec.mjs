@@ -2,7 +2,7 @@ import * as assert from 'node:assert/strict';
 import { describe, it } from 'mocha';
 
 import { Evaluator } from './index.mjs';
-import { Context } from './Context.mjs';
+import { Extern } from './Extern.mjs';
 
 function SampleData() {
 	return {
@@ -26,8 +26,8 @@ describe('Evaluator::', function () {
 					},
 				};
 
-				const context = new Evaluator.Extern(SampleData());
-				assert.equal(await vm.execute(program, context), 'foo');
+				const extern = new Evaluator.Extern(SampleData());
+				assert.equal(await vm.execute(program, extern), 'foo');
 			});
 
 			it('should throw if bad value.', async function () {
@@ -38,8 +38,8 @@ describe('Evaluator::', function () {
 					},
 				};
 
-				const context = new Evaluator.Extern(SampleData());
-				await assert.rejects(async () => await vm.execute(program, context), {
+				const extern = new Evaluator.Extern(SampleData());
+				await assert.rejects(async () => await vm.execute(program, extern), {
 					name: 'TypeError',
 					message: 'Invalid "value", one "function" expected.',
 				});
@@ -47,7 +47,7 @@ describe('Evaluator::', function () {
 		});
 
 		describe('._run()', function () {
-			it('should set context.done to false.', async function () {
+			it('should set extern.done to false.', async function () {
 				const program = {
 					*SAT() {
 						return yield this._run('example');
@@ -57,7 +57,7 @@ describe('Evaluator::', function () {
 					},
 				};
 
-				const context = new Evaluator.Extern({
+				const extern = new Evaluator.Extern({
 					...SampleData(),
 					crafts: {
 						example: () => true,
@@ -66,18 +66,18 @@ describe('Evaluator::', function () {
 
 				const vm = new Evaluator();
 
-				assert.equal(await vm.execute(program, context), undefined);
-				assert.equal(context.done, false);
+				assert.equal(await vm.execute(program, extern), undefined);
+				assert.equal(extern.done, false);
 			});
 
-			it('should set context.done true.', async function () {
+			it('should set extern.done true.', async function () {
 				const program = {
 					*main() {
 						return yield this._run('example');
 					},
 				};
 
-				const context = new Evaluator.Extern({
+				const extern = new Evaluator.Extern({
 					...SampleData(),
 					dump: { values: ['foo'], children: [] },
 					finished: {
@@ -95,8 +95,8 @@ describe('Evaluator::', function () {
 
 				const vm = new Evaluator();
 
-				assert.equal(await vm.execute(program, context), 'bar');
-				assert.equal(context.done, true);
+				assert.equal(await vm.execute(program, extern), 'bar');
+				assert.equal(extern.done, true);
 			});
 
 			it('should throw if bad craft.', async function () {
@@ -106,10 +106,10 @@ describe('Evaluator::', function () {
 					},
 				};
 
-				const context = new Evaluator.Extern(SampleData());
+				const extern = new Evaluator.Extern(SampleData());
 				const vm = new Evaluator();
 
-				await assert.rejects(async () => await vm.execute(program, context), {
+				await assert.rejects(async () => await vm.execute(program, extern), {
 					name: 'TypeError',
 					message: 'Invalid "craft", one "string" expected.',
 				});
@@ -122,7 +122,7 @@ describe('Evaluator::', function () {
 					},
 				};
 
-				const context = new Evaluator.Extern({
+				const extern = new Evaluator.Extern({
 					...SampleData(),
 					dump: { values: ['foo'], children: [] },
 					finished: {
@@ -137,7 +137,7 @@ describe('Evaluator::', function () {
 
 				const vm = new Evaluator();
 
-				await assert.rejects(async () => await vm.execute(program, context), {
+				await assert.rejects(async () => await vm.execute(program, extern), {
 					name: 'Error',
 					message: 'baz',
 				});
@@ -152,10 +152,10 @@ describe('Evaluator::', function () {
 					},
 				};
 
-				const context = new Evaluator.Extern(SampleData());
+				const extern = new Evaluator.Extern(SampleData());
 				const vm = new Evaluator();
 
-				assert.deepEqual(await vm.execute(program, context), []);
+				assert.deepEqual(await vm.execute(program, extern), []);
 			});
 
 			it('should get [value, value].', async function () {
@@ -168,10 +168,10 @@ describe('Evaluator::', function () {
 					},
 				};
 
-				const context = new Evaluator.Extern(SampleData());
+				const extern = new Evaluator.Extern(SampleData());
 				const vm = new Evaluator();
 
-				assert.deepEqual(await vm.execute(program, context), ['foo', 'bar']);
+				assert.deepEqual(await vm.execute(program, extern), ['foo', 'bar']);
 			});
 		});
 	});
@@ -247,20 +247,20 @@ function SampleContextData() {
 	};
 }
 
-describe('Context::', function () {
-	it('should create a context.', function () {
-		new Context(SampleContextData());
+describe('CustomExtern::', function () {
+	it('should create a extern.', function () {
+		new Extern(SampleContextData());
 	});
 
 	describe('hasJob()', function () {
 		it('should get false.', function () {
-			const context = new Context(SampleContextData());
+			const extern = new Extern(SampleContextData());
 
-			assert.equal(context.hasJob('abc'), false);
+			assert.equal(extern.hasJob('abc'), false);
 		});
 
 		it('should get true.', function () {
-			const context = new Context({
+			const extern = new Extern({
 				...SampleContextData(),
 				finished: {
 					'foo': {
@@ -272,13 +272,13 @@ describe('Context::', function () {
 				},
 			});
 
-			assert.equal(context.hasJob('foo'), true);
+			assert.equal(extern.hasJob('foo'), true);
 		});
 	});
 
 	describe('fetchJob()', function () {
 		it('should get a job record.', function () {
-			const context = new Context({
+			const extern = new Extern({
 				...SampleContextData(),
 				finished: {
 					'foo': {
@@ -290,7 +290,7 @@ describe('Context::', function () {
 				},
 			});
 
-			assert.deepEqual(context.fetchJob('foo'), {
+			assert.deepEqual(extern.fetchJob('foo'), {
 				id: 'bar',
 				ok: true,
 				error: null,
@@ -301,20 +301,20 @@ describe('Context::', function () {
 
 	describe('assertCraftAndSource()', function () {
 		it('should throw if bad name.', function () {
-			const context = new Context(SampleContextData());
+			const extern = new Extern(SampleContextData());
 
-			assert.throws(() => context.assertCraftAndSource('foo'), {
+			assert.throws(() => extern.assertCraftAndSource('foo'), {
 				name: 'Error',
 				message: 'Invalid craft(foo)',
 			});
 		});
 		it('should throw if bad source.', function () {
-			const context = new Context({
+			const extern = new Extern({
 				...SampleContextData(),
 				crafts: { foo: () => false },
 			});
 
-			assert.throws(() => context.assertCraftAndSource('foo', null), {
+			assert.throws(() => extern.assertCraftAndSource('foo', null), {
 				name: 'Error',
 				message: 'Bad craft(foo) source.',
 			});
@@ -323,14 +323,14 @@ describe('Context::', function () {
 
 	describe('planJob()', function () {
 		it('should plan a new job.', function () {
-			const context = new Context({
+			const extern = new Extern({
 				...SampleContextData(),
 				crafts: { foo: () => true },
 			});
 
-			context.planJob('abc', 'foo', [1, 2, 3]);
+			extern.planJob('abc', 'foo', [1, 2, 3]);
 
-			assert.deepEqual(context.creating, [
+			assert.deepEqual(extern.creating, [
 				{ id: 'abc', craft: 'foo', source: [1, 2, 3] },
 			]);
 		});
