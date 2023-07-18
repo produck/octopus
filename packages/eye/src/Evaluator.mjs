@@ -6,64 +6,66 @@ import { T, U } from '@produck/mold';
 import { Context } from './Context.mjs';
 import { Dump } from './Dump.mjs';
 
-const map = new WeakMap();
-
 export const Evaluator = Crank.Engine({
 	name: 'EvaluatorEngine',
 	Extern: Context,
-	abort: (lastInstruction, process) => {
-		const scope = map.get(process);
+	abort: (currentToken, lastToken) => {
+		const context = currentToken.process.extern;
+		const lastDone = context.fetchData(lastToken);
+		const done = context.fetchData(currentToken) && lastDone;
 
-		if (!scope.blocked) {
-			scope.blocked = map.get(process.top).blocked;
-		}
+		context.saveData(currentToken, done);
+		context.done &&= lastDone;
 
-		return scope.blocked;
+		return !lastDone;
 	},
-	call: async (process, nextFrame, next) =>  {
-		if (!map.has(process)) {
-			map.set(process, {
-				blocked: false,
-			});
+	call: async (currentToken, next, nextFrame) =>  {
+		const { process, frame } = currentToken;
+		const context = process.extern;
 
-			map.set(process.top, {
-				dump: new Dump({values: [], children: [process.extern.dump]}),
-				blocked: false,
-			});
+		context.saveData(currentToken, true);
+
+		if (!context.hasData(frame)) {
+			context.saveData(frame,
+				new Dump({values: [], children: [process.extern.dump]}));
 		}
 
-		map.set(nextFrame, {
-			dump: map.get(process.top).dump.fetchChild(),
-			blocked: false,
-		});
+		const currentDump = context.fetchData(frame);
+
+		context.saveData(nextFrame, currentDump.fetchChild());
 
 		await next();
-
-		process.extern.done = !map.get(process).blocked;
 	},
 }, {
-	value(process, instruction, ...args) {
-		const { top } = process;
+	val: function value(currentToken, args) {
+		const { process, frame } = currentToken;
+		const context = process.extern;
+		const dump = context.fetchData(frame);
 
-		return map.get(top).dump.fetchValue(...args);
+		context.saveData(currentToken, true);
+
+		return dump.fetchValue(...args);
 	},
-	run(process, instruction, ...args) {
+	run(currentToken, args) {
 		const [craft, source] = args;
+		const { process, frame } = currentToken;
+		const context = process.extern;
+
+		context.saveData(currentToken, true);
 
 		if (!T.Native.String(craft)) {
 			U.throwError('craft', 'string');
 		}
 
-		const { top, extern } = process;
-		const scope = map.get(top);
-		const id =  scope.dump.fetchValue(() => crypto.randomUUID());
+		const dump = context.fetchData(frame);
+		const id =  dump.fetchValue(() => crypto.randomUUID());
 
-		if (!extern.hasJob(id)) {
-			scope.blocked = true;
+		if (!context.hasJob(id)) {
+			context.planJob(id, craft, source);
 
-			extern.planJob(id, craft, source);
+			context.saveData(currentToken, false);
 		} else {
-			const { ok, error, target } = extern.fetchJob(id);
+			const { ok, error, target } = context.fetchJob(id);
 
 			if (ok) {
 				return target;
@@ -72,22 +74,24 @@ export const Evaluator = Crank.Engine({
 			}
 		}
 	},
-	async all(process, instruction, args) {
+	async all(currentToken, args) {
+		const context = currentToken.process.extern;
 		const ret = [];
-
-		if (!Array.isArray(args)) {
-			U.throwError('args', 'boolean');
-		}
+		let done = true;
 
 		for (const instruction of args) {
 			if (Crank.isToken(instruction)) {
 				const val = await instruction.execute();
 
 				ret.push(val);
+
+				done &&= context.fetchData(instruction);
 			} else {
 				ret.push(instruction);
 			}
 		}
+
+		context.saveData(currentToken, done);
 
 		return ret;
 	},

@@ -17,12 +17,12 @@ describe('Evaluator::', function () {
 		new Evaluator();
 	});
 	describe('executors', function () {
-		describe('._value()', function () {
+		describe('._val()', function () {
 			it('should get a value.', async function () {
 				const vm = new Evaluator();
 				const program = {
 					*main() {
-						return yield this._value(() => 'foo');
+						return yield this._val(() => 'foo');
 					},
 				};
 
@@ -34,7 +34,7 @@ describe('Evaluator::', function () {
 				const vm = new Evaluator();
 				const program = {
 					*main() {
-						return yield this._value('foo');
+						return yield this._val('foo');
 					},
 				};
 
@@ -148,7 +148,7 @@ describe('Evaluator::', function () {
 			it('should get [].', async function () {
 				const program = {
 					*main() {
-						return yield this._all([]);
+						return yield this._all();
 					},
 				};
 
@@ -161,10 +161,10 @@ describe('Evaluator::', function () {
 			it('should get [value, value].', async function () {
 				const program = {
 					*main() {
-						return yield this._all([
-							this._value(() => 'foo'),
+						return yield this._all(
+							this._val(() => 'foo'),
 							'bar',
-						]);
+						);
 					},
 				};
 
@@ -196,14 +196,14 @@ describe('Evaluator::', function () {
 				throw new Error('SAT failed 3 time.', { cause });
 			},
 			*main() {
-				return yield this._all([
+				return yield this._all(
 					this.SAT(),
 					this.SAT(),
-				]);
+				);
 			},
 		};
 
-		const context = new Evaluator.Extern({
+		const options = {
 			...SampleData(),
 			crafts: { foo: () => true },
 			dump: {
@@ -218,19 +218,24 @@ describe('Evaluator::', function () {
 				b: { id: 'b', ok: false, error: 'testtest', target: null },
 				c: { id: 'c', ok: true, error: null, target: 'world' },
 			},
-		});
+		};
 
 		const vm = new Evaluator();
+		const extern0 = new Evaluator.Extern(options);
 
-		await vm.execute(program, context);
-		assert.equal(context.done, false);
+		await vm.execute(program, extern0);
+		assert.equal(extern0.done, false);
 
-		context.finished[context.dump.children[0].values[2]] = {
+		options.dump.children[0] = extern0.dump.children[0];
+
+		options.finished[options.dump.children[0].values[2]] = {
 			id: '...', ok: true, error: null, target: 'hello',
 		};
 
-		assert.deepEqual(await vm.execute(program, context), ['hello', 'world']);
-		assert.equal(context.done, true);
+		const extern1 = new Evaluator.Extern(options);
+
+		assert.deepEqual(await vm.execute(program, extern1), ['hello', 'world']);
+		assert.equal(extern1.done, true);
 	});
 });
 
