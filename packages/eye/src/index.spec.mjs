@@ -173,6 +173,39 @@ describe('Evaluator::', function () {
 
 				assert.deepEqual(await vm.execute(program, extern), ['foo', 'bar']);
 			});
+
+			it('should get [error, value]', async function () {
+				const program = {
+					*SAT() {
+						let count = 0, cause = null, ok = false;
+
+						while (!ok && count < 3) {
+							try {
+								return yield this._run('foo', {});
+							} catch (error) {
+								cause = error;
+							}
+
+							count++;
+						}
+
+						throw new Error('SAT failed 3 time.', { cause });
+					},
+					*main() {
+						return yield this._all(
+							this._val(() => 'foo'),
+							this.SAT(),
+						);
+					},
+				};
+
+				const extern = new Evaluator.Extern(SampleData());
+				const vm = new Evaluator();
+
+				assert.deepEqual(await vm.execute(program, extern), ['foo',
+					new Error('SAT failed 3 time.'),
+				]);
+			});
 		});
 	});
 

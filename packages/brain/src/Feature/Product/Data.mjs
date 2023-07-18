@@ -1,7 +1,7 @@
 import { Normalizer, P, S } from '@produck/mold';
 
 import { UUIDSchema as IdSchema } from '../Utils.mjs';
-import * as Evaluator from '../Evaluator/index.mjs';
+import * as Evaluator from '@produck/octopus-eye';
 import { NEW, OK, ERROR, TIMEOUT, ABORTED } from './Status.mjs';
 
 const AtSchema = P.OrNull(P.Integer());

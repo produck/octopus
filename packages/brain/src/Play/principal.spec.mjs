@@ -34,7 +34,7 @@ const script = {
 
 		while (!ok && count < 3) {
 			try {
-				return yield this.run('baz', {});
+				return yield this._run('baz', {});
 			} catch (error) {
 				cause = error;
 			}
@@ -45,16 +45,16 @@ const script = {
 		throw new Error('SAT failed 3 time.', { cause });
 	},
 	*main() {
-		return yield this.all([
+		return yield this._all(
 			this.SAT(),
 			this.SAT(),
-		]);
+		);
 	},
 };
 
 let forceFlag = null, forceError = false, failUnlock = false;
 
-function Brain(id) {
+function Brain(id, program = script) {
 	const brain = Octopus.Brain({
 		name: 'Test', version: '1.0.0',
 		Application: {
@@ -281,7 +281,7 @@ function Brain(id) {
 				}
 			},
 		},
-	}).Craft('baz').Craft('els').Model('bar', { script });
+	}).Craft('baz').Craft('els').Model('bar', { script: program });
 
 	brain.configuration.id = id;
 	brain.configuration.application.http.port = 8081;
@@ -492,7 +492,7 @@ describe('Play::Principal', function () {
 			assert.deepEqual(Backend.Product[0].artifact, ['hello', 'world']);
 		});
 
-		it('should finish product in error.', async function () {
+		it.only('should finish product in error.', async function () {
 			const productId = crypto.webcrypto.randomUUID();
 
 			Backend = {
@@ -513,7 +513,26 @@ describe('Play::Principal', function () {
 				evaluating: null,
 			};
 
-			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d');
+			const foo = Brain('6fcf3d0a-88fc-41fe-97c3-bfe39e19409d', {
+				*SAT() {
+					let count = 0, cause = null, ok = false;
+
+					while (!ok && count < 3) {
+						try {
+							return yield this._run('baz', {});
+						} catch (error) {
+							cause = error;
+						}
+
+						count++;
+					}
+
+					throw new Error('SAT failed 3 time.', { cause });
+				},
+				*main() {
+					return yield this.SAT();
+				},
+			});
 
 			await foo.boot(['start']);
 

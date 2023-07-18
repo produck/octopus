@@ -1,11 +1,11 @@
 import { T, U } from '@produck/mold';
 import { Definer, Model, _ } from '@produck/shop';
 
-import * as Evaluator from '../Evaluator/index.mjs';
+import { Evaluator } from '@produck/octopus-eye';
 import * as Data from './Data.mjs';
 import * as Private from './private.mjs';
 
-const vm = new Evaluator.Engine();
+const vm = new Evaluator();
 
 function isOrder(any) {
 	const _flag = _(this).order(any);
@@ -34,15 +34,15 @@ export function assertProcedureName(any) {
 }
 
 function compileSelfScript() {
-	return new Evaluator.Program(_(this).script);
+	return _(this).script;
 }
 
 const defineBase = Definer.Base(({ Declare }) => {
-	function evaluate(order, contextData = {}) {
-		const context = new Evaluator.Context(contextData);
+	async function evaluate(order, contextData = {}) {
+		const context = new Evaluator.Extern(contextData);
 
 		try {
-			const artifact = vm.execute(this.program, context, order);
+			const artifact = await vm.execute(this.program, context, order);
 			const { done } = context;
 
 			if (!done) {
