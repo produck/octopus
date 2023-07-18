@@ -11,13 +11,12 @@ export const Evaluator = Crank.Engine({
 	Extern: Context,
 	abort: (currentToken, lastToken) => {
 		const context = currentToken.process.extern;
-		const lastDone = context.fetchData(lastToken);
-		const done = context.fetchData(currentToken) && lastDone;
+		const done = context.fetchData(currentToken) && context.fetchData(lastToken);
 
 		context.saveData(currentToken, done);
-		context.done &&= lastDone;
+		context.done = done;
 
-		return !lastDone;
+		return !done;
 	},
 	call: async (currentToken, next, nextFrame) =>  {
 		const { process, frame } = currentToken;
@@ -30,9 +29,7 @@ export const Evaluator = Crank.Engine({
 				new Dump({values: [], children: [process.extern.dump]}));
 		}
 
-		const currentDump = context.fetchData(frame);
-
-		context.saveData(nextFrame, currentDump.fetchChild());
+		context.saveData(nextFrame, context.fetchData(frame).fetchChild());
 
 		await next();
 	},
@@ -47,11 +44,12 @@ export const Evaluator = Crank.Engine({
 		return dump.fetchValue(...args);
 	},
 	run(currentToken, args) {
-		const [craft, source] = args;
 		const { process, frame } = currentToken;
 		const context = process.extern;
 
 		context.saveData(currentToken, true);
+
+		const [craft, source] = args;
 
 		if (!T.Native.String(craft)) {
 			U.throwError('craft', 'string');
