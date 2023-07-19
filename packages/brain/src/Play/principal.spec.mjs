@@ -489,7 +489,11 @@ describe('Play::Principal', function () {
 			await sleep(1000);
 			foo.halt();
 
-			assert.deepEqual(Backend.Product[0].artifact, ['hello', 'world']);
+			assert.deepEqual(Backend.Product[0].artifact, [{
+				ok: true, value: 'hello',
+			}, {
+				ok: true, value: 'world',
+			}]);
 		});
 
 		it('should finish product in error.', async function () {

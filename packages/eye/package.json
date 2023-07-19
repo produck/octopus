@@ -8,7 +8,7 @@
     "import": "./src/index.mjs",
     "require": "./src/index.gen.cjs"
   },
-  "types": "src/index.d.ts",
+  "types": "./src/index.d.ts",
   "keywords": [
     "evaluator",
     "vm",
@@ -27,7 +27,7 @@
   "scripts": {
     "test": "mocha \"**/*.spec.mjs\" --no-diff -t 999999999 --exit",
     "build": "rollup -c script/rollup.config.mjs",
-    "prepublishOnly": " npm run build"
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "mocha": "^10.2.0"

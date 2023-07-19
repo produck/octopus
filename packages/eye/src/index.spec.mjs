@@ -171,7 +171,11 @@ describe('Evaluator::', function () {
 				const extern = new Evaluator.Extern(SampleData());
 				const vm = new Evaluator();
 
-				assert.deepEqual(await vm.execute(program, extern), ['foo', 'bar']);
+				assert.deepEqual(await vm.execute(program, extern), [{
+					ok: true, value: 'foo',
+				}, {
+					ok: true, value: 'bar',
+				}]);
 			});
 
 			it('should get [error, value]', async function () {
@@ -202,8 +206,13 @@ describe('Evaluator::', function () {
 				const extern = new Evaluator.Extern(SampleData());
 				const vm = new Evaluator();
 
-				assert.deepEqual(await vm.execute(program, extern), ['foo',
-					new Error('SAT failed 3 time.'),
+				assert.deepEqual(await vm.execute(program, extern), [{
+					ok: true,
+					value: 'foo',
+				}, {
+					ok: false,
+					error: new Error('SAT failed 3 time.'),
+				},
 				]);
 			});
 		});
@@ -267,7 +276,11 @@ describe('Evaluator::', function () {
 
 		const extern1 = new Evaluator.Extern(options);
 
-		assert.deepEqual(await vm.execute(program, extern1), ['hello', 'world']);
+		assert.deepEqual(await vm.execute(program, extern1), [{
+			ok: true, value: 'hello',
+		}, {
+			ok: true, value: 'world',
+		}]);
 		assert.equal(extern1.done, true);
 	});
 });
