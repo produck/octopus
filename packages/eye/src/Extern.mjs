@@ -23,7 +23,7 @@ const DataSchema = S.Object({
 
 const normalizeData = Normalizer(DataSchema);
 
-export class Context extends Crank.Extern {
+export class Extern extends Crank.Extern {
 	dump = null;
 	finished = {};
 	creating = [];
