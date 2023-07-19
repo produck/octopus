@@ -28,7 +28,8 @@ export class Context extends Crank.Extern {
 	finished = {};
 	creating = [];
 	crafts = {};
-	done = false;
+	done = true;
+	dataStore = new WeakMap();
 
 	constructor(_data) {
 		super();
@@ -60,5 +61,17 @@ export class Context extends Crank.Extern {
 	planJob(id, craft, source) {
 		this.assertCraftAndSource(craft, source);
 		this.creating.push({ id, craft, source });
+	}
+
+	saveData(key, value) {
+		this.dataStore.set(key, value);
+	}
+
+	fetchData(key) {
+		return this.dataStore.get(key);
+	}
+
+	hasData(key) {
+		return this.dataStore.has(key);
 	}
 }
