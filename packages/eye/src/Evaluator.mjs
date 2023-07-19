@@ -8,11 +8,11 @@ import { T, U } from '@produck/mold';
 const options = {
 	Extern: Context,
 	abort: (lastInstruction, process) => {
-		if (process.done !== false) {
-			process.done = !process.top.blocked;
+		if (!process.abort) {
+			process.abort = process.top.blocked;
 		}
 
-		return !!process.top.blocked;
+		return !!process.abort;
 	},
 	call: async (process, nextFrame, next) =>  {
 		if (!process.top.dump) {
@@ -23,7 +23,7 @@ const options = {
 
 		await next();
 
-		process.extern.done = process.done;
+		process.extern.done = !process.abort;
 	},
 };
 
