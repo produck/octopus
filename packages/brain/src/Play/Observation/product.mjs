@@ -47,7 +47,7 @@ export const evaluateProductProgress = Duck.inject(async ({
 		const { model, order, dump: _dump } = product;
 		const dump = _dump === null ? {} : _dump;
 		const procedure = Procedure.use(model);
-		const result = procedure.evaluate(order, { dump, finished, crafts });
+		const result = await procedure.evaluate(order, { dump, finished, crafts });
 
 		if (result.done) {
 			if (result.ok) {

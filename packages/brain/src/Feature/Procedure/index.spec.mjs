@@ -219,7 +219,7 @@ describe('::Feature::Procedure', function () {
 
 				const procedure = await NativeProcedure.get('example');
 
-				assert.deepEqual(procedure.evaluate(null, {}), {
+				assert.deepEqual(await procedure.evaluate(null, {}), {
 					ok: true,
 					done: true,
 					artifact: undefined,
@@ -234,7 +234,7 @@ describe('::Feature::Procedure', function () {
 
 				const procedure = await NativeProcedure.get('example');
 
-				assert.deepEqual(procedure.evaluate(null, {}), {
+				assert.deepEqual(await procedure.evaluate(null, {}), {
 					ok: false,
 					done: true,
 					error: 'Invalid "artifact <= vm.execute()", one "valid artifact" expected.',
@@ -244,7 +244,7 @@ describe('::Feature::Procedure', function () {
 			it('should not done if new job.', async function () {
 				const script = {
 					*main() {
-						return yield this.run('example');
+						return yield this._run('example');
 					},
 				};
 
@@ -255,7 +255,7 @@ describe('::Feature::Procedure', function () {
 
 				const procedure = await NativeProcedure.get('example');
 
-				const result = procedure.evaluate(null, {
+				const result = await procedure.evaluate(null, {
 					crafts: { example: () => true },
 				});
 
