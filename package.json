@@ -4,7 +4,7 @@
 	"scripts": {
 		"deps:install": "npm -v && npm i",
 		"lint": "eslint --fix packages/**/*.mjs",
-		"test": "npm run build:extract --workspaces && npm run test --workspaces",
+		"test": "npm run build:extract --if-present --workspaces && npm run test --workspaces",
 		"coverage": "c8 --exclude=**/*.spec** --reporter=lcov npm run test",
 		"publish": "npm run lint && npm test && lerna publish --no-private"
 	},
