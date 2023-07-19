@@ -74,29 +74,31 @@ export const Evaluator = Crank.Engine({
 	},
 	async all(currentToken, args) {
 		const extern = currentToken.process.extern;
-		const ret = [];
+		const returnValue = [];
 		let done = true;
 
+
 		for (const instruction of args) {
+			const result = { ok: true };
+
 			if (Crank.isToken(instruction)) {
-				let value;
-
 				try {
-					value = await instruction.execute();
+					result.value = await instruction.execute();
 				} catch (error) {
-					value = error;
+					result.ok = false;
+					result.error = error;
 				}
-
-				ret.push(value);
 
 				done &&= extern.fetchData(instruction);
 			} else {
-				ret.push(instruction);
+				result.value = instruction;
 			}
+
+			returnValue.push(result);
 		}
 
 		extern.saveData(currentToken, done);
 
-		return ret;
+		return returnValue;
 	},
 });
