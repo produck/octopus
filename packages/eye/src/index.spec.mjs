@@ -22,7 +22,7 @@ describe('Evaluator::', function () {
 				const vm = new Evaluator();
 				const program = {
 					*main() {
-						return yield this._value('foo');
+						return yield this._value(() => 'foo');
 					},
 				};
 
@@ -144,8 +144,8 @@ describe('Evaluator::', function () {
 				const program = {
 					*main() {
 						return yield this._all([
-							this._value('foo'),
-							this._value('bar'),
+							this._value(() => 'foo'),
+							this._value(() => 'bar'),
 						]);
 					},
 				};

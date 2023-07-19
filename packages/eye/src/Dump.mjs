@@ -1,3 +1,5 @@
+import { T, U } from '@produck/mold';
+
 export class Dump {
 	constructor(data) {
 		this.data = data;
@@ -16,10 +18,18 @@ export class Dump {
 		return new Dump(childData);
 	}
 
-	fetchValue(value) {
+	fetchValue(generator) {
 		const index = this.valueIndex++;
 		const { values } = this.data;
 
-		return index < values.length ? values[index] : values[index] = value;
+		if (index < values.length) {
+			return values[index];
+		} else {
+			if (!T.Native.Function(generator)) {
+				U.throwError('value', 'function');
+			}
+
+			return values[index] = generator();
+		}
 	}
 }
