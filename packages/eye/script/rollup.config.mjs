@@ -32,6 +32,8 @@ export default moduleList.map(config => {
 		},
 		external: [
 			'@produck/crank',
+			'node:crypto',
+			'@produck/mold',
 		],
 	});
 });
