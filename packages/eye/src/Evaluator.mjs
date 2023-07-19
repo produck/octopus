@@ -6,34 +6,48 @@ import { T, U } from '@produck/mold';
 import { Context } from './Context.mjs';
 import { Dump } from './Dump.mjs';
 
+const map = new WeakMap();
+
 export const Evaluator = Crank.Engine({
 	name: 'EvaluatorEngine',
 	Extern: Context,
 	abort: (lastInstruction, process) => {
-		if (!process.abort) {
-			process.abort = process.top.blocked;
+		const scope = map.get(process);
+
+		if (!scope.blocked) {
+			scope.blocked = map.get(process.top).blocked;
 		}
 
-		return !!process.abort;
+		return scope.blocked;
 	},
 	call: async (process, nextFrame, next) =>  {
-		if (!process.top.dump) {
-			process.top.dump = new Dump({values: [], children: [process.extern.dump]});
+		if (!map.has(process)) {
+			map.set(process, {
+				blocked: false,
+			});
+
+			map.set(process.top, {
+				dump: new Dump({values: [], children: [process.extern.dump]}),
+				blocked: false,
+			});
 		}
 
-		nextFrame.dump = process.top.dump.fetchChild();
+		map.set(nextFrame, {
+			dump: map.get(process.top).dump.fetchChild(),
+			blocked: false,
+		});
 
 		await next();
 
-		process.extern.done = !process.abort;
+		process.extern.done = !map.get(process).blocked;
 	},
 }, {
-	value(process, ...args) {
+	value(process, instruction, ...args) {
 		const { top } = process;
 
-		return top.dump.fetchValue(...args);
+		return map.get(top).dump.fetchValue(...args);
 	},
-	run(process, ...args) {
+	run(process, instruction, ...args) {
 		const [craft, source] = args;
 
 		if (!T.Native.String(craft)) {
@@ -41,12 +55,13 @@ export const Evaluator = Crank.Engine({
 		}
 
 		const { top, extern } = process;
-		const id = top.dump.fetchValue(() => crypto.randomUUID());
+		const scope = map.get(top);
+		const id =  scope.dump.fetchValue(() => crypto.randomUUID());
 
 		if (!extern.hasJob(id)) {
-			extern.planJob(id, craft, source);
+			scope.blocked = true;
 
-			top.blocked = true;
+			extern.planJob(id, craft, source);
 		} else {
 			const { ok, error, target } = extern.fetchJob(id);
 
@@ -57,8 +72,12 @@ export const Evaluator = Crank.Engine({
 			}
 		}
 	},
-	async all(process, args) {
+	async all(process, instruction, args) {
 		const ret = [];
+
+		if (!Array.isArray(args)) {
+			U.throwError('args', 'boolean');
+		}
 
 		for (const instruction of args) {
 			if (Crank.isToken(instruction)) {
@@ -73,5 +92,3 @@ export const Evaluator = Crank.Engine({
 		return ret;
 	},
 });
-
-export { Evaluator as Engine };
