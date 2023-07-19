@@ -492,7 +492,7 @@ describe('Play::Principal', function () {
 			assert.deepEqual(Backend.Product[0].artifact, ['hello', 'world']);
 		});
 
-		it.only('should finish product in error.', async function () {
+		it('should finish product in error.', async function () {
 			const productId = crypto.webcrypto.randomUUID();
 
 			Backend = {
@@ -539,20 +539,14 @@ describe('Play::Principal', function () {
 			await sleep(1000);
 			Backend.Job[0].finishedAt = Date.now();
 			Backend.Job[0].status = 200;
+
+			await sleep(1000);
 			Backend.Job[1].finishedAt = Date.now();
 			Backend.Job[1].status = 200;
 
 			await sleep(1000);
 			Backend.Job[2].finishedAt = Date.now();
 			Backend.Job[2].status = 200;
-			Backend.Job[3].finishedAt = Date.now();
-			Backend.Job[3].status = 200;
-
-			await sleep(1000);
-			Backend.Job[4].finishedAt = Date.now();
-			Backend.Job[4].status = 200;
-			Backend.Job[5].finishedAt = Date.now();
-			Backend.Job[5].status = 200;
 
 			await sleep(1000);
 			foo.halt();
