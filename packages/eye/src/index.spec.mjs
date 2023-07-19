@@ -32,7 +32,7 @@ describe('Evaluator::', function () {
 		});
 
 		describe('._run()', function () {
-			it('should set the done of executor to false.', async function () {
+			it('should set context.done to false.', async function () {
 				const program = {
 					*main() {
 						return yield this._run('example');
@@ -48,11 +48,11 @@ describe('Evaluator::', function () {
 
 				const vm = new Evaluator();
 
-				assert.equal(await vm.execute(program, context), null); // Crank frame ret null -> undefined
+				assert.equal(await vm.execute(program, context), undefined);
 				assert.equal(context.done, false);
 			});
 
-			it('should set the done of executor true.', async function () {
+			it('should set context.done true.', async function () {
 				const program = {
 					*main() {
 						return yield this._run('example');
@@ -158,7 +158,7 @@ describe('Evaluator::', function () {
 		});
 	});
 
-	it.only('should pass a complex case.', async function () {
+	it('should pass a complex case.', async function () {
 		const MAX_SAT_TIMES = 3;
 
 		const program = {

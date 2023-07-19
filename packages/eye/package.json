@@ -9,10 +9,10 @@
     "require": "./src/index.gen.cjs"
   },
   "types": "src/index.d.ts",
-	"keywords": [
+  "keywords": [
     "evaluator",
     "vm",
-		"executor"
+    "executor"
   ],
   "publishConfig": {
     "access": "public"
@@ -24,17 +24,16 @@
   "bugs": {
     "url": "https://github.com/produck/octopus/issues"
   },
-
   "scripts": {
     "test": "mocha \"**/*.spec.mjs\" --no-diff -t 999999999 --exit",
     "build": "rollup -c script/rollup.config.mjs",
     "prepublishOnly": " npm run build"
   },
-	"devDependencies": {
+  "devDependencies": {
     "mocha": "^10.2.0"
   },
   "license": "MIT",
   "dependencies": {
-    "@produck/crank": "^0.2.1"
+    "@produck/crank": "^0.3.0"
   }
 }
