@@ -40,9 +40,10 @@ function compileSelfScript() {
 const defineBase = Definer.Base(({ Declare }) => {
 	async function evaluate(order, contextData = {}) {
 		const context = new Evaluator.Extern(contextData);
+		context.setArgs(order);
 
 		try {
-			const artifact = await vm.execute(this.program, context, order);
+			const artifact = await vm.execute(this.program, context);
 			const { done } = context;
 
 			if (!done) {

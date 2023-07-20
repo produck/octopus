@@ -226,6 +226,27 @@ describe('::Feature::Procedure', function () {
 				});
 			});
 
+			it('should get normal artifact.', async function () {
+				const EXAMPLE = Data.normalize({
+					name: 'example',
+					script: { *main(order) {
+						return yield this._all(order);
+					} },
+				});
+				const NativeProcedure = defineProcedure({
+					has: () => true,
+					get: () => ({ ...EXAMPLE }),
+				});
+
+				const procedure = await NativeProcedure.get('example');
+
+				assert.deepEqual(await procedure.evaluate(1, {}), {
+					ok: true,
+					done: true,
+					artifact: [{ ok: true, value: 1 }],
+				});
+			});
+
 			it('should throw if bad artifact.', async function () {
 				const NativeProcedure = defineProcedure({
 					has: () => true,
