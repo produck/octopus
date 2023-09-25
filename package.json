@@ -10,9 +10,9 @@
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"c8": "^8.0.0",
-		"eslint": "^8.45.0",
-		"lerna": "^7.1.4"
+		"c8": "^8.0.1",
+		"eslint": "^8.50.0",
+		"lerna": "^7.3.0"
 	},
 	"workspaces": [
 		"packages/*"
