@@ -1,5 +1,4 @@
 import * as assert from 'node:assert/strict';
-import { webcrypto as crypto } from 'node:crypto';
 import * as Octopus from './index.mjs';
 
 const sleep = (ms = 1000) => new Promise(resolve => setTimeout(resolve, ms));
@@ -77,53 +76,11 @@ describe('CLI', function () {
 		});
 	});
 
-	describe('> start', function () {
-		it('should use a existed id.', async function () {
-			let flag = false;
-			const id = crypto.randomUUID();
-
-			const tentacle = Octopus.Tentacle({
-				id: {
-					has: () => true,
-					get: () => id,
-				},
-				craft: 'example',
-				version: '0.0.0',
-				shared: () => ({}),
-				run: () => {},
-				command: {
-					options: {
-						start: [{
-							name: 'foo', required: false, value: null,
-							description: 'for test.',
-						}],
-					},
-					start: (opts, env, next) => {
-						assert.equal(opts.foo, true);
-						flag = true;
-						next();
-					},
-				},
-			});
-
-			await tentacle.boot(['start', '-m', 'solo', '--foo']);
-			assert.equal(tentacle.environment.id, id);
-			assert.equal(flag, true);
-			tentacle.halt();
-		});
-	});
-
 	describe('> clean', function () {
 		it('should run options.command.clean.', async function () {
-			let flag = false, changed = false;
-			const id = crypto.randomUUID();
+			let flag = false;
 
 			const tentacle = Octopus.Tentacle({
-				id: {
-					has: () => true,
-					get: () => id,
-					clean: () => changed = true,
-				},
 				craft: 'example',
 				version: '0.0.0',
 				shared: () => ({}),
@@ -141,13 +98,12 @@ describe('CLI', function () {
 				},
 			});
 
-			await tentacle.boot(['clean', '--include-id']);
+			await tentacle.boot(['clean']);
 			assert.equal(flag, true);
-			assert.equal(changed, true);
 		});
 	});
 
-	it('should start and clean use default id.', async function () {
+	it('should start.', async function () {
 		const tentacle = Octopus.Tentacle({
 			craft: 'example',
 			version: '0.0.0',
@@ -158,11 +114,9 @@ describe('CLI', function () {
 		await tentacle.boot(['-m', 'solo']);
 		await sleep();
 		tentacle.halt();
-		await tentacle.boot(['clean']);
 
 		await tentacle.boot(['-m', 'solo']);
 		await sleep();
 		tentacle.halt();
-		await tentacle.boot(['clean', '-i']);
 	});
 });

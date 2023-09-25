@@ -4,17 +4,11 @@ import * as DuckCLI from '@produck/duck-cli';
 
 import * as Broker from './Feature/Broker';
 import * as RJSP from './Feature/RJSP';
-import * as Identifier from './Feature/Identifier';
 
 export interface CommandStartOpts {
 	mode: 'solo' | 'processes';
 	host: string;
 	port: string;
-	renew: boolean;
-}
-
-export interface CommandCleanOpts {
-	includeId: boolean;
 }
 
 interface Options<
@@ -23,11 +17,6 @@ interface Options<
 > extends Broker.BrokerOptions<Shared, Source> {
 	craft?: string;
 	version?: string;
-
-	id?: Identifier.Options.Object<{
-		readonly workspace: string;
-		readonly temp: string;
-	}>;
 
 	command?: {
 		options: {
@@ -39,7 +28,7 @@ interface Options<
 			environment: Environment,
 			next: () => any
 		) => Promise<void> | void;
-		clean?: (opts: CommandCleanOpts) => Promise<void> | void;
+		clean?: () => Promise<void> | void;
 	};
 }
 
@@ -76,7 +65,6 @@ declare module '@produck/duck' {
 		Environment: Environment;
 		Broker: Broker.Broker;
 		Client: RJSP.RJSPClient;
-		Id: Identifier.IdentifierAccessor;
 	}
 }
 

@@ -1,8 +1,10 @@
+import { webcrypto as crypto } from 'node:crypto';
+
 import { definePlay } from '@produck/duck-runner';
 import { RJSP } from './Feature/index.mjs';
 
 export const play = definePlay(function Principal({
-	Bus, Options, Environment, Broker, Client, Id,
+	Bus, Options, Environment, Broker, Client,
 }) {
 	Bus.on('halt', () => Environment.active = false);
 
@@ -135,8 +137,7 @@ export const play = definePlay(function Principal({
 	}
 
 	return async function start() {
-		await Id.read();
-		Environment.id = Id.value;
+		Environment.id = crypto.randomUUID();
 		Environment.active = true;
 		setServer();
 		observe();

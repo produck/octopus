@@ -4,7 +4,7 @@ import { defineFactory } from '@produck/duck-cli';
 import * as Develop from './develop.mjs';
 
 export const factory = defineFactory(({
-	Kit, Workspace, Runner, Commander, setProgram, Id, Options, Environment,
+	Kit, Workspace, Runner, Commander, setProgram, Options, Environment,
 }) => {
 	const program = new Commander({ name: 'tentacle' });
 
@@ -23,16 +23,9 @@ export const factory = defineFactory(({
 			name: 'port', alias: 'p', required: false,
 			value: { name: 'port', required: true, default: '9173' },
 			description: 'The server port',
-		}, {
-			name: 'renew', alias: 'r', required: false, value: null,
-			description: 'Force to create a new agent id or not',
 		}, ...Options.command.options.start],
 		handler: async function start(_args, opts) {
 			await Workspace.buildAll();
-
-			if (opts.renew ||!await Id.has()) {
-				await Id.write();
-			}
 
 			Environment.config.host = opts.host;
 			Environment.config.port = Number(opts.port);
@@ -47,15 +40,8 @@ export const factory = defineFactory(({
 	const clean = new Commander({
 		name: 'clean', aliases: ['c'],
 		description: 'Cleaning local.',
-		options: [{
-			name: 'include-id', alias: 'i', required: false, value: null,
-			description: 'If delete id when cleaning.',
-		}, ...Options.command.options.clean],
+		options: [...Options.command.options.clean],
 		handler: async function clean(_args, opts) {
-			if (opts.includeId) {
-				await Id.clean();
-			}
-
 			await Options.command.clean(opts);
 			await fs.rm(Workspace.getPath('temp'), { recursive: true });
 			await fs.rm(Workspace.getPath('log'), { recursive: true });

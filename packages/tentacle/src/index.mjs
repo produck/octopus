@@ -31,7 +31,7 @@ export const Tentacle = Duck.define({
 		DuckCLI.Component(CLI.factory, DuckCLICommander.Provider),
 	],
 }, function Tentacle({
-	Kit, Workspace, Runner, Bus, CLI,
+	Kit, Runner, Bus, CLI,
 }, ...args) {
 	const options =  Options.normalize(...args);
 	const environment = Environment.normalize();
@@ -49,17 +49,7 @@ export const Tentacle = Duck.define({
 		timeout: () => environment.config.timeout,
 	});
 
-	const identifier = new Feature.Identifier.Accessor(options.id, {
-		get workspace() {
-			return Workspace.root;
-		},
-		get temp() {
-			return Workspace.getPath('temp');
-		},
-	});
-
 	Object.assign(Kit, {
-		Id: identifier,
 		Options: options,
 		Environment: environment,
 		Broker: broker,
