@@ -3,6 +3,8 @@ import { webcrypto as crypto } from 'node:crypto';
 import { defineRouter } from '@produck/duck-web-koa-forker';
 import { koaBody } from 'koa-body';
 
+import { UUIDSchema } from '../../../Feature/Utils.mjs';
+
 const StateSchema = S.Object({
 	finished: P.Constant(true, true),
 });
@@ -12,7 +14,17 @@ const isState = (data) => {
 		StateSchema(data, false);
 
 		return true;
-	} catch(error) {
+	} catch (error) {
+		return false;
+	}
+};
+
+const isUUID = (data) => {
+	try {
+		UUIDSchema(data, false);
+
+		return true;
+	} catch (error) {
 		return false;
 	}
 };
@@ -70,6 +82,10 @@ export const Router = defineRouter(function ProductRouter(router, {
 			ctx.body = toProductValueObject(product);
 		})
 		.param('productId', async function fetchProduct(productId, ctx, next) {
+			if (!isUUID(productId)) {
+				return ctx.throw(400, 'Bad productId.');
+			}
+
 			const { application } = ctx.state;
 			const product = await Product.get(productId);
 
